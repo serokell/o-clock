@@ -117,5 +117,13 @@ script:
   - rm -rf ./dist-newstyle
   - if $HADDOCK; then cabal new-haddock -w ${HC} --disable-tests --disable-benchmarks all; else echo "Skipping haddock generation";fi
 
+notifications:
+  email: false
+  slack:
+    rooms:
+      - serokell:T7L0cju5Nrn6ZkqWJCwNuOh4
+    on_success: change
+    on_failure: always
+
 # REGENDATA ["o-clock.cabal"]
 # EOF
