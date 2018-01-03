@@ -1,8 +1,8 @@
-name:                safe-time
+name:                o-clock
 version:             0.1.0.0
 description:         Type-safe time library.
-homepage:            https://github.com/serokell/safe-time
-bug-reports:         https://github.com/serokell/safe-time/issues
+homepage:            https://github.com/serokell/o-clock
+bug-reports:         https://github.com/serokell/o-clock/issues
 license:             MIT
 license-file:        LICENSE
 author:              @serokell
@@ -17,11 +17,12 @@ tested-with:         GHC == 8.4.1
 
 source-repository head
   type:     git
-  location: https://github.com/serokell/safe-type
+  location: https://github.com/serokell/o-clock
 
 library
   hs-source-dirs:      src
-  exposed-modules:     Lib
+  exposed-modules:     Time
+                           Time.Rat
   ghc-options:         -Wall
   build-depends:       base      >= 4.11
   default-language:    Haskell2010
@@ -29,24 +30,24 @@ library
                        RecordWildCards
 
 
-test-suite safe-time-test
+test-suite o-clock-test
   type:                exitcode-stdio-1.0
   hs-source-dirs:      test
   main-is:             Spec.hs
   build-depends:       base      >= 4.11
-                     , safe-time
+                     , o-clock
   ghc-options:         -Wall -Werror -threaded -rtsopts -with-rtsopts=-N
   default-language:    Haskell2010
   default-extensions:  OverloadedStrings
                        RecordWildCards
 
-benchmark safe-time-benchmark
+benchmark o-clock-benchmark
   type:                exitcode-stdio-1.0
   default-language:    Haskell2010
   ghc-options:         -Wall -Werror -O2 -threaded -rtsopts -with-rtsopts=-N
   hs-source-dirs:      benchmark
   main-is:             Main.hs
   build-depends:       base      >= 4.11
-                     , safe-time
+                     , o-clock
   default-extensions:  OverloadedStrings
                        RecordWildCards
