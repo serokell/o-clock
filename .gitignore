@@ -1,0 +1,33 @@
+# Haskell
+dist
+dist-newstyle
+cabal-dev
+*.o
+*.hi
+*.chi
+*.chs.h
+*.dyn_o
+*.dyn_hi
+*.prof
+*.aux
+*.hp
+.virtualenv
+.hsenv
+.hpc
+.stack-work/
+.cabal-sandbox/
+cabal.sandbox.config
+cabal.config
+TAGS
+.DS_Store
+*~
+*#
+
+cabal.project.local
+
+# IDE/support
+.idea/
+.ideaHaskellLib/
+guide.iml
+.vscode/
+tags
