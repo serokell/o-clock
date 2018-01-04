@@ -30,25 +30,26 @@ module Time.Units
        , FortnightUnit
        ) where
 
-import Data.Ratio (Rational)
+import Data.Ratio (Ratio)
+import GHC.Natural (Natural)
 
-import Time.Rational (type (%), Rat)
+import Time.Rational (type (%), type (**), type (//), Rat)
 
 
-newtype Time (rat :: Rat) = Time Rational
+newtype Time (rat :: Rat) = Time (Ratio Natural)
 
 -- Units
 
 type SecondUnit      = 1 % 1
-type MilliSecondUnit = 1 % 1000
-type MicroSecondUnit = 1 % 1000000
-type NanoSecondUnit  = 1 % 1000000000
+type MilliSecondUnit = SecondUnit      // 1000
+type MicroSecondUnit = MilliSecondUnit // 1000
+type NanoSecondUnit  = MicroSecondUnit // 1000
 
-type MinuteUnit      = 60 % 1
-type HourUnit        = 360 % 1
-type DayUnit         = 8640 % 1
-type WeekUnit        = 60480 % 1
-type FortnightUnit   = 120960 % 1
+type MinuteUnit      = 60 ** SecondUnit
+type HourUnit        = 60 ** MinuteUnit
+type DayUnit         = 24 ** HourUnit
+type WeekUnit        = 7  ** DayUnit
+type FortnightUnit   = 2  ** WeekUnit
 
 -- Time data types
 
