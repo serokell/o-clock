@@ -1,5 +1,7 @@
 module Time
-    ( module Time.Rat
+    ( module Time.Rational
+    , module Time.Units
     ) where
 
-import Time.Rat
+import Time.Rational
+import Time.Units
