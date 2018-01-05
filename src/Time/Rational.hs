@@ -1,6 +1,7 @@
 {-# LANGUAGE DataKinds            #-}
-{-# LANGUAGE ExplicitNamespaces   #-}
-{-# LANGUAGE KindSignatures       #-}
+{-# LANGUAGE FlexibleInstances    #-}
+{-# LANGUAGE ScopedTypeVariables  #-}
+{-# LANGUAGE TypeApplications     #-}
 {-# LANGUAGE TypeFamilies         #-}
 {-# LANGUAGE TypeOperators        #-}
 {-# LANGUAGE UndecidableInstances #-}
@@ -15,9 +16,17 @@ module Time.Rational
        , DivRat
        , Gcd
        , Normalize
+
+        -- Utilities
+       , RatioNat
+       , KnownRat (..)
+       , divRat
        ) where
 
-import GHC.TypeNats (type (*), Div, Mod, Nat)
+import Data.Proxy (Proxy (..))
+import GHC.Natural (Natural)
+import GHC.Real (Ratio ((:%)))
+import GHC.TypeNats (type (*), Div, KnownNat, Mod, Nat, natVal)
 
 -- | Data structure represents the rational number.
 -- Rational number can be represented as a pair of
@@ -80,7 +89,6 @@ __Example:__
 (9 % 11) // 2 :: Rat
 = 9 :% 22
 -}
-
 type family (//) (r :: Rat) (n :: Nat) :: Rat where
     (a :% b) // x = a % (b * x)
 
@@ -114,3 +122,17 @@ Normalize (9 % 12) :: Rat
 -}
 type family Normalize (r :: Rat) :: Rat  where
     Normalize (a :% b) = (a `Div` Gcd a b) :% (b `Div` Gcd a b)
+
+
+-- | Rational numbers, with numerator and denominator of 'Natural' type.
+type RatioNat = Ratio Natural
+
+-- | This class gives the integer associated with a type-level rational.
+class KnownRat (r :: Rat) where
+  ratVal :: Proxy r -> Ratio Natural
+
+instance (KnownNat a, KnownNat b) => KnownRat (a :% b) where
+    ratVal _ = natVal (Proxy @a) :% natVal (Proxy @b)
+
+divRat :: forall (m1 :: Rat) (m2 :: Rat) . Proxy m1 -> Proxy m2 -> Proxy (DivRat m1 m2)
+divRat _ _ = Proxy

@@ -1,7 +1,11 @@
-{-# LANGUAGE DataKinds          #-}
-{-# LANGUAGE ExplicitNamespaces #-}
-{-# LANGUAGE KindSignatures     #-}
-{-# LANGUAGE TypeOperators      #-}
+{-# LANGUAGE DataKinds                  #-}
+{-# LANGUAGE ExplicitForAll             #-}
+{-# LANGUAGE FlexibleContexts           #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE ScopedTypeVariables        #-}
+{-# LANGUAGE TypeApplications           #-}
+{-# LANGUAGE TypeFamilies               #-}
+{-# LANGUAGE TypeOperators              #-}
 
 module Time.Units
        ( -- * Time
@@ -28,15 +32,18 @@ module Time.Units
        , DayUnit
        , WeekUnit
        , FortnightUnit
+
+        -- ** Functions
+       , convertUnit
        ) where
 
-import Data.Ratio (Ratio)
-import GHC.Natural (Natural)
+import Data.Proxy (Proxy (..))
 
-import Time.Rational (type (%), type (**), type (//), Rat)
+import Time.Rational (type (%), type (**), type (//), DivRat, KnownRat, Rat, RatioNat, divRat,
+                      ratVal)
 
 
-newtype Time (rat :: Rat) = Time (Ratio Natural)
+newtype Time (rat :: Rat) = Time RatioNat deriving (Show, Num)
 
 -- Units
 
@@ -63,3 +70,11 @@ type Hour        = Time HourUnit
 type Day         = Time DayUnit
 type Week        = Time WeekUnit
 type Fortnight   = Time FortnightUnit
+
+
+-- | Converts from one time unit to another time unit.
+convertUnit :: forall (unitTo :: Rat) (unitFrom :: Rat) .
+               (KnownRat unitTo, KnownRat unitFrom, KnownRat (DivRat unitFrom unitTo))
+            => Time unitFrom
+            -> Time unitTo
+convertUnit (Time ratNat) = Time $ ratNat * (ratVal $ divRat (Proxy @unitFrom) (Proxy @unitTo))
