@@ -35,9 +35,12 @@ module Time.Units
 
         -- ** Functions
        , convertUnit
+       , intPart
        ) where
 
 import Data.Proxy (Proxy (..))
+import Data.Ratio (denominator, numerator)
+import GHC.Natural (Natural)
 
 import Time.Rational (type (%), type (**), type (//), DivRat, KnownRat, Rat, RatioNat, divRat,
                       ratVal)
@@ -78,3 +81,7 @@ convertUnit :: forall (unitTo :: Rat) (unitFrom :: Rat) .
             => Time unitFrom
             -> Time unitTo
 convertUnit (Time ratNat) = Time $ ratNat * (ratVal $ divRat (Proxy @unitFrom) (Proxy @unitTo))
+
+-- | Extracts integer part of time unit.
+intPart :: Time unit -> Natural
+intPart (Time n) = numerator n `div` denominator n
