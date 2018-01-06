@@ -25,11 +25,20 @@ library
                          Time.Rational
                          Time.Units
   ghc-options:         -Wall
-  build-depends:       base      >= 4.11
+  build-depends:       base         >= 4.11
+                     , transformers >= 0.5
   default-language:    Haskell2010
   default-extensions:  OverloadedStrings
                        RecordWildCards
 
+executable play-o-clock
+  main-is:             Playground.hs
+  build-depends:       o-clock
+                     , base     >= 4.11
+  hs-source-dirs:      examples
+  default-language:    Haskell2010
+  ghc-options:         -threaded -Wall
+                       -fno-warn-orphans
 
 test-suite o-clock-test
   type:                exitcode-stdio-1.0
