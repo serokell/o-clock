@@ -26,14 +26,14 @@ spec_convertUnit :: Spec
 spec_convertUnit =
     describe "Unit Conversion Test" $ do
         it "11 seconds is 11000 milliseconds" $
-            convertUnit @MilliSecondUnit (Time 11 :: Second) `shouldBe` Time 11000
+            convertUnit @MilliSecondUnit (11 :: Second) `shouldBe` 11000
         it "5000 milliseconds is 5 seconds" $
-            convertUnit @SecondUnit (Time 5000 :: MilliSecond) `shouldBe` Time 5
+            convertUnit @SecondUnit (5000 :: MilliSecond) `shouldBe` 5
         it "3 seconds is 3000000 microseconds" $
-            convertUnit @MicroSecondUnit (Time 3 :: Second) `shouldBe` Time 3000000
+            convertUnit @MicroSecondUnit (3 :: Second) `shouldBe` 3000000
         it "3 microseconds is 3/1000000 seconds" $
-            convertUnit @SecondUnit (Time 3 :: MicroSecond) `shouldBe` Time (3 % 1000000)
+            convertUnit @SecondUnit (3 :: MicroSecond) `shouldBe` Time (3 % 1000000)
         it "7 days is 1 week" $
-            convertUnit @WeekUnit (Time 7 :: Day) `shouldBe` Time 1
+            convertUnit @WeekUnit (7 :: Day) `shouldBe` 1
         it "2 fornights is 28 days" $
-            convertUnit @DayUnit (Time 2 :: Fortnight) `shouldBe` Time 28
+            convertUnit @DayUnit (2 :: Fortnight) `shouldBe` 28

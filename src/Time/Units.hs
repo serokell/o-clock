@@ -35,21 +35,19 @@ module Time.Units
 
         -- ** Functions
        , convertUnit
-       , intPart
        , threadDelay
        ) where
 
 import Control.Monad.IO.Class (MonadIO, liftIO)
 import Data.Proxy (Proxy (..))
-import Data.Ratio (denominator, numerator)
-import GHC.Natural (Natural)
 
 import Time.Rational (type (%), type (**), type (//), DivRat, KnownRat, Rat, RatioNat, divRat,
                       ratVal)
 
 import qualified Control.Concurrent as Concurrent
 
-newtype Time (rat :: Rat) = Time RatioNat deriving (Show, Num, Eq)
+newtype Time (rat :: Rat) = Time RatioNat
+    deriving (Show, Num, Eq, Ord, Enum, Fractional, Read, Real, RealFrac)
 
 -- Units
 
@@ -85,14 +83,10 @@ convertUnit :: forall (unitTo :: Rat) (unitFrom :: Rat) .
             -> Time unitTo
 convertUnit (Time ratNat) = Time $ ratNat * (ratVal $ divRat (Proxy @unitFrom) (Proxy @unitTo))
 
--- | Extracts integer part of time unit.
-intPart :: Time unit -> Natural
-intPart (Time n) = numerator n `div` denominator n
-
 -- | Convenient version of 'Control.Concurrent.threadDelay' which takes
 -- any time-unit and operates in any MonadIO.
 threadDelay :: forall unit m .
                (KnownRat unit, KnownRat (DivRat unit MicroSecondUnit), MonadIO m)
             => Time unit
             -> m ()
-threadDelay = liftIO . Concurrent.threadDelay . fromIntegral . intPart . convertUnit @MicroSecondUnit
+threadDelay = liftIO . Concurrent.threadDelay . floor . convertUnit @MicroSecondUnit
