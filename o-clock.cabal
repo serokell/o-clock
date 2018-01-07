@@ -46,10 +46,13 @@ test-suite o-clock-test
   main-is:             Spec.hs
 
   other-modules:       Test.Time.TypeSpec
+                       Test.Time.Units
 
-  build-depends:       base       >= 4.11 && < 5
+  build-depends:       base         >= 4.11  && < 5
                      , o-clock
-                     , type-spec ^>= 0.3.0.1
+                     , tasty       ^>= 0.12
+                     , tasty-hspec ^>= 1.1.3
+                     , type-spec   ^>= 0.3.0.1
 
   ghc-options:         -Wall -threaded -rtsopts -with-rtsopts=-N
   default-language:    Haskell2010

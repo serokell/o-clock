@@ -49,7 +49,7 @@ import Time.Rational (type (%), type (**), type (//), DivRat, KnownRat, Rat, Rat
 
 import qualified Control.Concurrent as Concurrent
 
-newtype Time (rat :: Rat) = Time RatioNat deriving (Show, Num)
+newtype Time (rat :: Rat) = Time RatioNat deriving (Show, Num, Eq)
 
 -- Units
 
