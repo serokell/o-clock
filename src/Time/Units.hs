@@ -34,6 +34,7 @@ module Time.Units
        , WeekUnit
        , FortnightUnit
 
+       , ShowUnit
         -- ** Functions
        , convertUnit
        , threadDelay
@@ -87,7 +88,7 @@ type instance ShowUnit (1 :% 1000000)    = "mcs" -- microsecond unit
 type instance ShowUnit (1 :% 1000000000) = "ns"  -- nanosecond unit
 
 type instance ShowUnit (60      :% 1) = "m"  -- minute unit
-type instance ShowUnit (360     :% 1) = "h"  -- hour unit
+type instance ShowUnit (3600    :% 1) = "h"  -- hour unit
 type instance ShowUnit (86400   :% 1) = "d"  -- day unit
 type instance ShowUnit (604800  :% 1) = "w"  -- week unit
 type instance ShowUnit (1209600 :% 1) = "fn" -- fortnight unit
