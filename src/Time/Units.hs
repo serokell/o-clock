@@ -1,6 +1,7 @@
 {-# LANGUAGE DataKinds                  #-}
 {-# LANGUAGE ExplicitForAll             #-}
 {-# LANGUAGE FlexibleContexts           #-}
+{-# LANGUAGE InstanceSigs               #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE ScopedTypeVariables        #-}
 {-# LANGUAGE TypeApplications           #-}
@@ -64,8 +65,8 @@ import GHC.Natural (Natural)
 import GHC.Read (Read (readPrec))
 import GHC.Real (Ratio ((:%)), denominator, numerator, (%))
 import GHC.TypeLits (KnownSymbol, Symbol, symbolVal)
-import Text.ParserCombinators.ReadP (char, munch1, option, pfail)
-import Text.ParserCombinators.ReadPrec (lift)
+import Text.ParserCombinators.ReadP (ReadP, char, munch1, option, pfail)
+import Text.ParserCombinators.ReadPrec (ReadPrec, lift)
 
 import Time.Rational (type (%), type (**), type (//), type (:%), DivRat, KnownRat, Rat, RatioNat, divRat,
                       ratVal)
@@ -123,14 +124,17 @@ instance KnownSymbol (ShowUnit unit) => Show (Time unit) where
                       in numeratorStr ++ denominatorStr ++ symbolVal (Proxy @(ShowUnit unit))
 
 instance KnownSymbol (ShowUnit unit) => Read (Time unit) where
+    readPrec :: ReadPrec (Time unit)
     readPrec = lift readP
       where
+        readP :: ReadP (Time unit)
         readP = do
-            n <- munch1 isDigit
-            m <- option "1" (char '/' *> munch1 isDigit)
+            let naturalP = read <$> munch1 isDigit
+            n <- naturalP
+            m <- option 1 (char '/' *> naturalP)
             timeUnitStr <- munch1 isLetter
             unless (timeUnitStr == symbolVal (Proxy @(ShowUnit unit))) pfail
-            pure $ Time (read n % read m)
+            pure $ Time (n % m)
 
 ----------------------------------------------------------------------------
 -- Creation helpers
