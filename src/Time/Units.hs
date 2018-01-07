@@ -1,6 +1,7 @@
 {-# LANGUAGE DataKinds                  #-}
 {-# LANGUAGE ExplicitForAll             #-}
 {-# LANGUAGE FlexibleContexts           #-}
+{-# LANGUAGE InstanceSigs               #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE ScopedTypeVariables        #-}
 {-# LANGUAGE TypeApplications           #-}
@@ -55,11 +56,17 @@ module Time.Units
        , threadDelay
        ) where
 
+import Control.Applicative ((*>))
+import Control.Monad (unless)
 import Control.Monad.IO.Class (MonadIO, liftIO)
+import Data.Char (isDigit, isLetter)
 import Data.Proxy (Proxy (..))
 import GHC.Natural (Natural)
-import GHC.Real (Ratio ((:%)), denominator, numerator)
+import GHC.Read (Read (readPrec))
+import GHC.Real (Ratio ((:%)), denominator, numerator, (%))
 import GHC.TypeLits (KnownSymbol, Symbol, symbolVal)
+import Text.ParserCombinators.ReadP (ReadP, char, munch1, option, pfail)
+import Text.ParserCombinators.ReadPrec (ReadPrec, lift)
 
 import Time.Rational (type (%), type (**), type (//), type (:%), DivRat, KnownRat, Rat, RatioNat, divRat,
                       ratVal)
@@ -67,7 +74,7 @@ import Time.Rational (type (%), type (**), type (//), type (:%), DivRat, KnownRa
 import qualified Control.Concurrent as Concurrent
 
 newtype Time (rat :: Rat) = Time RatioNat
-    deriving (Num, Eq, Ord, Enum, Fractional, Read, Real, RealFrac)
+    deriving (Num, Eq, Ord, Enum, Fractional, Real, RealFrac)
 
 -- Units
 
@@ -115,6 +122,19 @@ instance KnownSymbol (ShowUnit unit) => Show (Time unit) where
                                                 1 -> ""
                                                 n -> '/' : show n
                       in numeratorStr ++ denominatorStr ++ symbolVal (Proxy @(ShowUnit unit))
+
+instance KnownSymbol (ShowUnit unit) => Read (Time unit) where
+    readPrec :: ReadPrec (Time unit)
+    readPrec = lift readP
+      where
+        readP :: ReadP (Time unit)
+        readP = do
+            let naturalP = read <$> munch1 isDigit
+            n <- naturalP
+            m <- option 1 (char '/' *> naturalP)
+            timeUnitStr <- munch1 isLetter
+            unless (timeUnitStr == symbolVal (Proxy @(ShowUnit unit))) pfail
+            pure $ Time (n % m)
 
 ----------------------------------------------------------------------------
 -- Creation helpers
