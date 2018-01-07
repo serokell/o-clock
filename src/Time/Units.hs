@@ -35,6 +35,21 @@ module Time.Units
        , FortnightUnit
 
        , ShowUnit
+
+        -- ** Creation helpers
+       , time
+
+       , sec
+       , ms
+       , mcs
+       , ns
+
+       , minute
+       , hour
+       , day
+       , week
+       , fortnight
+
         -- ** Functions
        , convertUnit
        , threadDelay
@@ -42,7 +57,8 @@ module Time.Units
 
 import Control.Monad.IO.Class (MonadIO, liftIO)
 import Data.Proxy (Proxy (..))
-import Data.Ratio (denominator, numerator)
+import GHC.Natural (Natural)
+import GHC.Real (Ratio ((:%)), denominator, numerator)
 import GHC.TypeLits (KnownSymbol, Symbol, symbolVal)
 
 import Time.Rational (type (%), type (**), type (//), type (:%), DivRat, KnownRat, Rat, RatioNat, divRat,
@@ -99,6 +115,91 @@ instance KnownSymbol (ShowUnit unit) => Show (Time unit) where
                                                 1 -> ""
                                                 n -> '/' : show n
                       in numeratorStr ++ denominatorStr ++ symbolVal (Proxy @(ShowUnit unit))
+
+----------------------------------------------------------------------------
+-- Creation helpers
+----------------------------------------------------------------------------
+
+-- | Creates 'Time' of some type from given 'Natural'.
+time :: Natural -> Time unit
+time n = Time (n :% 1)
+{-# INLINE time #-}
+
+-- | Creates 'Second' from given 'Natural'.
+--
+-- >>> sec 42
+-- 42s :: Second
+sec :: Natural -> Second
+sec = time
+{-# INLINE sec #-}
+
+-- | Creates 'MilliSecond' from given 'Natural'.
+--
+-- >>> ms 42
+-- 42ms :: MilliSecond
+ms :: Natural -> MilliSecond
+ms = time
+{-# INLINE ms #-}
+
+-- | Creates 'MicroSecond' from given 'Natural'.
+--
+-- >>> mcs 42
+-- 42mcs :: MicroSecond
+mcs :: Natural -> MicroSecond
+mcs = time
+{-# INLINE mcs #-}
+
+-- | Creates 'NanoSecond' from given 'Natural'.
+--
+-- >>> ns 42
+-- 42ns :: NanoSecond
+ns :: Natural -> NanoSecond
+ns = time
+{-# INLINE ns #-}
+
+-- | Creates 'Minute' from given 'Natural'.
+--
+-- >>> minute 42
+-- 42m :: Minute
+minute :: Natural -> Minute
+minute = time
+{-# INLINE minute #-}
+
+-- | Creates 'Hour' from given 'Natural'.
+--
+-- >>> hour 42
+-- 42h :: Hour
+hour :: Natural -> Hour
+hour = time
+{-# INLINE hour #-}
+
+-- | Creates 'Day' from given 'Natural'.
+--
+-- >>> day 42
+-- 42d :: Day
+day :: Natural -> Day
+day = time
+{-# INLINE day #-}
+
+-- | Creates 'Week' from given 'Natural'.
+--
+-- >>> sec 42
+-- 42w :: Week
+week :: Natural -> Week
+week = time
+{-# INLINE week #-}
+
+-- | Creates 'Fortnight' from given 'Natural'.
+--
+-- >>> fortnight 42
+-- 42fn :: Fortnight
+fortnight :: Natural -> Fortnight
+fortnight = time
+{-# INLINE fortnight #-}
+
+----------------------------------------------------------------------------
+-- Functional
+----------------------------------------------------------------------------
 
 -- | Converts from one time unit to another time unit.
 convertUnit :: forall (unitTo :: Rat) (unitFrom :: Rat) .
