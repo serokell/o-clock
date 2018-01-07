@@ -94,11 +94,11 @@ type instance ShowUnit (604800  :% 1) = "w"  -- week unit
 type instance ShowUnit (1209600 :% 1) = "fn" -- fortnight unit
 
 instance KnownSymbol (ShowUnit unit) => Show (Time unit) where
-    show (Time rat) = let value = show (numerator rat) ++
-                           case denominator rat of
-                               1 -> ""
-                               n -> "/" ++ show n           in
-        value ++ symbolVal (Proxy @(ShowUnit unit))
+    show (Time rat) = let numeratorStr   = show (numerator rat)
+                          denominatorStr = case denominator rat of
+                                                1 -> ""
+                                                n -> '/' : show n
+                      in numeratorStr ++ denominatorStr ++ symbolVal (Proxy @(ShowUnit unit))
 
 -- | Converts from one time unit to another time unit.
 convertUnit :: forall (unitTo :: Rat) (unitFrom :: Rat) .

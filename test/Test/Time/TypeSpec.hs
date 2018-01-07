@@ -2,11 +2,7 @@
 {-# LANGUAGE TypeOperators #-}
 
 module Test.Time.TypeSpec
-       ( typeSpec_DivRat
-       , typeSpec_Gcd
-       , typeSpec_Normalize
-       , typeSpec_UnitCalculation
-       , typeSpec_ShowUnits
+       ( runTypeSpecTests
        ) where
 
 -- implicit import because we import a lot of strange operators here...
@@ -16,6 +12,14 @@ import Test.TypeSpecCrazy
 import Time.Rational ((:%), type (%), Gcd, Normalize, DivRat)
 import Time.Units (DayUnit, FortnightUnit, HourUnit, MicroSecondUnit, MilliSecondUnit, MinuteUnit,
                    NanoSecondUnit, SecondUnit, ShowUnit, WeekUnit)
+
+runTypeSpecTests :: IO ()
+runTypeSpecTests = do
+    print typeSpec_Gcd
+    print typeSpec_Normalize
+    print typeSpec_DivRat
+    print typeSpec_UnitCalculation
+    print typeSpec_ShowUnits
 
 typeSpec_Gcd ::
 
