@@ -2,10 +2,7 @@
 {-# LANGUAGE TypeOperators #-}
 
 module Test.Time.TypeSpec
-       ( typeSpec_DivRat
-       , typeSpec_Gcd
-       , typeSpec_Normalize
-       , typeSpec_UnitCalculation
+       ( runTypeSpecTests
        ) where
 
 -- implicit import because we import a lot of strange operators here...
@@ -13,7 +10,16 @@ import Test.TypeSpec
 import Test.TypeSpecCrazy
 
 import Time.Rational ((:%), type (%), Gcd, Normalize, DivRat)
-import Time.Units (SecondUnit, MilliSecondUnit, MicroSecondUnit, NanoSecondUnit, HourUnit, MinuteUnit, DayUnit, WeekUnit, FortnightUnit)
+import Time.Units (DayUnit, FortnightUnit, HourUnit, MicroSecondUnit, MilliSecondUnit, MinuteUnit,
+                   NanoSecondUnit, SecondUnit, ShowUnit, WeekUnit)
+
+runTypeSpecTests :: IO ()
+runTypeSpecTests = do
+    print typeSpec_Gcd
+    print typeSpec_Normalize
+    print typeSpec_DivRat
+    print typeSpec_UnitCalculation
+    print typeSpec_ShowUnits
 
 typeSpec_Gcd ::
 
@@ -101,3 +107,27 @@ typeSpec_UnitCalculation ::
      -*- It "Fortnight = 1209600 % 1" (FortnightUnit `Is` (1209600 :% 1))
 
 typeSpec_UnitCalculation = Valid
+
+typeSpec_ShowUnits ::
+
+  "Units"
+  ######
+
+    "Lower"
+    ~~~~~~~~~~~~
+         It "ShowUnit SecondUnit      = 's'"   (ShowUnit SecondUnit      `Is` "s")
+     -*- It "ShowUnit MilliSecondUnit = 'ms'"  (ShowUnit MilliSecondUnit `Is` "ms")
+     -*- It "ShowUnit MicroSecondUnit = 'mcs'" (ShowUnit MicroSecondUnit `Is` "mcs")
+     -*- It "ShowUnit NanoSecondUnit  = 'ns'"  (ShowUnit NanoSecondUnit  `Is` "ns")
+
+ -/-
+
+    "Bigger"
+    ~~~~~~~~~~~~
+         It "ShowUnit MinuteUnit    = 'm'"  (ShowUnit MinuteUnit    `Is` "m")
+     -*- It "ShowUnit HourUnit      = 'h'"  (ShowUnit HourUnit      `Is` "h")
+     -*- It "ShowUnit DayUnit       = 'd'"  (ShowUnit DayUnit       `Is` "d")
+     -*- It "ShowUnit WeekUnit      = 'w'"  (ShowUnit WeekUnit      `Is` "w")
+     -*- It "ShowUnit FortnightUnit = 'fn'" (ShowUnit FortnightUnit `Is` "fn")
+
+typeSpec_ShowUnits = Valid
