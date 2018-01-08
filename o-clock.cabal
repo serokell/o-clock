@@ -23,6 +23,7 @@ library
   hs-source-dirs:      src
   exposed-modules:     Time
                          Time.Rational
+                         Time.Timestamp
                          Time.Units
   ghc-options:         -Wall
   build-depends:       base         >= 4.11
