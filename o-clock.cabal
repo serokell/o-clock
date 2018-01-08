@@ -23,9 +23,11 @@ library
   hs-source-dirs:      src
   exposed-modules:     Time
                          Time.Rational
+                         Time.TimeStamp
                          Time.Units
   ghc-options:         -Wall
   build-depends:       base         >= 4.11
+                     , ghc-prim     >= 0.5
                      , transformers >= 0.5
   default-language:    Haskell2010
   default-extensions:  OverloadedStrings
@@ -45,7 +47,8 @@ test-suite o-clock-test
   hs-source-dirs:      test
   main-is:             Spec.hs
 
-  other-modules:       Test.Time.TypeSpec
+  other-modules:       Test.Time.TimeStamp
+                       Test.Time.TypeSpec
                        Test.Time.Units
 
   build-depends:       base         >= 4.11  && < 5

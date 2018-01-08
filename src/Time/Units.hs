@@ -62,6 +62,7 @@ import Control.Monad.IO.Class (MonadIO, liftIO)
 import Data.Char (isDigit, isLetter)
 import Data.Proxy (Proxy (..))
 import GHC.Natural (Natural)
+import GHC.Prim (coerce)
 import GHC.Read (Read (readPrec))
 import GHC.Real (Ratio ((:%)), denominator, numerator, (%))
 import GHC.TypeLits (KnownSymbol, Symbol, symbolVal)
@@ -73,8 +74,8 @@ import Time.Rational (type (%), type (**), type (//), type (:%), DivRat, KnownRa
 
 import qualified Control.Concurrent as Concurrent
 
-newtype Time (rat :: Rat) = Time RatioNat
-    deriving (Num, Eq, Ord, Enum, Fractional, Real, RealFrac)
+newtype Time (rat :: Rat) = Time { unTime :: RatioNat }
+    deriving (Eq, Ord, Enum, Real, RealFrac)
 
 -- Units
 
@@ -135,6 +136,28 @@ instance KnownSymbol (ShowUnit unit) => Read (Time unit) where
             timeUnitStr <- munch1 isLetter
             unless (timeUnitStr == symbolVal (Proxy @(ShowUnit unit))) pfail
             pure $ Time (n % m)
+
+-- | Has the same behavior as derived instance, but '*' operator
+-- throws the runtime error with 'error'.
+instance Num (Time unit) where
+    (+) = coerce ((+) :: RatioNat -> RatioNat -> RatioNat)
+    {-# INLINE (+) #-}
+    (-) = coerce ((-) :: RatioNat -> RatioNat -> RatioNat)
+    {-# INLINE (-) #-}
+    (*) = error "It's not possible to multiply time"
+    abs = id
+    {-# INLINE abs #-}
+    signum = coerce (signum :: RatioNat -> RatioNat)
+    {-# INLINE signum #-}
+    fromInteger = coerce (fromInteger :: Integer -> RatioNat)
+    {-# INLINE fromInteger #-}
+
+-- | Has the same behavior as derived instance, but '/' operator
+-- throws the runtime error with 'error'.
+instance Fractional (Time unit) where
+    fromRational = coerce (fromRational :: Rational -> RatioNat)
+    {-# INLINE fromRational #-}
+    (/) = error "It's not possible to divide time"
 
 ----------------------------------------------------------------------------
 -- Creation helpers
@@ -226,7 +249,7 @@ convertUnit :: forall (unitTo :: Rat) (unitFrom :: Rat) .
                (KnownRat unitTo, KnownRat unitFrom, KnownRat (DivRat unitFrom unitTo))
             => Time unitFrom
             -> Time unitTo
-convertUnit (Time ratNat) = Time $ ratNat * ratVal (divRat (Proxy @unitFrom) (Proxy @unitTo))
+convertUnit Time{..} = Time $ unTime * ratVal (divRat (Proxy @unitFrom) (Proxy @unitTo))
 
 -- | Convenient version of 'Control.Concurrent.threadDelay' which takes
 -- any time-unit and operates in any MonadIO.

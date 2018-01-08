@@ -4,25 +4,19 @@
 {-# LANGUAGE TypeOperators      #-}
 
 module Test.Time.Units
-       ( runTests
+       ( unitsTestTree
        ) where
 
 import Control.Exception (evaluate)
 import GHC.Real (Ratio ((:%)))
-import Test.Tasty (TestTree, defaultMain)
+import Test.Tasty (TestTree)
 import Test.Tasty.Hspec (Spec, anyException, describe, it, shouldBe, shouldThrow, testSpec)
 
 import Time (DayUnit, Hour, MicroSecond, MicroSecondUnit, MilliSecondUnit, Second, SecondUnit,
              Time (..), WeekUnit, convertUnit, day, fortnight, mcs, ms, sec)
 
-runTests :: IO ()
-runTests = do
-    tests <- specTests
-    defaultMain tests
-
-specTests :: IO TestTree
-specTests = testSpec "Units" spec_Units
-
+unitsTestTree :: IO TestTree
+unitsTestTree = testSpec "Units" spec_Units
 
 spec_Units :: Spec
 spec_Units = do
