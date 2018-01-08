@@ -1,33 +1,32 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
-{-# LANGUAGE Rank2Types                 #-}
 {-# LANGUAGE ScopedTypeVariables        #-}
 
-module Time.Timestamp
-       ( Timestamp (..)
+module Time.TimeStamp
+       ( TimeStamp (..)
        , timeDiff
        , timeAdd
        , timeMul
        , timeDiv
        ) where
 
-import GHC.Real (denominator, numerator, (%))
-
 import Time.Rational (KnownRat, RatioNat)
 import Time.Units (Time (..))
 
 -- | Similar to 'Time' but has no units and can be negative.
-newtype Timestamp = Timestamp Rational
+newtype TimeStamp = TimeStamp Rational
     deriving (Show, Read, Num, Eq, Ord, Enum, Fractional, Real, RealFrac)
 
 
 -- | Returns the result of comparison of two 'Timestamp's and
 -- the 'Time' of that difference of given time unit.
-timeDiff :: KnownRat unit => Timestamp -> Timestamp -> (Ordering, Time unit)
-timeDiff (Timestamp a) (Timestamp b) =
-    let order         = compare a b
-        dif           = abs (a - b)
-        t :: RatioNat = fromIntegral (numerator dif) % fromIntegral (denominator dif)
-    in (order, Time t)
+timeDiff :: KnownRat unit => TimeStamp -> TimeStamp -> (Ordering, Time unit)
+timeDiff (TimeStamp a) (TimeStamp b) =
+    let order = compare a b
+        d = fromRational $ case order of
+                EQ -> 0
+                GT -> a - b
+                LT -> b - a
+    in (order, d)
 
 -- | Returns the result of addition of two 'Time' elements.
 timeAdd :: KnownRat unit => Time unit -> Time unit -> Time unit
