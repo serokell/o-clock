@@ -47,15 +47,18 @@ test-suite o-clock-test
   hs-source-dirs:      test
   main-is:             Spec.hs
 
-  other-modules:       Test.Time.TimeStamp
+  other-modules:       Test.Time.ReadShow
+                       Test.Time.TimeStamp
                        Test.Time.TypeSpec
                        Test.Time.Units
 
-  build-depends:       base         >= 4.11  && < 5
+  build-depends:       base            >= 4.11  && < 5
                      , o-clock
-                     , tasty       ^>= 0.12
-                     , tasty-hspec ^>= 1.1.3
-                     , type-spec   ^>= 0.3.0.1
+                     , hedgehog       ^>= 0.5.1
+                     , tasty          ^>= 0.12
+                     , tasty-hedgehog ^>= 0.1
+                     , tasty-hspec    ^>= 1.1.3
+                     , type-spec      ^>= 0.3.0.1
 
   ghc-options:         -Wall -threaded -rtsopts -with-rtsopts=-N
   default-language:    Haskell2010

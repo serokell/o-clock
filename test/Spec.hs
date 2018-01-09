@@ -2,6 +2,7 @@ module Main where
 
 import Test.Tasty (defaultMain, testGroup)
 
+import Test.Time.ReadShow (readShowTestTree)
 import Test.Time.TimeStamp (timeStampTestTree)
 import Test.Time.TypeSpec (runTypeSpecTests)
 import Test.Time.Units (unitsTestTree)
@@ -17,5 +18,5 @@ main = do
     -- TimeStamp tests
     tsTests   <- timeStampTestTree
 
-    let allTests = testGroup "O'Clock" [unitTests, tsTests]
+    let allTests = testGroup "O'Clock" [unitTests, tsTests, readShowTestTree]
     defaultMain allTests
