@@ -15,7 +15,7 @@ import Test.Tasty (TestTree)
 import Test.Tasty.Hedgehog (testProperty)
 
 import Time (DayUnit, FortnightUnit, HourUnit, MicroSecondUnit, MilliSecondUnit, MinuteUnit,
-             NanoSecondUnit, RatioNat, SecondUnit, ShowUnit, Time (..), WeekUnit)
+             NanoSecondUnit, PicoSecondUnit, RatioNat, SecondUnit, ShowUnit, Time (..), WeekUnit)
 
 import qualified Hedgehog.Gen as Gen
 import qualified Hedgehog.Range as Range
@@ -33,11 +33,12 @@ unitChooser 0 t = MkAnyTime $ Time @SecondUnit      t
 unitChooser 1 t = MkAnyTime $ Time @MilliSecondUnit t
 unitChooser 2 t = MkAnyTime $ Time @MicroSecondUnit t
 unitChooser 3 t = MkAnyTime $ Time @NanoSecondUnit  t
-unitChooser 4 t = MkAnyTime $ Time @MinuteUnit      t
-unitChooser 5 t = MkAnyTime $ Time @HourUnit        t
-unitChooser 6 t = MkAnyTime $ Time @DayUnit         t
-unitChooser 7 t = MkAnyTime $ Time @WeekUnit        t
-unitChooser 8 t = MkAnyTime $ Time @FortnightUnit   t
+unitChooser 4 t = MkAnyTime $ Time @PicoSecondUnit  t
+unitChooser 5 t = MkAnyTime $ Time @MinuteUnit      t
+unitChooser 6 t = MkAnyTime $ Time @HourUnit        t
+unitChooser 7 t = MkAnyTime $ Time @DayUnit         t
+unitChooser 8 t = MkAnyTime $ Time @WeekUnit        t
+unitChooser 9 t = MkAnyTime $ Time @FortnightUnit   t
 unitChooser _ _ = error "Impossible happened"
 
 -- | Verifier for 'AnyTime'.
@@ -45,8 +46,8 @@ verifyAnyTime :: (MonadTest m) => AnyTime -> m ()
 verifyAnyTime (MkAnyTime t) = read (show t) === t
 
 -- | Generates random number from [0, 8].
-getNumber0'8 :: (MonadGen m) => m Int
-getNumber0'8 = Gen.int $ Range.constant 0 8
+getNumber0'9 :: (MonadGen m) => m Int
+getNumber0'9 = Gen.int $ Range.constant 0 9
 
 -- | Generates random natural number up to 10^20.
 -- it receives the lower bound so that it wouldn't be possible
@@ -67,5 +68,5 @@ getRationalNum = do
 prop_readShowUnit :: Property
 prop_readShowUnit = property $ do
     ratN <- forAll getRationalNum
-    n    <- forAll getNumber0'8
+    n    <- forAll getNumber0'9
     verifyAnyTime $ unitChooser n ratN
