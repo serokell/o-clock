@@ -18,6 +18,7 @@ module Time.Units
        , MilliSecond
        , MicroSecond
        , NanoSecond
+       , PicoSecond
        , Minute
        , Hour
        , Day
@@ -29,6 +30,7 @@ module Time.Units
        , MilliSecondUnit
        , MicroSecondUnit
        , NanoSecondUnit
+       , PicoSecondUnit
        , MinuteUnit
        , HourUnit
        , DayUnit
@@ -44,6 +46,7 @@ module Time.Units
        , ms
        , mcs
        , ns
+       , ps
 
        , minute
        , hour
@@ -54,6 +57,8 @@ module Time.Units
         -- ** Functions
        , convertUnit
        , threadDelay
+       , getCPUTime
+       , timeout
        ) where
 
 import Control.Applicative ((*>))
@@ -73,6 +78,8 @@ import Time.Rational (type (*), type (/), type (:%), KnownRat, Rat, RatioNat, di
                       ratVal)
 
 import qualified Control.Concurrent as Concurrent
+import qualified System.CPUTime as CPUTime
+import qualified System.Timeout as Timeout
 
 newtype Time (rat :: Rat) = Time { unTime :: RatioNat }
     deriving (Eq, Ord, Enum, Real, RealFrac)
@@ -83,6 +90,7 @@ type SecondUnit      = 1 / 1
 type MilliSecondUnit = SecondUnit      / 1000
 type MicroSecondUnit = MilliSecondUnit / 1000
 type NanoSecondUnit  = MicroSecondUnit / 1000
+type PicoSecondUnit  = NanoSecondUnit  / 1000
 
 type MinuteUnit      = 60 * SecondUnit
 type HourUnit        = 60 * MinuteUnit
@@ -96,6 +104,7 @@ type Second      = Time SecondUnit
 type MilliSecond = Time MilliSecondUnit
 type MicroSecond = Time MicroSecondUnit
 type NanoSecond  = Time NanoSecondUnit
+type PicoSecond  = Time PicoSecondUnit
 
 type Minute      = Time MinuteUnit
 type Hour        = Time HourUnit
@@ -106,10 +115,11 @@ type Fortnight   = Time FortnightUnit
 -- | Type family for prettier 'show' of time units.
 type family ShowUnit (unit :: Rat) :: Symbol
 
-type instance ShowUnit (1 :% 1)          = "s"   -- second unit
-type instance ShowUnit (1 :% 1000)       = "ms"  -- millisecond unit
-type instance ShowUnit (1 :% 1000000)    = "mcs" -- microsecond unit
-type instance ShowUnit (1 :% 1000000000) = "ns"  -- nanosecond unit
+type instance ShowUnit (1 :% 1)             = "s"   -- second unit
+type instance ShowUnit (1 :% 1000)          = "ms"  -- millisecond unit
+type instance ShowUnit (1 :% 1000000)       = "mcs" -- microsecond unit
+type instance ShowUnit (1 :% 1000000000)    = "ns"  -- nanosecond unit
+type instance ShowUnit (1 :% 1000000000000) = "ps"  -- picosecond unit
 
 type instance ShowUnit (60      :% 1) = "m"  -- minute unit
 type instance ShowUnit (3600    :% 1) = "h"  -- hour unit
@@ -200,6 +210,14 @@ ns :: Natural -> NanoSecond
 ns = time
 {-# INLINE ns #-}
 
+-- | Creates 'PicoSecond' from given 'Natural'.
+--
+-- >>> ps 42
+-- 42ps :: PicoSecond
+ps :: Natural -> PicoSecond
+ps = time
+{-# INLINE ps #-}
+
 -- | Creates 'Minute' from given 'Natural'.
 --
 -- >>> minute 42
@@ -258,3 +276,34 @@ threadDelay :: forall unit m .
             => Time unit
             -> m ()
 threadDelay = liftIO . Concurrent.threadDelay . floor . convertUnit @MicroSecondUnit
+
+-- | Similar to 'CPUTime.getCPUTime' but returns the CPU time used by the current
+-- program in the given time unit.
+-- The precision of this result is implementation-dependent.
+--
+-- >>> getCPUTime @SecondUnit
+-- 1064046949/1000000000s
+getCPUTime :: forall unit m .
+              (KnownRat unit, KnownRat (PicoSecondUnit / unit), MonadIO m)
+           => m (Time unit)
+getCPUTime = convertUnit . ps . fromInteger <$> liftIO CPUTime.getCPUTime
+
+{- | Similar to 'Timeout.timeout' but receiving any time unit
+instead of number of microseconds.
+
+>>> timeout (sec 1) (putStrLn "Hello O'Clock")
+Hello O'Clock
+Just ()
+
+>>> timeout (ps 1) (putStrLn "Hello O'Clock")
+Nothing
+
+>>> timeout (mcs 1) (putStrLn "Hello O'Clock")
+HellNothing
+
+-}
+timeout :: forall unit m a . (MonadIO m, KnownRat unit, KnownRat (unit / MicroSecondUnit))
+        => Time unit   -- ^ time
+        -> IO a        -- ^ 'IO' action
+        -> m (Maybe a) -- ^ returns 'Nothing' if no result is available within the given time
+timeout t = liftIO . Timeout.timeout (floor $ convertUnit @MicroSecondUnit t)

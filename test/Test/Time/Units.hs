@@ -12,8 +12,8 @@ import GHC.Real (Ratio ((:%)))
 import Test.Tasty (TestTree)
 import Test.Tasty.Hspec (Spec, anyException, describe, it, shouldBe, shouldThrow, testSpec)
 
-import Time (DayUnit, Hour, MicroSecond, MicroSecondUnit, MilliSecondUnit, Second, SecondUnit,
-             Time (..), WeekUnit, convertUnit, day, fortnight, mcs, ms, sec)
+import Time (DayUnit, Hour, MicroSecond, MicroSecondUnit, MilliSecondUnit, PicoSecondUnit, Second,
+             SecondUnit, Time (..), WeekUnit, convertUnit, day, fortnight, mcs, ms, ns, sec)
 
 unitsTestTree :: IO TestTree
 unitsTestTree = testSpec "Units" spec_Units
@@ -33,6 +33,8 @@ spec_Units = do
             convertUnit @WeekUnit (day 7) `shouldBe` 1
         it "2 fornights is 28 days" $
             convertUnit @DayUnit (fortnight 2) `shouldBe` 28
+        it "1 nanosecond is 1000 picoseconds" $
+            convertUnit @PicoSecondUnit (ns 1) `shouldBe` 1000
     describe "Read Time Test" $ do
         it "parses '42s' as 42 seconds" $
             read @Second "42s" `shouldBe` 42

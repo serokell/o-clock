@@ -11,7 +11,7 @@ import Test.TypeSpecCrazy
 
 import Time.Rational ((:%), type (/), Gcd, Normalize)
 import Time.Units (DayUnit, FortnightUnit, HourUnit, MicroSecondUnit, MilliSecondUnit, MinuteUnit,
-                   NanoSecondUnit, SecondUnit, ShowUnit, WeekUnit)
+                   NanoSecondUnit, PicoSecondUnit, SecondUnit, ShowUnit, WeekUnit)
 
 runTypeSpecTests :: IO ()
 runTypeSpecTests = do
@@ -91,10 +91,11 @@ typeSpec_UnitCalculation ::
 
     "Lower"
     ~~~~~~~~~~~~
-         It "Second      = 1 % 1"          (     SecondUnit `Is` (1 :% 1))
-     -*- It "MilliSecond = 1 % 1000"       (MilliSecondUnit `Is` (1 :% 1000))
-     -*- It "MicroSecond = 1 % 1000000"    (MicroSecondUnit `Is` (1 :% 1000000))
-     -*- It "NanoSecond  = 1 % 1000000000" ( NanoSecondUnit `Is` (1 :% 1000000000))
+         It "Second      = 1 % 1"             (     SecondUnit `Is` (1 :% 1))
+     -*- It "MilliSecond = 1 % 1000"          (MilliSecondUnit `Is` (1 :% 1000))
+     -*- It "MicroSecond = 1 % 1000000"       (MicroSecondUnit `Is` (1 :% 1000000))
+     -*- It "NanoSecond  = 1 % 1000000000"    ( NanoSecondUnit `Is` (1 :% 1000000000))
+     -*- It "PicoSecond  = 1 % 1000000000000" ( PicoSecondUnit `Is` (1 :% 1000000000000))
 
  -/-
 
@@ -119,6 +120,7 @@ typeSpec_ShowUnits ::
      -*- It "ShowUnit MilliSecondUnit = 'ms'"  (ShowUnit MilliSecondUnit `Is` "ms")
      -*- It "ShowUnit MicroSecondUnit = 'mcs'" (ShowUnit MicroSecondUnit `Is` "mcs")
      -*- It "ShowUnit NanoSecondUnit  = 'ns'"  (ShowUnit NanoSecondUnit  `Is` "ns")
+     -*- It "ShowUnit PicoSecondUnit  = 'ps'"  (ShowUnit PicoSecondUnit  `Is` "ps")
 
  -/-
 
