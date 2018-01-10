@@ -11,7 +11,7 @@ import Test.TypeSpecCrazy
 
 import Time.Rational ((:%), type (/), Gcd, Normalize)
 import Time.Units (DayUnit, FortnightUnit, HourUnit, MicrosecondUnit, MillisecondUnit, MinuteUnit,
-                   NanosecondUnit, PicosecondUnit, SecondUnit, ShowUnit, WeekUnit)
+                   NanosecondUnit, PicosecondUnit, SecondUnit, UnitName, WeekUnit)
 
 runTypeSpecTests :: IO ()
 runTypeSpecTests = do
@@ -19,7 +19,7 @@ runTypeSpecTests = do
     print typeSpec_Normalize
     print typeSpec_DivRat
     print typeSpec_UnitCalculation
-    print typeSpec_ShowUnits
+    print typeSpec_UnitNames
 
 typeSpec_Gcd ::
 
@@ -109,27 +109,27 @@ typeSpec_UnitCalculation ::
 
 typeSpec_UnitCalculation = Valid
 
-typeSpec_ShowUnits ::
+typeSpec_UnitNames ::
 
   "Units"
   ######
 
     "Lower"
     ~~~~~~~~~~~~
-         It "ShowUnit SecondUnit      = 's'"   (ShowUnit SecondUnit      `Is` "s")
-     -*- It "ShowUnit MillisecondUnit = 'ms'"  (ShowUnit MillisecondUnit `Is` "ms")
-     -*- It "ShowUnit MicrosecondUnit = 'mcs'" (ShowUnit MicrosecondUnit `Is` "mcs")
-     -*- It "ShowUnit NanosecondUnit  = 'ns'"  (ShowUnit NanosecondUnit  `Is` "ns")
-     -*- It "ShowUnit PicosecondUnit  = 'ps'"  (ShowUnit PicosecondUnit  `Is` "ps")
+         It "UnitName SecondUnit      = 's'"   (UnitName SecondUnit      `Is` "s")
+     -*- It "UnitName MillisecondUnit = 'ms'"  (UnitName MillisecondUnit `Is` "ms")
+     -*- It "UnitName MicrosecondUnit = 'mcs'" (UnitName MicrosecondUnit `Is` "mcs")
+     -*- It "UnitName NanosecondUnit  = 'ns'"  (UnitName NanosecondUnit  `Is` "ns")
+     -*- It "UnitName PicosecondUnit  = 'ps'"  (UnitName PicosecondUnit  `Is` "ps")
 
  -/-
 
     "Bigger"
     ~~~~~~~~~~~~
-         It "ShowUnit MinuteUnit    = 'm'"  (ShowUnit MinuteUnit    `Is` "m")
-     -*- It "ShowUnit HourUnit      = 'h'"  (ShowUnit HourUnit      `Is` "h")
-     -*- It "ShowUnit DayUnit       = 'd'"  (ShowUnit DayUnit       `Is` "d")
-     -*- It "ShowUnit WeekUnit      = 'w'"  (ShowUnit WeekUnit      `Is` "w")
-     -*- It "ShowUnit FortnightUnit = 'fn'" (ShowUnit FortnightUnit `Is` "fn")
+         It "UnitName MinuteUnit    = 'm'"  (UnitName MinuteUnit    `Is` "m")
+     -*- It "UnitName HourUnit      = 'h'"  (UnitName HourUnit      `Is` "h")
+     -*- It "UnitName DayUnit       = 'd'"  (UnitName DayUnit       `Is` "d")
+     -*- It "UnitName WeekUnit      = 'w'"  (UnitName WeekUnit      `Is` "w")
+     -*- It "UnitName FortnightUnit = 'fn'" (UnitName FortnightUnit `Is` "fn")
 
-typeSpec_ShowUnits = Valid
+typeSpec_UnitNames = Valid
