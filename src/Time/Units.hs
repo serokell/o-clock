@@ -69,7 +69,7 @@ import GHC.TypeLits (KnownSymbol, Symbol, symbolVal)
 import Text.ParserCombinators.ReadP (ReadP, char, munch1, option, pfail)
 import Text.ParserCombinators.ReadPrec (ReadPrec, lift)
 
-import Time.Rational (type (%), type (**), type (//), type (:%), DivRat, KnownRat, Rat, RatioNat, divRat,
+import Time.Rational (type (*), type (/), type (:%), KnownRat, Rat, RatioNat, divRat,
                       ratVal)
 
 import qualified Control.Concurrent as Concurrent
@@ -79,16 +79,16 @@ newtype Time (rat :: Rat) = Time { unTime :: RatioNat }
 
 -- Units
 
-type SecondUnit      = 1 % 1
-type MilliSecondUnit = SecondUnit      // 1000
-type MicroSecondUnit = MilliSecondUnit // 1000
-type NanoSecondUnit  = MicroSecondUnit // 1000
+type SecondUnit      = 1 / 1
+type MilliSecondUnit = SecondUnit      / 1000
+type MicroSecondUnit = MilliSecondUnit / 1000
+type NanoSecondUnit  = MicroSecondUnit / 1000
 
-type MinuteUnit      = 60 ** SecondUnit
-type HourUnit        = 60 ** MinuteUnit
-type DayUnit         = 24 ** HourUnit
-type WeekUnit        = 7  ** DayUnit
-type FortnightUnit   = 2  ** WeekUnit
+type MinuteUnit      = 60 * SecondUnit
+type HourUnit        = 60 * MinuteUnit
+type DayUnit         = 24 * HourUnit
+type WeekUnit        = 7  * DayUnit
+type FortnightUnit   = 2  * WeekUnit
 
 -- Time data types
 
@@ -246,7 +246,7 @@ fortnight = time
 
 -- | Converts from one time unit to another time unit.
 convertUnit :: forall (unitTo :: Rat) (unitFrom :: Rat) .
-               (KnownRat unitTo, KnownRat unitFrom, KnownRat (DivRat unitFrom unitTo))
+               (KnownRat unitTo, KnownRat unitFrom, KnownRat (unitFrom / unitTo))
             => Time unitFrom
             -> Time unitTo
 convertUnit Time{..} = Time $ unTime * ratVal (divRat (Proxy @unitFrom) (Proxy @unitTo))
@@ -254,7 +254,7 @@ convertUnit Time{..} = Time $ unTime * ratVal (divRat (Proxy @unitFrom) (Proxy @
 -- | Convenient version of 'Control.Concurrent.threadDelay' which takes
 -- any time-unit and operates in any MonadIO.
 threadDelay :: forall unit m .
-               (KnownRat unit, KnownRat (DivRat unit MicroSecondUnit), MonadIO m)
+               (KnownRat unit, KnownRat (unit / MicroSecondUnit), MonadIO m)
             => Time unit
             -> m ()
 threadDelay = liftIO . Concurrent.threadDelay . floor . convertUnit @MicroSecondUnit

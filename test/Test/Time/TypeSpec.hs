@@ -9,7 +9,7 @@ module Test.Time.TypeSpec
 import Test.TypeSpec
 import Test.TypeSpecCrazy
 
-import Time.Rational ((:%), type (%), Gcd, Normalize, DivRat)
+import Time.Rational ((:%), type (/), Gcd, Normalize)
 import Time.Units (DayUnit, FortnightUnit, HourUnit, MicroSecondUnit, MilliSecondUnit, MinuteUnit,
                    NanoSecondUnit, SecondUnit, ShowUnit, WeekUnit)
 
@@ -78,9 +78,9 @@ typeSpec_DivRat ::
 
     "Dividing"
     ~~~~~~~~~~~~
-         It "2%7 / 2%7 = 1%1"   (DivRat (2 % 7) (2 % 7)  `Is` (1 :% 1))
-     -*- It "2%7 / 7%2 = 4%49"  (DivRat (2 % 7) (7 % 2)  `Is` (4 :% 49))
-     -*- It "5%6 / 25%3 = 1%10" (DivRat (5 % 6) (25 % 3) `Is` (1 :% 10))
+         It "2%7 / 2%7 = 1%1"   ((2 / 7) / (2 / 7)  `Is` (1 :% 1))
+     -*- It "2%7 / 7%2 = 4%49"  ((2 / 7) / (7 / 2)  `Is` (4 :% 49))
+     -*- It "5%6 / 25%3 = 1%10" ((5 / 6) / (25 / 3) `Is` (1 :% 10))
 
 typeSpec_DivRat = Valid
 
