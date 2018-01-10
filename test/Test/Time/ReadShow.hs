@@ -15,7 +15,7 @@ import Test.Tasty (TestTree)
 import Test.Tasty.Hedgehog (testProperty)
 
 import Time (DayUnit, FortnightUnit, HourUnit, MicrosecondUnit, MillisecondUnit, MinuteUnit,
-             NanosecondUnit, PicosecondUnit, RatioNat, SecondUnit, ShowUnit, Time (..), WeekUnit)
+             NanosecondUnit, PicosecondUnit, RatioNat, SecondUnit, Time (..), UnitName, WeekUnit)
 
 import qualified Hedgehog.Gen as Gen
 import qualified Hedgehog.Range as Range
@@ -24,7 +24,7 @@ readShowTestTree :: TestTree
 readShowTestTree = testProperty "Hedgehog read . show == id" prop_readShowUnit
 
 -- | Existential data type for 'Unit's.
-data AnyTime =  forall unit . (KnownSymbol (ShowUnit unit))
+data AnyTime =  forall unit . (KnownSymbol (UnitName unit))
              => MkAnyTime (Time unit)
 
 -- | Returns the 'AnyTime' depending on given (random) integer.

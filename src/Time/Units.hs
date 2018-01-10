@@ -40,7 +40,7 @@ module Time.Units
        , WeekUnit
        , FortnightUnit
 
-       , ShowUnit
+       , UnitName
 
         -- ** Creation helpers
        , time
@@ -121,28 +121,28 @@ type Week        = Time WeekUnit
 type Fortnight   = Time FortnightUnit
 
 -- | Type family for prettier 'show' of time units.
-type family ShowUnit (unit :: Rat) :: Symbol
+type family UnitName (unit :: Rat) :: Symbol
 
-type instance ShowUnit (1 :% 1)             = "s"   -- second unit
-type instance ShowUnit (1 :% 1000)          = "ms"  -- millisecond unit
-type instance ShowUnit (1 :% 1000000)       = "mcs" -- microsecond unit
-type instance ShowUnit (1 :% 1000000000)    = "ns"  -- nanosecond unit
-type instance ShowUnit (1 :% 1000000000000) = "ps"  -- picosecond unit
+type instance UnitName (1 :% 1)             = "s"   -- second unit
+type instance UnitName (1 :% 1000)          = "ms"  -- millisecond unit
+type instance UnitName (1 :% 1000000)       = "mcs" -- microsecond unit
+type instance UnitName (1 :% 1000000000)    = "ns"  -- nanosecond unit
+type instance UnitName (1 :% 1000000000000) = "ps"  -- picosecond unit
 
-type instance ShowUnit (60      :% 1) = "m"  -- minute unit
-type instance ShowUnit (3600    :% 1) = "h"  -- hour unit
-type instance ShowUnit (86400   :% 1) = "d"  -- day unit
-type instance ShowUnit (604800  :% 1) = "w"  -- week unit
-type instance ShowUnit (1209600 :% 1) = "fn" -- fortnight unit
+type instance UnitName (60      :% 1) = "m"  -- minute unit
+type instance UnitName (3600    :% 1) = "h"  -- hour unit
+type instance UnitName (86400   :% 1) = "d"  -- day unit
+type instance UnitName (604800  :% 1) = "w"  -- week unit
+type instance UnitName (1209600 :% 1) = "fn" -- fortnight unit
 
-instance KnownSymbol (ShowUnit unit) => Show (Time unit) where
+instance KnownSymbol (UnitName unit) => Show (Time unit) where
     show (Time rat) = let numeratorStr   = show (numerator rat)
                           denominatorStr = case denominator rat of
                                                 1 -> ""
                                                 n -> '/' : show n
-                      in numeratorStr ++ denominatorStr ++ symbolVal (Proxy @(ShowUnit unit))
+                      in numeratorStr ++ denominatorStr ++ symbolVal (Proxy @(UnitName unit))
 
-instance KnownSymbol (ShowUnit unit) => Read (Time unit) where
+instance KnownSymbol (UnitName unit) => Read (Time unit) where
     readPrec :: ReadPrec (Time unit)
     readPrec = lift readP
       where
@@ -152,7 +152,7 @@ instance KnownSymbol (ShowUnit unit) => Read (Time unit) where
             n <- naturalP
             m <- option 1 (char '/' *> naturalP)
             timeUnitStr <- munch1 isLetter
-            unless (timeUnitStr == symbolVal (Proxy @(ShowUnit unit))) pfail
+            unless (timeUnitStr == symbolVal (Proxy @(UnitName unit))) pfail
             pure $ Time (n % m)
 
 -- | Has the same behavior as derived instance, but '*' operator
