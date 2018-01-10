@@ -11,7 +11,7 @@ import Control.Exception (evaluate)
 import Test.Tasty (TestTree)
 import Test.Tasty.Hspec (Spec, anyException, describe, it, shouldBe, shouldThrow, testSpec)
 
-import Time (DayUnit, HourUnit, MicroSecondUnit, PicoSecondUnit, SecondUnit, TimeStamp (..),
+import Time (DayUnit, HourUnit, MicrosecondUnit, PicosecondUnit, SecondUnit, TimeStamp (..),
              WeekUnit, timeAdd, timeDiff, timeDiv, timeMul)
 
 timeStampTestTree :: IO TestTree
@@ -30,10 +30,10 @@ spec_TimeStamp = do
         it "3 hours + 7 hours is 10"  $
             timeAdd @HourUnit 3 7 `shouldBe` 10
         it "twice 21 mcs is 42 mcs"  $
-            timeMul @MicroSecondUnit 2 21 `shouldBe` 42
+            timeMul @MicrosecondUnit 2 21 `shouldBe` 42
         it "zero x 42 s is zero"  $
             timeMul @SecondUnit 0 42 `shouldBe` 0
         it "84 picoseconds divide by 2 is 42"  $
-            timeDiv @PicoSecondUnit 84 2 `shouldBe` 42
+            timeDiv @PicosecondUnit 84 2 `shouldBe` 42
         it "fails when trying to divide by zero"  $
             evaluate (timeDiv @SecondUnit 42 0) `shouldThrow` anyException

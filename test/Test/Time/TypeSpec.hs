@@ -10,8 +10,8 @@ import Test.TypeSpec
 import Test.TypeSpecCrazy
 
 import Time.Rational ((:%), type (/), Gcd, Normalize)
-import Time.Units (DayUnit, FortnightUnit, HourUnit, MicroSecondUnit, MilliSecondUnit, MinuteUnit,
-                   NanoSecondUnit, PicoSecondUnit, SecondUnit, ShowUnit, WeekUnit)
+import Time.Units (DayUnit, FortnightUnit, HourUnit, MicrosecondUnit, MillisecondUnit, MinuteUnit,
+                   NanosecondUnit, PicosecondUnit, SecondUnit, ShowUnit, WeekUnit)
 
 runTypeSpecTests :: IO ()
 runTypeSpecTests = do
@@ -92,10 +92,10 @@ typeSpec_UnitCalculation ::
     "Lower"
     ~~~~~~~~~~~~
          It "Second      = 1 % 1"             (     SecondUnit `Is` (1 :% 1))
-     -*- It "MilliSecond = 1 % 1000"          (MilliSecondUnit `Is` (1 :% 1000))
-     -*- It "MicroSecond = 1 % 1000000"       (MicroSecondUnit `Is` (1 :% 1000000))
-     -*- It "NanoSecond  = 1 % 1000000000"    ( NanoSecondUnit `Is` (1 :% 1000000000))
-     -*- It "PicoSecond  = 1 % 1000000000000" ( PicoSecondUnit `Is` (1 :% 1000000000000))
+     -*- It "Millisecond = 1 % 1000"          (MillisecondUnit `Is` (1 :% 1000))
+     -*- It "Microsecond = 1 % 1000000"       (MicrosecondUnit `Is` (1 :% 1000000))
+     -*- It "Nanosecond  = 1 % 1000000000"    ( NanosecondUnit `Is` (1 :% 1000000000))
+     -*- It "Picosecond  = 1 % 1000000000000" ( PicosecondUnit `Is` (1 :% 1000000000000))
 
  -/-
 
@@ -117,10 +117,10 @@ typeSpec_ShowUnits ::
     "Lower"
     ~~~~~~~~~~~~
          It "ShowUnit SecondUnit      = 's'"   (ShowUnit SecondUnit      `Is` "s")
-     -*- It "ShowUnit MilliSecondUnit = 'ms'"  (ShowUnit MilliSecondUnit `Is` "ms")
-     -*- It "ShowUnit MicroSecondUnit = 'mcs'" (ShowUnit MicroSecondUnit `Is` "mcs")
-     -*- It "ShowUnit NanoSecondUnit  = 'ns'"  (ShowUnit NanoSecondUnit  `Is` "ns")
-     -*- It "ShowUnit PicoSecondUnit  = 'ps'"  (ShowUnit PicoSecondUnit  `Is` "ps")
+     -*- It "ShowUnit MillisecondUnit = 'ms'"  (ShowUnit MillisecondUnit `Is` "ms")
+     -*- It "ShowUnit MicrosecondUnit = 'mcs'" (ShowUnit MicrosecondUnit `Is` "mcs")
+     -*- It "ShowUnit NanosecondUnit  = 'ns'"  (ShowUnit NanosecondUnit  `Is` "ns")
+     -*- It "ShowUnit PicosecondUnit  = 'ps'"  (ShowUnit PicosecondUnit  `Is` "ps")
 
  -/-
 

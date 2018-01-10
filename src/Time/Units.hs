@@ -9,16 +9,19 @@
 {-# LANGUAGE TypeOperators              #-}
 {-# LANGUAGE UndecidableInstances       #-}
 
+-- | This module contains time unit data structures
+-- and functions to work with time.
+
 module Time.Units
        ( -- * Time
          Time (..)
 
          -- ** Time data types
        , Second
-       , MilliSecond
-       , MicroSecond
-       , NanoSecond
-       , PicoSecond
+       , Millisecond
+       , Microsecond
+       , Nanosecond
+       , Picosecond
        , Minute
        , Hour
        , Day
@@ -27,10 +30,10 @@ module Time.Units
 
          -- ** Units
        , SecondUnit
-       , MilliSecondUnit
-       , MicroSecondUnit
-       , NanoSecondUnit
-       , PicoSecondUnit
+       , MillisecondUnit
+       , MicrosecondUnit
+       , NanosecondUnit
+       , PicosecondUnit
        , MinuteUnit
        , HourUnit
        , DayUnit
@@ -81,16 +84,19 @@ import qualified Control.Concurrent as Concurrent
 import qualified System.CPUTime as CPUTime
 import qualified System.Timeout as Timeout
 
+-- | Time unit is represented as type level rational multiplier with kind 'Rat'.
 newtype Time (rat :: Rat) = Time { unTime :: RatioNat }
     deriving (Eq, Ord, Enum, Real, RealFrac)
 
+----------------------------------------------------------------------------
 -- Units
+----------------------------------------------------------------------------
 
 type SecondUnit      = 1 / 1
-type MilliSecondUnit = SecondUnit      / 1000
-type MicroSecondUnit = MilliSecondUnit / 1000
-type NanoSecondUnit  = MicroSecondUnit / 1000
-type PicoSecondUnit  = NanoSecondUnit  / 1000
+type MillisecondUnit = SecondUnit      / 1000
+type MicrosecondUnit = MillisecondUnit / 1000
+type NanosecondUnit  = MicrosecondUnit / 1000
+type PicosecondUnit  = NanosecondUnit  / 1000
 
 type MinuteUnit      = 60 * SecondUnit
 type HourUnit        = 60 * MinuteUnit
@@ -98,13 +104,15 @@ type DayUnit         = 24 * HourUnit
 type WeekUnit        = 7  * DayUnit
 type FortnightUnit   = 2  * WeekUnit
 
--- Time data types
+----------------------------------------------------------------------------
+-- Time data type
+----------------------------------------------------------------------------
 
 type Second      = Time SecondUnit
-type MilliSecond = Time MilliSecondUnit
-type MicroSecond = Time MicroSecondUnit
-type NanoSecond  = Time NanoSecondUnit
-type PicoSecond  = Time PicoSecondUnit
+type Millisecond = Time MillisecondUnit
+type Microsecond = Time MicrosecondUnit
+type Nanosecond  = Time NanosecondUnit
+type Picosecond  = Time PicosecondUnit
 
 type Minute      = Time MinuteUnit
 type Hour        = Time HourUnit
@@ -186,35 +194,35 @@ sec :: Natural -> Second
 sec = time
 {-# INLINE sec #-}
 
--- | Creates 'MilliSecond' from given 'Natural'.
+-- | Creates 'Millisecond' from given 'Natural'.
 --
 -- >>> ms 42
--- 42ms :: MilliSecond
-ms :: Natural -> MilliSecond
+-- 42ms :: Millisecond
+ms :: Natural -> Millisecond
 ms = time
 {-# INLINE ms #-}
 
--- | Creates 'MicroSecond' from given 'Natural'.
+-- | Creates 'Microsecond' from given 'Natural'.
 --
 -- >>> mcs 42
--- 42mcs :: MicroSecond
-mcs :: Natural -> MicroSecond
+-- 42mcs :: Microsecond
+mcs :: Natural -> Microsecond
 mcs = time
 {-# INLINE mcs #-}
 
--- | Creates 'NanoSecond' from given 'Natural'.
+-- | Creates 'Nanosecond' from given 'Natural'.
 --
 -- >>> ns 42
--- 42ns :: NanoSecond
-ns :: Natural -> NanoSecond
+-- 42ns :: Nanosecond
+ns :: Natural -> Nanosecond
 ns = time
 {-# INLINE ns #-}
 
--- | Creates 'PicoSecond' from given 'Natural'.
+-- | Creates 'Picosecond' from given 'Natural'.
 --
 -- >>> ps 42
--- 42ps :: PicoSecond
-ps :: Natural -> PicoSecond
+-- 42ps :: Picosecond
+ps :: Natural -> Picosecond
 ps = time
 {-# INLINE ps #-}
 
@@ -272,10 +280,10 @@ convertUnit Time{..} = Time $ unTime * ratVal (divRat (Proxy @unitFrom) (Proxy @
 -- | Convenient version of 'Control.Concurrent.threadDelay' which takes
 -- any time-unit and operates in any MonadIO.
 threadDelay :: forall unit m .
-               (KnownRat unit, KnownRat (unit / MicroSecondUnit), MonadIO m)
+               (KnownRat unit, KnownRat (unit / MicrosecondUnit), MonadIO m)
             => Time unit
             -> m ()
-threadDelay = liftIO . Concurrent.threadDelay . floor . convertUnit @MicroSecondUnit
+threadDelay = liftIO . Concurrent.threadDelay . floor . convertUnit @MicrosecondUnit
 
 -- | Similar to 'CPUTime.getCPUTime' but returns the CPU time used by the current
 -- program in the given time unit.
@@ -284,7 +292,7 @@ threadDelay = liftIO . Concurrent.threadDelay . floor . convertUnit @MicroSecond
 -- >>> getCPUTime @SecondUnit
 -- 1064046949/1000000000s
 getCPUTime :: forall unit m .
-              (KnownRat unit, KnownRat (PicoSecondUnit / unit), MonadIO m)
+              (KnownRat unit, KnownRat (PicosecondUnit / unit), MonadIO m)
            => m (Time unit)
 getCPUTime = convertUnit . ps . fromInteger <$> liftIO CPUTime.getCPUTime
 
@@ -302,8 +310,8 @@ Nothing
 HellNothing
 
 -}
-timeout :: forall unit m a . (MonadIO m, KnownRat unit, KnownRat (unit / MicroSecondUnit))
+timeout :: forall unit m a . (MonadIO m, KnownRat unit, KnownRat (unit / MicrosecondUnit))
         => Time unit   -- ^ time
         -> IO a        -- ^ 'IO' action
         -> m (Maybe a) -- ^ returns 'Nothing' if no result is available within the given time
-timeout t = liftIO . Timeout.timeout (floor $ convertUnit @MicroSecondUnit t)
+timeout t = liftIO . Timeout.timeout (floor $ convertUnit @MicrosecondUnit t)
