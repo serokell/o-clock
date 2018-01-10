@@ -13,7 +13,7 @@ import Test.Tasty (TestTree)
 import Test.Tasty.Hspec (Spec, anyException, describe, it, shouldBe, shouldThrow, testSpec)
 
 import Time (DayUnit, Hour, Microsecond, MicrosecondUnit, MillisecondUnit, PicosecondUnit, Second,
-             SecondUnit, Time (..), WeekUnit, convertUnit, day, fortnight, mcs, ms, ns, sec)
+             SecondUnit, Time (..), WeekUnit, day, fortnight, mcs, ms, ns, sec, toUnit)
 
 unitsTestTree :: IO TestTree
 unitsTestTree = testSpec "Units" spec_Units
@@ -22,19 +22,19 @@ spec_Units :: Spec
 spec_Units = do
     describe "Unit Conversion Test" $ do
         it "11 seconds is 11000 milliseconds" $
-            convertUnit @MillisecondUnit (sec 11) `shouldBe` 11000
+            toUnit @MillisecondUnit (sec 11) `shouldBe` 11000
         it "5000 milliseconds is 5 seconds" $
-            convertUnit @SecondUnit (ms 5000) `shouldBe` 5
+            toUnit @SecondUnit (ms 5000) `shouldBe` 5
         it "3 seconds is 3000000 microseconds" $
-            convertUnit @MicrosecondUnit (sec 3) `shouldBe` 3000000
+            toUnit @MicrosecondUnit (sec 3) `shouldBe` 3000000
         it "3 microseconds is 3/1000000 seconds" $
-            convertUnit @SecondUnit (mcs 3) `shouldBe` Time (3 :% 1000000)
+            toUnit @SecondUnit (mcs 3) `shouldBe` Time (3 :% 1000000)
         it "7 days is 1 week" $
-            convertUnit @WeekUnit (day 7) `shouldBe` 1
+            toUnit @WeekUnit (day 7) `shouldBe` 1
         it "2 fornights is 28 days" $
-            convertUnit @DayUnit (fortnight 2) `shouldBe` 28
+            toUnit @DayUnit (fortnight 2) `shouldBe` 28
         it "1 nanosecond is 1000 picoseconds" $
-            convertUnit @PicosecondUnit (ns 1) `shouldBe` 1000
+            toUnit @PicosecondUnit (ns 1) `shouldBe` 1000
     describe "Read Time Test" $ do
         it "parses '42s' as 42 seconds" $
             read @Second "42s" `shouldBe` 42

@@ -58,7 +58,7 @@ module Time.Units
        , fortnight
 
         -- ** Functions
-       , convertUnit
+       , toUnit
        , threadDelay
        , getCPUTime
        , timeout
@@ -271,11 +271,11 @@ fortnight = time
 ----------------------------------------------------------------------------
 
 -- | Converts from one time unit to another time unit.
-convertUnit :: forall (unitTo :: Rat) (unitFrom :: Rat) .
-               (KnownRat unitTo, KnownRat unitFrom, KnownRat (unitFrom / unitTo))
-            => Time unitFrom
-            -> Time unitTo
-convertUnit Time{..} = Time $ unTime * ratVal (divRat (Proxy @unitFrom) (Proxy @unitTo))
+toUnit :: forall (unitTo :: Rat) (unitFrom :: Rat) .
+          (KnownRat unitTo, KnownRat unitFrom, KnownRat (unitFrom / unitTo))
+       => Time unitFrom
+       -> Time unitTo
+toUnit Time{..} = Time $ unTime * ratVal (divRat (Proxy @unitFrom) (Proxy @unitTo))
 
 -- | Convenient version of 'Control.Concurrent.threadDelay' which takes
 -- any time-unit and operates in any MonadIO.
@@ -283,7 +283,7 @@ threadDelay :: forall unit m .
                (KnownRat unit, KnownRat (unit / MicrosecondUnit), MonadIO m)
             => Time unit
             -> m ()
-threadDelay = liftIO . Concurrent.threadDelay . floor . convertUnit @MicrosecondUnit
+threadDelay = liftIO . Concurrent.threadDelay . floor . toUnit @MicrosecondUnit
 
 -- | Similar to 'CPUTime.getCPUTime' but returns the CPU time used by the current
 -- program in the given time unit.
@@ -294,7 +294,7 @@ threadDelay = liftIO . Concurrent.threadDelay . floor . convertUnit @Microsecond
 getCPUTime :: forall unit m .
               (KnownRat unit, KnownRat (PicosecondUnit / unit), MonadIO m)
            => m (Time unit)
-getCPUTime = convertUnit . ps . fromInteger <$> liftIO CPUTime.getCPUTime
+getCPUTime = toUnit . ps . fromInteger <$> liftIO CPUTime.getCPUTime
 
 {- | Similar to 'Timeout.timeout' but receiving any time unit
 instead of number of microseconds.
@@ -314,4 +314,4 @@ timeout :: forall unit m a . (MonadIO m, KnownRat unit, KnownRat (unit / Microse
         => Time unit   -- ^ time
         -> IO a        -- ^ 'IO' action
         -> m (Maybe a) -- ^ returns 'Nothing' if no result is available within the given time
-timeout t = liftIO . Timeout.timeout (floor $ convertUnit @MicrosecondUnit t)
+timeout t = liftIO . Timeout.timeout (floor $ toUnit @MicrosecondUnit t)
