@@ -1,6 +1,9 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE ScopedTypeVariables        #-}
 
+-- | This module introduces 'TimeStamp' data type
+-- and corresponding functions for operations with time.
+
 module Time.TimeStamp
        ( TimeStamp (..)
        , timeDiff

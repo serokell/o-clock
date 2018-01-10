@@ -9,6 +9,9 @@
 {-# LANGUAGE TypeOperators              #-}
 {-# LANGUAGE UndecidableInstances       #-}
 
+-- | This module contains time unit data structures
+-- and functions to work with time.
+
 module Time.Units
        ( -- * Time
          Time (..)
@@ -81,10 +84,13 @@ import qualified Control.Concurrent as Concurrent
 import qualified System.CPUTime as CPUTime
 import qualified System.Timeout as Timeout
 
+-- | Time unit is represented as type level rational multiplier with kind 'Rat'.
 newtype Time (rat :: Rat) = Time { unTime :: RatioNat }
     deriving (Eq, Ord, Enum, Real, RealFrac)
 
+----------------------------------------------------------------------------
 -- Units
+----------------------------------------------------------------------------
 
 type SecondUnit      = 1 / 1
 type MillisecondUnit = SecondUnit      / 1000
@@ -98,7 +104,9 @@ type DayUnit         = 24 * HourUnit
 type WeekUnit        = 7  * DayUnit
 type FortnightUnit   = 2  * WeekUnit
 
--- Time data types
+----------------------------------------------------------------------------
+-- Time data type
+----------------------------------------------------------------------------
 
 type Second      = Time SecondUnit
 type Millisecond = Time MillisecondUnit

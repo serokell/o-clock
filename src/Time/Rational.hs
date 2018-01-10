@@ -7,13 +7,19 @@
 {-# LANGUAGE TypeOperators        #-}
 {-# LANGUAGE UndecidableInstances #-}
 
+-- | This module introduces 'Rat' kind and all necessary functional.
+
 module Time.Rational
        ( Rat (..)
        , type (:%)
+       , type (%)
        , type (*)
        , type (/)
+       , MulK
+       , DivK
        , Gcd
        , Normalize
+       , DivRat
 
         -- Utilities
        , RatioNat
@@ -34,7 +40,7 @@ import qualified GHC.TypeNats
 -- to zero.
 data Rat = Nat ::% Nat
 
--- | The result kind of overloaded multiplication and division.
+-- | The result kind of overloaded multiplication.
 type family MulK (k1 :: Type) (k2 :: Type) :: Type
 
 type instance MulK Nat Nat = Nat
@@ -42,6 +48,7 @@ type instance MulK Rat Rat = Rat
 type instance MulK Rat Nat = Rat
 type instance MulK Nat Rat = Rat
 
+-- | The result kind of overloaded division.
 type family DivK (k1 :: Type) (k2 :: Type) :: Type
 
 type instance DivK Nat Nat = Rat
@@ -160,10 +167,11 @@ type RatioNat = Ratio Natural
 
 -- | This class gives the integer associated with a type-level rational.
 class KnownRat (r :: Rat) where
-  ratVal :: Proxy r -> Ratio Natural
+    ratVal :: Proxy r -> Ratio Natural
 
 instance (KnownNat a, KnownNat b) => KnownRat (a :% b) where
     ratVal _ = natVal (Proxy @a) :% natVal (Proxy @b)
 
+-- | Returns 'Proxy' with the result of 'Rat' \'s division.
 divRat :: forall (m1 :: Rat) (m2 :: Rat) . Proxy m1 -> Proxy m2 -> Proxy (DivRat m1 m2)
 divRat _ _ = Proxy
