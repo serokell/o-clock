@@ -58,6 +58,7 @@ module Time.Units
        , convertUnit
        , threadDelay
        , getCPUTime
+       , timeout
        ) where
 
 import Control.Applicative ((*>))
@@ -78,6 +79,7 @@ import Time.Rational (type (*), type (/), type (:%), KnownRat, Rat, RatioNat, di
 
 import qualified Control.Concurrent as Concurrent
 import qualified System.CPUTime as CPUTime
+import qualified System.Timeout as Timeout
 
 newtype Time (rat :: Rat) = Time { unTime :: RatioNat }
     deriving (Eq, Ord, Enum, Real, RealFrac)
@@ -275,8 +277,8 @@ threadDelay :: forall unit m .
             -> m ()
 threadDelay = liftIO . Concurrent.threadDelay . floor . convertUnit @MicroSecondUnit
 
--- | Computation getCPUTime returns the CPU time used by the current program
--- in the given time unit.
+-- | Similar to 'CPUTime.getCPUTime' but returns the CPU time used by the current
+-- program in the given time unit.
 -- The precision of this result is implementation-dependent.
 --
 -- >>> getCPUTime @SecondUnit
@@ -284,4 +286,24 @@ threadDelay = liftIO . Concurrent.threadDelay . floor . convertUnit @MicroSecond
 getCPUTime :: forall unit m .
               (KnownRat unit, KnownRat (PicoSecondUnit / unit), MonadIO m)
            => m (Time unit)
-getCPUTime = liftIO CPUTime.getCPUTime >>= pure . convertUnit . ps . fromInteger
+getCPUTime = convertUnit . ps . fromInteger <$> liftIO CPUTime.getCPUTime
+
+{- | Similar to 'Timeout.timeout' but receiving any time unit
+instead of number of microseconds.
+
+>>> timeout (sec 1) (putStrLn "Hello O'Clock")
+Hello O'Clock
+Just ()
+
+>>> timeout (ps 1) (putStrLn "Hello O'Clock")
+Nothing
+
+>>> timeout (mcs 1) (putStrLn "Hello O'Clock")
+HellNothing
+
+-}
+timeout :: forall unit m a . (MonadIO m, KnownRat unit, KnownRat (unit / MicroSecondUnit))
+        => Time unit   -- ^ time
+        -> IO a        -- ^ 'IO' action
+        -> m (Maybe a) -- ^ returns 'Nothing' if no result is available within the given time
+timeout t = liftIO . Timeout.timeout (floor $ convertUnit @MicroSecondUnit t)
