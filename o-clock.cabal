@@ -69,6 +69,8 @@ test-suite o-clock-test
 test-suite readme-test
   type:                exitcode-stdio-1.0
   main-is:             README.lhs
+
+  build-tool-depends:  markdown-unlit:markdown-unlit
   build-depends:       base            >= 4.11  && < 5
                      , o-clock
                      , markdown-unlit ^>= 0.5
