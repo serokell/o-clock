@@ -1,4 +1,5 @@
 {-# LANGUAGE DataKinds            #-}
+{-# LANGUAGE TypeInType           #-}
 {-# LANGUAGE FlexibleInstances    #-}
 {-# LANGUAGE ScopedTypeVariables  #-}
 {-# LANGUAGE TypeApplications     #-}
@@ -9,11 +10,8 @@
 module Time.Rational
        ( Rat (..)
        , type (:%)
-       , type (%)
-       , type (%*)
-       , type (**)
-       , type (//)
-       , DivRat
+       , type (*)
+       , type (/)
        , Gcd
        , Normalize
 
@@ -23,16 +21,49 @@ module Time.Rational
        , divRat
        ) where
 
+import Data.Kind (Type)
 import Data.Proxy (Proxy (..))
 import GHC.Natural (Natural)
 import GHC.Real (Ratio ((:%)))
-import GHC.TypeNats (type (*), Div, KnownNat, Mod, Nat, natVal)
+import GHC.TypeNats (Div, KnownNat, Mod, Nat, natVal)
+import qualified GHC.TypeNats
 
 -- | Data structure represents the rational number.
 -- Rational number can be represented as a pair of
 -- natural numbers @n@ and @m@ where @m@ is nor equal
 -- to zero.
 data Rat = Nat ::% Nat
+
+-- | The result kind of overloaded multiplication and division.
+type family MulK (k1 :: Type) (k2 :: Type) :: Type
+
+type instance MulK Nat Nat = Nat
+type instance MulK Rat Rat = Rat
+type instance MulK Rat Nat = Rat
+type instance MulK Nat Rat = Rat
+
+type family DivK (k1 :: Type) (k2 :: Type) :: Type
+
+type instance DivK Nat Nat = Rat
+type instance DivK Rat Rat = Rat
+type instance DivK Rat Nat = Rat
+type instance DivK Nat Rat = Rat
+
+-- | Overloaded multiplication.
+type family (*) (a :: k1) (b :: k2) :: MulK k1 k2
+
+type instance (a :: Nat) * (b :: Nat) = (GHC.TypeNats.*) a b
+type instance (a :: Rat) * (b :: Rat) = MulRat a b
+type instance (a :: Rat) * (b :: Nat) = MulNatRat b a
+type instance (a :: Nat) * (b :: Rat) = MulNatRat a b
+
+-- | Overloaded division.
+type family (/) (a :: k1) (b :: k2) :: DivK k1 k2
+
+type instance (a :: Nat) / (b :: Nat) = a % b
+type instance (a :: Rat) / (b :: Rat) = DivRat a b
+type instance (a :: Rat) / (b :: Nat) = DivRatNat a b
+type instance (a :: Nat) / (b :: Rat) = DivRat (a :% 1) b
 
 -- | More convenient name for promoted constructor of 'Rat'.
 type (:%) = '(::%)
@@ -63,34 +94,34 @@ type family DivRat (m :: Rat) (n :: Rat) :: Rat where
 
 __Example:__
 
->>> :kind!  (2 % 3) %* (9 % 11)
-(2 % 3) %* (9 % 11) :: Rat
+>>> :kind!  MulRat (2 % 3) (9 % 11)
+MulRat (2 % 3) (9 % 11) :: Rat
 = 6 :% 11
 -}
-type family (%*) (m :: Rat) (n :: Rat) :: Rat where
-    (a :% b) %* (c :% d) = (a * c) % (b * d)
+type family MulRat (m :: Rat) (n :: Rat) :: Rat where
+    MulRat (a :% b) (c :% d) = (a * c) % (b * d)
 
 {- | Multiplication of type-level natural with rational.
 
 __Example:__
 
->>> :kind!  2 ** (9 % 11)
-2 ** (9 % 11) :: Rat
+>>> :kind!  MulNatRat 2 (9 % 11)
+MulNatRat 2 (9 % 11) :: Rat
 = 18 :% 11
 -}
-type family (**) (n :: Nat) (r :: Rat) :: Rat where
-    x ** (a :% b) = (x * a) % b
+type family MulNatRat (n :: Nat) (r :: Rat) :: Rat where
+    MulNatRat x (a :% b) = (x * a) % b
 
 {- | Division of type-level rational and natural.
 
 __Example:__
 
->>> :kind!  (9 % 11) // 2
-(9 % 11) // 2 :: Rat
+>>> :kind!  DivRatNat (9 % 11) 2
+DivRatNat (9 % 11) 2 :: Rat
 = 9 :% 22
 -}
-type family (//) (r :: Rat) (n :: Nat) :: Rat where
-    (a :% b) // x = a % (b * x)
+type family DivRatNat (r :: Rat) (n :: Nat) :: Rat where
+    DivRatNat (a :% b) x = a % (b * x)
 
 {- | Greatest common divisor for type-level naturals.
 
