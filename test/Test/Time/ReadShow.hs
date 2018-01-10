@@ -14,8 +14,8 @@ import Hedgehog (MonadGen, MonadTest, Property, forAll, property, (===))
 import Test.Tasty (TestTree)
 import Test.Tasty.Hedgehog (testProperty)
 
-import Time (DayUnit, FortnightUnit, HourUnit, MicroSecondUnit, MilliSecondUnit, MinuteUnit,
-             NanoSecondUnit, PicoSecondUnit, RatioNat, SecondUnit, ShowUnit, Time (..), WeekUnit)
+import Time (DayUnit, FortnightUnit, HourUnit, MicrosecondUnit, MillisecondUnit, MinuteUnit,
+             NanosecondUnit, PicosecondUnit, RatioNat, SecondUnit, ShowUnit, Time (..), WeekUnit)
 
 import qualified Hedgehog.Gen as Gen
 import qualified Hedgehog.Range as Range
@@ -30,10 +30,10 @@ data AnyTime =  forall unit . (KnownSymbol (ShowUnit unit))
 -- | Returns the 'AnyTime' depending on given (random) integer.
 unitChooser :: Int -> RatioNat -> AnyTime
 unitChooser 0 t = MkAnyTime $ Time @SecondUnit      t
-unitChooser 1 t = MkAnyTime $ Time @MilliSecondUnit t
-unitChooser 2 t = MkAnyTime $ Time @MicroSecondUnit t
-unitChooser 3 t = MkAnyTime $ Time @NanoSecondUnit  t
-unitChooser 4 t = MkAnyTime $ Time @PicoSecondUnit  t
+unitChooser 1 t = MkAnyTime $ Time @MillisecondUnit t
+unitChooser 2 t = MkAnyTime $ Time @MicrosecondUnit t
+unitChooser 3 t = MkAnyTime $ Time @NanosecondUnit  t
+unitChooser 4 t = MkAnyTime $ Time @PicosecondUnit  t
 unitChooser 5 t = MkAnyTime $ Time @MinuteUnit      t
 unitChooser 6 t = MkAnyTime $ Time @HourUnit        t
 unitChooser 7 t = MkAnyTime $ Time @DayUnit         t
