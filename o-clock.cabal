@@ -12,6 +12,7 @@ category:            Time
 build-type:          Simple
 extra-doc-files:     CHANGELOG.md
                    , README.md
+                   , README.lhs
 cabal-version:       >=1.18
 tested-with:         GHC == 8.4.1
 
@@ -64,6 +65,17 @@ test-suite o-clock-test
   default-language:    Haskell2010
   default-extensions:  OverloadedStrings
                        RecordWildCards
+
+test-suite readme-test
+  type:                exitcode-stdio-1.0
+  main-is:             README.lhs
+
+  build-tool-depends:  markdown-unlit:markdown-unlit
+  build-depends:       base            >= 4.11  && < 5
+                     , o-clock
+                     , markdown-unlit ^>= 0.5
+  ghc-options:         -Wall -threaded -rtsopts -with-rtsopts=-N -pgmL markdown-unlit
+  default-language:    Haskell2010
 
 benchmark o-clock-benchmark
   type:                exitcode-stdio-1.0

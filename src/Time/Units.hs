@@ -270,15 +270,36 @@ fortnight = time
 -- Functional
 ----------------------------------------------------------------------------
 
--- | Converts from one time unit to another time unit.
+{- | Converts from one time unit to another time unit.
+
+>>> toUnit @HourUnit (120 :: Minute)
+2h
+
+>>> toUnit @SecondUnit (ms 7)
+7/1000s
+
+>>> toUnit @WeekUnit (Time @DayUnit 45)
+45/7w
+
+>>>  toUnit (day 42000000) :: Second
+3628800000000s
+
+-}
 toUnit :: forall (unitTo :: Rat) (unitFrom :: Rat) .
           (KnownRat unitTo, KnownRat unitFrom, KnownRat (unitFrom / unitTo))
        => Time unitFrom
        -> Time unitTo
 toUnit Time{..} = Time $ unTime * ratVal (divRat (Proxy @unitFrom) (Proxy @unitTo))
 
--- | Convenient version of 'Control.Concurrent.threadDelay' which takes
--- any time-unit and operates in any MonadIO.
+{- | Convenient version of 'Control.Concurrent.threadDelay' which takes
+ any time-unit and operates in any MonadIO.
+
+
+>>> threadDelay $ sec 2
+>>> threadDelay (2 :: Second)
+>>> threadDelay @SecondUnit 2
+
+-}
 threadDelay :: forall unit m .
                (KnownRat unit, KnownRat (unit / MicrosecondUnit), MonadIO m)
             => Time unit
