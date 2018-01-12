@@ -48,7 +48,7 @@ test-suite o-clock-test
   hs-source-dirs:      test
   main-is:             Spec.hs
 
-  other-modules:       Test.Time.ReadShow
+  other-modules:       Test.Time.Property
                        Test.Time.TimeStamp
                        Test.Time.TypeSpec
                        Test.Time.Units
