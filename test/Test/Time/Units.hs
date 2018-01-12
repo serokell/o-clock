@@ -13,7 +13,8 @@ import Test.Tasty (TestTree)
 import Test.Tasty.Hspec (Spec, anyException, describe, it, shouldBe, shouldThrow, testSpec)
 
 import Time (DayUnit, Hour, Microsecond, MicrosecondUnit, MillisecondUnit, PicosecondUnit, Second,
-             SecondUnit, Time (..), WeekUnit, day, fortnight, mcs, ms, ns, sec, toUnit)
+             SecondUnit, Time (..), WeekUnit, day, floorUnit, fortnight, mcs, ms, ns, ps, sec,
+             toUnit)
 
 unitsTestTree :: IO TestTree
 unitsTestTree = testSpec "Units" spec_Units
@@ -52,3 +53,10 @@ spec_Units = do
             read @Microsecond ('1' : replicate 20 '0' ++ "mcs") `shouldBe` 100000000000000000000
         it "fails when '4ms' expected as 4 seconds" $
             evaluate (read @Second "4ms") `shouldThrow` anyException
+    describe "Floor tests" $ do
+        it "returns 0s when floor < 1 second" $
+            floorUnit (Time @SecondUnit $ 2 :% 3) `shouldBe` 0
+        it "returns 2d when floor 2.5 days" $
+             floorUnit @DayUnit (Time $ 5 :% 2) `shouldBe` 2
+        it "returns 42ps when floor integer" $
+             floorUnit (ps 42) `shouldBe` 42
