@@ -74,7 +74,7 @@ Since this tutorial is literate haskell file, let's first write some pragmas and
 module Main where
 
 import Numeric.Natural (Natural)
-import Time ((:%), Time, Hour, HourUnit, UnitName, type (*), toUnit, time)
+import Time ((:%), Time, Hour, HourUnit, UnitName, type (*), floorUnit, toUnit, time)
 ```
 
 ### Introduce custom units
@@ -114,8 +114,8 @@ convert them to work weeks and work days and then show in human readable format.
 calculateWork :: Hour  -- type synonym for 'Time HourUnit'
               -> (WorkWeek, WorkDay)
 calculateWork workHours =
-    let completeWeeks = workWeek $ floor $ toUnit @WorkWeekUnit workHours
-        completeDays  = workDay  $ floor $ toUnit @WorkDayUnit  workHours - toUnit completeWeeks
+    let completeWeeks = floorUnit $ toUnit @WorkWeekUnit workHours
+        completeDays  = floorUnit $ toUnit @WorkDayUnit  workHours - toUnit completeWeeks
     in (completeWeeks, completeDays)
 
 formatHours :: Hour -> String
