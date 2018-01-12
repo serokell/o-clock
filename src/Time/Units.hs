@@ -78,8 +78,7 @@ import GHC.TypeLits (KnownSymbol, Symbol, symbolVal)
 import Text.ParserCombinators.ReadP (ReadP, char, munch1, option, pfail)
 import Text.ParserCombinators.ReadPrec (ReadPrec, lift)
 
-import Time.Rational (type (*), type (/), type (:%), KnownRat, Rat, RatioNat, divRat,
-                      ratVal)
+import Time.Rational (type (*), type (/), type (:%), KnownRat, Rat, RatioNat, ratVal)
 
 import qualified Control.Concurrent as Concurrent
 import qualified System.CPUTime as CPUTime
@@ -305,7 +304,7 @@ toUnit :: forall (unitTo :: Rat) (unitFrom :: Rat) .
           (KnownRat unitTo, KnownRat unitFrom, KnownRat (unitFrom / unitTo))
        => Time unitFrom
        -> Time unitTo
-toUnit Time{..} = Time $ unTime * ratVal (divRat (Proxy @unitFrom) (Proxy @unitTo))
+toUnit Time{..} = Time $ unTime * ratVal @(unitFrom / unitTo)
 
 {- | Convenient version of 'Control.Concurrent.threadDelay' which takes
  any time-unit and operates in any MonadIO.

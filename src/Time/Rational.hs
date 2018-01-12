@@ -1,4 +1,4 @@
-{-# LANGUAGE DataKinds            #-}
+{-# LANGUAGE AllowAmbiguousTypes  #-}
 {-# LANGUAGE TypeInType           #-}
 {-# LANGUAGE FlexibleInstances    #-}
 {-# LANGUAGE ScopedTypeVariables  #-}
@@ -24,7 +24,6 @@ module Time.Rational
         -- Utilities
        , RatioNat
        , KnownRat (..)
-       , divRat
        ) where
 
 import Data.Kind (Type)
@@ -167,11 +166,7 @@ type RatioNat = Ratio Natural
 
 -- | This class gives the integer associated with a type-level rational.
 class KnownRat (r :: Rat) where
-    ratVal :: Proxy r -> Ratio Natural
+    ratVal :: RatioNat
 
 instance (KnownNat a, KnownNat b) => KnownRat (a :% b) where
-    ratVal _ = natVal (Proxy @a) :% natVal (Proxy @b)
-
--- | Returns 'Proxy' with the result of 'Rat' \'s division.
-divRat :: forall (m1 :: Rat) (m2 :: Rat) . Proxy m1 -> Proxy m2 -> Proxy (DivRat m1 m2)
-divRat _ _ = Proxy
+    ratVal = natVal (Proxy @a) :% natVal (Proxy @b)
