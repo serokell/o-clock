@@ -73,8 +73,7 @@ Since this tutorial is literate haskell file, let's first write some pragmas and
 
 module Main where
 
-import Numeric.Natural (Natural)
-import Time ((:%), Time, Hour, HourUnit, UnitName, type (*), floorUnit, toUnit, time)
+import Time ((:%), Time, Hour, HourUnit, UnitName, type (*), floorUnit, toUnit)
 ```
 
 ### Introduce custom units
@@ -96,13 +95,6 @@ type WorkWeek = Time WorkWeekUnit
 type instance UnitName (28800  :% 1) = "wd"  -- One WorkDay  contains 28800  seconds
 type instance UnitName (144000 :% 1) = "ww"  -- One WorkWeek contains 144000 seconds
 
--- | Smart constructor for 'WorkDay'.
-workDay :: Natural -> WorkDay
-workDay = time
-
--- | Smart constructor for 'WorkWeek'.
-workWeek :: Natural -> WorkWeek
-workWeek = time
 ```
 
 ### Calculations

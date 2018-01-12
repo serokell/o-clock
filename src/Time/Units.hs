@@ -267,7 +267,18 @@ fortnight :: Natural -> Fortnight
 fortnight = time
 {-# INLINE fortnight #-}
 
--- | Similar to 'floor', but works with 'Time' units.
+{- | Similar to 'floor', but works with 'Time' units.
+
+>>> floorUnit @DayUnit (Time $ 5 % 2)
+2d
+
+>>> floorUnit (Time @SecondUnit $ 2 % 3)
+0s
+
+>>> floorUnit $ ps 42
+42ps
+
+-}
 floorUnit :: Time unit -> Time unit
 floorUnit = time . floor
 
