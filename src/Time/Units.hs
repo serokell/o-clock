@@ -305,6 +305,7 @@ toUnit :: forall (unitTo :: Rat) (unitFrom :: Rat) .
        => Time unitFrom
        -> Time unitTo
 toUnit Time{..} = Time $ unTime * ratVal @(unitFrom / unitTo)
+{-# INLINE toUnit #-}
 
 {- | Convenient version of 'Control.Concurrent.threadDelay' which takes
  any time-unit and operates in any MonadIO.
@@ -320,6 +321,7 @@ threadDelay :: forall unit m .
             => Time unit
             -> m ()
 threadDelay = liftIO . Concurrent.threadDelay . floor . toUnit @MicrosecondUnit
+{-# INLINE threadDelay #-}
 
 -- | Similar to 'CPUTime.getCPUTime' but returns the CPU time used by the current
 -- program in the given time unit.
@@ -331,6 +333,7 @@ getCPUTime :: forall unit m .
               (KnownRat unit, KnownRat (PicosecondUnit / unit), MonadIO m)
            => m (Time unit)
 getCPUTime = toUnit . ps . fromInteger <$> liftIO CPUTime.getCPUTime
+{-# INLINE getCPUTime #-}
 
 {- | Similar to 'Timeout.timeout' but receiving any time unit
 instead of number of microseconds.
@@ -351,3 +354,4 @@ timeout :: forall unit m a . (MonadIO m, KnownRat unit, KnownRat (unit / Microse
         -> IO a        -- ^ 'IO' action
         -> m (Maybe a) -- ^ returns 'Nothing' if no result is available within the given time
 timeout t = liftIO . Timeout.timeout (floor $ toUnit @MicrosecondUnit t)
+{-# INLINE timeout #-}

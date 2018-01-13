@@ -1,6 +1,8 @@
 {-# LANGUAGE AllowAmbiguousTypes  #-}
 {-# LANGUAGE TypeInType           #-}
+{-# LANGUAGE FlexibleContexts     #-}
 {-# LANGUAGE FlexibleInstances    #-}
+{-# LANGUAGE Rank2Types           #-}
 {-# LANGUAGE ScopedTypeVariables  #-}
 {-# LANGUAGE TypeApplications     #-}
 {-# LANGUAGE TypeFamilies         #-}
@@ -24,6 +26,8 @@ module Time.Rational
         -- Utilities
        , RatioNat
        , KnownRat (..)
+
+       , withRuntimeDivRat
        ) where
 
 import Data.Kind (Type)
@@ -31,6 +35,8 @@ import Data.Proxy (Proxy (..))
 import GHC.Natural (Natural)
 import GHC.Real (Ratio ((:%)))
 import GHC.TypeNats (Div, KnownNat, Mod, Nat, natVal)
+import Unsafe.Coerce (unsafeCoerce)
+
 import qualified GHC.TypeNats
 
 -- | Data structure represents the rational number.
@@ -170,3 +176,15 @@ class KnownRat (r :: Rat) where
 
 instance (KnownNat a, KnownNat b) => KnownRat (a :% b) where
     ratVal = natVal (Proxy @a) :% natVal (Proxy @b)
+
+
+newtype KnownRatDict (unit :: Rat) r = MkKnownRatDict (KnownRat unit => r)
+
+giftRat :: forall (unit :: Rat) r . (KnownRat unit => r) -> RatioNat -> r
+giftRat given = unsafeCoerce (MkKnownRatDict given :: KnownRatDict unit r)
+{-# INLINE giftRat #-}
+
+-- | Performs action with introduced 'DivRat' constraint for rational numbers.
+withRuntimeDivRat :: forall (a :: Rat) (b :: Rat) r . (KnownRat a, KnownRat b) => (KnownRat (a / b) => r) -> r
+withRuntimeDivRat r = giftRat @(a / b) r (ratVal @a / ratVal @b)
+{-# INLINE withRuntimeDivRat #-}
