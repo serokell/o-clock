@@ -268,7 +268,7 @@ fortnight = time
 
 {- | Similar to 'floor', but works with 'Time' units.
 
->>> floorUnit @DayUnit (Time $ 5 % 2)
+>>> floorUnit @Day (Time $ 5 % 2)
 2d
 
 >>> floorUnit (Time @SecondUnit $ 2 % 3)
@@ -278,7 +278,7 @@ fortnight = time
 42ps
 
 -}
-floorUnit :: Time unit -> Time unit
+floorUnit :: forall time unit . (time ~ Time unit) => time -> time
 floorUnit = time . floor
 
 ----------------------------------------------------------------------------
@@ -287,22 +287,26 @@ floorUnit = time . floor
 
 {- | Converts from one time unit to another time unit.
 
->>> toUnit @HourUnit (120 :: Minute)
+>>> toUnit @Hour (120 :: Minute)
 2h
 
->>> toUnit @SecondUnit (ms 7)
+>>> toUnit @Second (ms 7)
 7/1000s
 
->>> toUnit @WeekUnit (Time @DayUnit 45)
+>>> toUnit @Week (Time @DayUnit 45)
 45/7w
 
->>>  toUnit (day 42000000) :: Second
+>>> toUnit @Second @Minute 3
+180s
+
+>>> toUnit (day 42000000) :: Second
 3628800000000s
 
 -}
-toUnit :: forall (unitTo :: Rat) (unitFrom :: Rat) . KnownDivRat unitFrom unitTo
-       => Time unitFrom
-       -> Time unitTo
+toUnit :: forall timeTo timeFrom (unitTo :: Rat) (unitFrom :: Rat) .
+          (timeTo ~ Time unitTo, timeFrom ~ Time unitFrom, KnownDivRat unitFrom unitTo)
+       => timeFrom
+       -> timeTo
 toUnit Time{..} = Time $ unTime * ratVal @(unitFrom / unitTo)
 {-# INLINE toUnit #-}
 
@@ -312,23 +316,23 @@ toUnit Time{..} = Time $ unTime * ratVal @(unitFrom / unitTo)
 
 >>> threadDelay $ sec 2
 >>> threadDelay (2 :: Second)
->>> threadDelay @SecondUnit 2
+>>> threadDelay @Second 2
 
 -}
-threadDelay :: forall unit m . (KnownDivRat unit MicrosecondUnit, MonadIO m)
-            => Time unit
+threadDelay :: forall time unit m . (time ~ Time unit, KnownDivRat unit MicrosecondUnit, MonadIO m)
+            => time
             -> m ()
-threadDelay = liftIO . Concurrent.threadDelay . floor . toUnit @MicrosecondUnit
+threadDelay = liftIO . Concurrent.threadDelay . floor . toUnit @Microsecond
 {-# INLINE threadDelay #-}
 
 -- | Similar to 'CPUTime.getCPUTime' but returns the CPU time used by the current
 -- program in the given time unit.
 -- The precision of this result is implementation-dependent.
 --
--- >>> getCPUTime @SecondUnit
+-- >>> getCPUTime @Second
 -- 1064046949/1000000000s
-getCPUTime :: forall unit m . (KnownDivRat PicosecondUnit unit, MonadIO m)
-           => m (Time unit)
+getCPUTime :: forall time unit m . (time ~ Time unit, KnownDivRat PicosecondUnit unit, MonadIO m)
+           => m time
 getCPUTime = toUnit . ps . fromInteger <$> liftIO CPUTime.getCPUTime
 {-# INLINE getCPUTime #-}
 
@@ -346,9 +350,9 @@ Nothing
 HellNothing
 
 -}
-timeout :: forall unit m a . (MonadIO m, KnownDivRat unit MicrosecondUnit)
-        => Time unit   -- ^ time
+timeout :: forall time unit m a . (time ~ Time unit, MonadIO m, KnownDivRat unit MicrosecondUnit)
+        => time        -- ^ time
         -> IO a        -- ^ 'IO' action
         -> m (Maybe a) -- ^ returns 'Nothing' if no result is available within the given time
-timeout t = liftIO . Timeout.timeout (floor $ toUnit @MicrosecondUnit t)
+timeout t = liftIO . Timeout.timeout (floor $ toUnit @Microsecond t)
 {-# INLINE timeout #-}

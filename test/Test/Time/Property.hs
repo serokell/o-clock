@@ -66,7 +66,7 @@ verifyToUnit (MkAnyTime t1) (MkAnyTime t2) = checkToUnit t1 t2
                 -> m ()
     checkToUnit t _ = withRuntimeDivRat @unitTo @unitFrom
                     $ withRuntimeDivRat @unitFrom @unitTo
-                    $ toUnit (toUnit @unitTo t) === t
+                    $ toUnit (toUnit @(Time unitTo) t) === t
 
 -- | Generates random number from [0, 8].
 number0'9 :: (MonadGen m) => m Int

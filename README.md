@@ -20,7 +20,7 @@ With O'Clock you can write in several more convenient ways (and use more preferr
 ```haskell ignore
 threadDelay $ sec 5
 threadDelay (5 :: Second)
-threadDelay @SecondUnit 5
+threadDelay @Second 5
 ```
 
 ## Features
@@ -106,8 +106,8 @@ convert them to work weeks and work days and then show in human readable format.
 calculateWork :: Hour  -- type synonym for 'Time HourUnit'
               -> (WorkWeek, WorkDay)
 calculateWork workHours =
-    let completeWeeks = floorUnit $ toUnit @WorkWeekUnit workHours
-        completeDays  = floorUnit $ toUnit @WorkDayUnit  workHours - toUnit completeWeeks
+    let completeWeeks = floorUnit $ toUnit @WorkWeek workHours
+        completeDays  = floorUnit $ toUnit @WorkDay  workHours - toUnit completeWeeks
     in (completeWeeks, completeDays)
 
 formatHours :: Hour -> String
