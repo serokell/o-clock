@@ -78,7 +78,7 @@ import GHC.TypeLits (KnownSymbol, Symbol, symbolVal)
 import Text.ParserCombinators.ReadP (ReadP, char, munch1, option, pfail)
 import Text.ParserCombinators.ReadPrec (ReadPrec, lift)
 
-import Time.Rational (type (*), type (/), type (:%), KnownRat, Rat, RatioNat, ratVal)
+import Time.Rational (type (*), type (/), type (:%), KnownDivRat, Rat, RatioNat, ratVal)
 
 import qualified Control.Concurrent as Concurrent
 import qualified System.CPUTime as CPUTime
@@ -300,8 +300,7 @@ floorUnit = time . floor
 3628800000000s
 
 -}
-toUnit :: forall (unitTo :: Rat) (unitFrom :: Rat) .
-          (KnownRat unitTo, KnownRat unitFrom, KnownRat (unitFrom / unitTo))
+toUnit :: forall (unitTo :: Rat) (unitFrom :: Rat) . KnownDivRat unitFrom unitTo
        => Time unitFrom
        -> Time unitTo
 toUnit Time{..} = Time $ unTime * ratVal @(unitFrom / unitTo)
@@ -316,8 +315,7 @@ toUnit Time{..} = Time $ unTime * ratVal @(unitFrom / unitTo)
 >>> threadDelay @SecondUnit 2
 
 -}
-threadDelay :: forall unit m .
-               (KnownRat unit, KnownRat (unit / MicrosecondUnit), MonadIO m)
+threadDelay :: forall unit m . (KnownDivRat unit MicrosecondUnit, MonadIO m)
             => Time unit
             -> m ()
 threadDelay = liftIO . Concurrent.threadDelay . floor . toUnit @MicrosecondUnit
@@ -329,8 +327,7 @@ threadDelay = liftIO . Concurrent.threadDelay . floor . toUnit @MicrosecondUnit
 --
 -- >>> getCPUTime @SecondUnit
 -- 1064046949/1000000000s
-getCPUTime :: forall unit m .
-              (KnownRat unit, KnownRat (PicosecondUnit / unit), MonadIO m)
+getCPUTime :: forall unit m . (KnownDivRat PicosecondUnit unit, MonadIO m)
            => m (Time unit)
 getCPUTime = toUnit . ps . fromInteger <$> liftIO CPUTime.getCPUTime
 {-# INLINE getCPUTime #-}
@@ -349,7 +346,7 @@ Nothing
 HellNothing
 
 -}
-timeout :: forall unit m a . (MonadIO m, KnownRat unit, KnownRat (unit / MicrosecondUnit))
+timeout :: forall unit m a . (MonadIO m, KnownDivRat unit MicrosecondUnit)
         => Time unit   -- ^ time
         -> IO a        -- ^ 'IO' action
         -> m (Maybe a) -- ^ returns 'Nothing' if no result is available within the given time

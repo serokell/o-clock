@@ -1,4 +1,5 @@
 {-# LANGUAGE AllowAmbiguousTypes  #-}
+{-# LANGUAGE ConstraintKinds      #-}
 {-# LANGUAGE TypeInType           #-}
 {-# LANGUAGE FlexibleContexts     #-}
 {-# LANGUAGE FlexibleInstances    #-}
@@ -28,6 +29,7 @@ module Time.Rational
        , KnownRat (..)
 
        , withRuntimeDivRat
+       , KnownDivRat
        ) where
 
 import Data.Kind (Type)
@@ -188,3 +190,6 @@ giftRat given = unsafeCoerce (MkKnownRatDict given :: KnownRatDict unit r)
 withRuntimeDivRat :: forall (a :: Rat) (b :: Rat) r . (KnownRat a, KnownRat b) => (KnownRat (a / b) => r) -> r
 withRuntimeDivRat r = giftRat @(a / b) r (ratVal @a / ratVal @b)
 {-# INLINE withRuntimeDivRat #-}
+
+-- | Constraint alias for 'DivRat' units.
+type KnownDivRat a b = (KnownRat a, KnownRat b, KnownRat (a / b))
