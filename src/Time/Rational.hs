@@ -1,6 +1,8 @@
-{-# LANGUAGE DataKinds            #-}
+{-# LANGUAGE AllowAmbiguousTypes  #-}
 {-# LANGUAGE TypeInType           #-}
+{-# LANGUAGE FlexibleContexts     #-}
 {-# LANGUAGE FlexibleInstances    #-}
+{-# LANGUAGE Rank2Types           #-}
 {-# LANGUAGE ScopedTypeVariables  #-}
 {-# LANGUAGE TypeApplications     #-}
 {-# LANGUAGE TypeFamilies         #-}
@@ -24,7 +26,8 @@ module Time.Rational
         -- Utilities
        , RatioNat
        , KnownRat (..)
-       , divRat
+
+       , withRuntimeDivRat
        ) where
 
 import Data.Kind (Type)
@@ -32,6 +35,8 @@ import Data.Proxy (Proxy (..))
 import GHC.Natural (Natural)
 import GHC.Real (Ratio ((:%)))
 import GHC.TypeNats (Div, KnownNat, Mod, Nat, natVal)
+import Unsafe.Coerce (unsafeCoerce)
+
 import qualified GHC.TypeNats
 
 -- | Data structure represents the rational number.
@@ -167,11 +172,19 @@ type RatioNat = Ratio Natural
 
 -- | This class gives the integer associated with a type-level rational.
 class KnownRat (r :: Rat) where
-    ratVal :: Proxy r -> Ratio Natural
+    ratVal :: RatioNat
 
 instance (KnownNat a, KnownNat b) => KnownRat (a :% b) where
-    ratVal _ = natVal (Proxy @a) :% natVal (Proxy @b)
+    ratVal = natVal (Proxy @a) :% natVal (Proxy @b)
 
--- | Returns 'Proxy' with the result of 'Rat' \'s division.
-divRat :: forall (m1 :: Rat) (m2 :: Rat) . Proxy m1 -> Proxy m2 -> Proxy (DivRat m1 m2)
-divRat _ _ = Proxy
+
+newtype KnownRatDict (unit :: Rat) r = MkKnownRatDict (KnownRat unit => r)
+
+giftRat :: forall (unit :: Rat) r . (KnownRat unit => r) -> RatioNat -> r
+giftRat given = unsafeCoerce (MkKnownRatDict given :: KnownRatDict unit r)
+{-# INLINE giftRat #-}
+
+-- | Performs action with introduced 'DivRat' constraint for rational numbers.
+withRuntimeDivRat :: forall (a :: Rat) (b :: Rat) r . (KnownRat a, KnownRat b) => (KnownRat (a / b) => r) -> r
+withRuntimeDivRat r = giftRat @(a / b) r (ratVal @a / ratVal @b)
+{-# INLINE withRuntimeDivRat #-}
