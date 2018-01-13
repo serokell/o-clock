@@ -84,7 +84,9 @@ benchmark o-clock-benchmark
   ghc-options:         -Wall -Werror -O2 -threaded -rtsopts -with-rtsopts=-N
   hs-source-dirs:      benchmark
   main-is:             Main.hs
-  build-depends:       base      >= 4.11
+  build-depends:       base       >= 4.11  && < 5
                      , o-clock
+                     , gauge      >= 0.2.1 && < 1
+                     , time-units == 1.0.0
   default-extensions:  OverloadedStrings
                        RecordWildCards
