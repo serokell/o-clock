@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP           #-}
 {-# LANGUAGE DataKinds     #-}
 {-# LANGUAGE TypeOperators #-}
 
@@ -9,18 +10,24 @@ module Test.Time.TypeSpec
 import Test.TypeSpec
 import Test.TypeSpecCrazy
 
-import Time.Rational ((:%), type (/), Gcd, Normalize)
+import Time.Rational ((:%))
+#if ( __GLASGOW_HASKELL__ >= 804 )
+import Time.Rational (type (/), Gcd, Normalize)
+#endif
 import Time.Units (Day, Fortnight, Hour, Microsecond, Millisecond, Minute,
                    Nanosecond, Picosecond, Second, UnitName, Week)
 
 runTypeSpecTests :: IO ()
 runTypeSpecTests = do
+#if ( __GLASGOW_HASKELL__ >= 804 )
     print typeSpec_Gcd
     print typeSpec_Normalize
     print typeSpec_DivRat
+#endif
     print typeSpec_UnitCalculation
     print typeSpec_UnitNames
 
+#if ( __GLASGOW_HASKELL__ >= 804 )
 typeSpec_Gcd ::
 
   "GCD"
@@ -83,6 +90,7 @@ typeSpec_DivRat ::
      -*- It "5%6 / 25%3 = 1%10" ((5 / 6) / (25 / 3) `Is` (1 :% 10))
 
 typeSpec_DivRat = Valid
+#endif
 
 typeSpec_UnitCalculation ::
 

@@ -1,4 +1,5 @@
 {-# LANGUAGE AllowAmbiguousTypes  #-}
+{-# LANGUAGE CPP                  #-}
 {-# LANGUAGE DataKinds            #-}
 {-# LANGUAGE FlexibleContexts     #-}
 {-# LANGUAGE InstanceSigs         #-}
@@ -32,7 +33,10 @@ module Time.Formatting
        , unitsF
        ) where
 
-import Time.Rational (Rat, withRuntimeDivRat)
+import Time.Rational (Rat)
+#if ( __GLASGOW_HASKELL__ >= 804 )
+import Time.Rational (withRuntimeDivRat)
+#endif
 import Time.Units (AllTimes, KnownRatName, Time, floorUnit, toUnit)
 
 -- | Class for time formatting.
@@ -50,7 +54,11 @@ instance (KnownRatName unit, Series units)
     seriesF :: forall (someUnit :: Rat) . KnownRatName someUnit
             => Time someUnit
             -> String
+#if ( __GLASGOW_HASKELL__ >= 804 )
     seriesF t = let newUnit = withRuntimeDivRat @someUnit @unit $ toUnit @unit t
+#else
+    seriesF t = let newUnit = toUnit @unit t
+#endif
                     format  = floorUnit newUnit
                     timeStr = case floor newUnit :: Int of
                                    0 -> ""

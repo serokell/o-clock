@@ -1,0 +1,8 @@
+resolver: lts-10.3
+
+extra-deps:
+- gauge-0.2.1
+- tiempo-0.0.1.1
+- time-units-1.0.0
+
+allow-newer: true
