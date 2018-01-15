@@ -63,6 +63,8 @@ module Time.Units
        , week
        , fortnight
 
+       , (+:)
+
         -- ** Functions
        , toUnit
        , threadDelay
@@ -298,6 +300,18 @@ fortnight = time
 -}
 floorUnit :: forall time unit . (time ~ Time unit) => time -> time
 floorUnit = time . floor
+
+-- | Sums times of different units.
+--
+-- >>> minute 1 +: sec 1
+-- 61s
+--
+(+:) :: forall timeB timeA b a . (timeA ~ Time a, timeB ~ Time b, KnownDivRat a b)
+     => timeA
+     -> timeB
+     -> timeB
+t1 +: t2 = toUnit t1 + t2
+{-# INLINE (+:) #-}
 
 ----------------------------------------------------------------------------
 -- Functional

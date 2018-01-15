@@ -2,7 +2,6 @@
 {-# LANGUAGE DataKinds            #-}
 {-# LANGUAGE FlexibleContexts     #-}
 {-# LANGUAGE InstanceSigs         #-}
-{-# LANGUAGE PolyKinds            #-}
 {-# LANGUAGE Rank2Types           #-}
 {-# LANGUAGE ScopedTypeVariables  #-}
 {-# LANGUAGE TypeApplications     #-}
@@ -51,9 +50,9 @@ instance (time ~ Time unit, KnownRatName unit, Series times)
     seriesF :: forall someTime someUnit . (someTime ~ Time someUnit, KnownRatName someUnit)
             => someTime
             -> String
-    seriesF t = let newUnit = withRuntimeDivRat @someUnit @unit $ toUnit @(Time unit) t
+    seriesF t = let newUnit = withRuntimeDivRat @someUnit @unit $ toUnit @time t
                     format  = floorUnit newUnit
-                    timeStr = case (floor @time newUnit :: Int) of
+                    timeStr = case floor @time newUnit :: Int of
                                    0 -> ""
                                    _ -> show format
                 in timeStr ++ seriesF @times @unit (newUnit - format)
