@@ -12,9 +12,9 @@ import GHC.Real (Ratio ((:%)))
 import Test.Tasty (TestTree)
 import Test.Tasty.Hspec (Spec, anyException, describe, it, shouldBe, shouldThrow, testSpec)
 
-import Time (Day, DayUnit, Hour, HourUnit, Microsecond, Millisecond, MillisecondUnit, MinuteUnit,
-             Picosecond, Second, SecondUnit, Time (..), Week, WeekUnit, day, floorUnit, fortnight,
-             mcs, minute, ms, ns, ps, sec, seriesF, toUnit, unitsF)
+import Time (Day, Hour, HourUnit, Microsecond, Millisecond, Minute, MinuteUnit, Picosecond, Second,
+             SecondUnit, Time (..), Week, day, floorUnit, fortnight, mcs, minute, ms, ns, ps, sec,
+             seriesF, toUnit, unitsF)
 
 unitsTestTree :: IO TestTree
 unitsTestTree = testSpec "Units" spec_Units
@@ -62,15 +62,15 @@ spec_Units = do
             floorUnit (ps 42) `shouldBe` 42
     describe "Formatting tests" $ do
         it "4000 minutes should be formatted without ending-zeros" $
-            seriesF @'[DayUnit, HourUnit, MinuteUnit, SecondUnit] (minute 4000) `shouldBe` "2d18h40m"
+            seriesF @'[Day, Hour, Minute, Second] (minute 4000) `shouldBe` "2d18h40m"
         it "4000 minutes should be formatted without beginning-zeros" $
-            seriesF @'[WeekUnit, DayUnit, HourUnit, MinuteUnit] (minute 4000) `shouldBe` "2d18h40m"
+            seriesF @'[Week, Day, Hour, Minute] (minute 4000) `shouldBe` "2d18h40m"
         it "3601 sec should be formatted without middle-zeros" $
-            seriesF @'[HourUnit, MinuteUnit, SecondUnit] (sec 3601) `shouldBe` "1h1s"
+            seriesF @'[Hour, Minute, Second] (sec 3601) `shouldBe` "1h1s"
         it "works on rational nums" $
-            seriesF @'[HourUnit, SecondUnit, MillisecondUnit] (Time @MinuteUnit $ 3 :% 2) `shouldBe` "90s"
+            seriesF @'[Hour, Second, Millisecond] (Time @MinuteUnit $ 3 :% 2) `shouldBe` "90s"
         it "works without minutes formatting" $
-            seriesF @'[DayUnit, MinuteUnit, SecondUnit] (minute 4000) `shouldBe` "2d1120m"
+            seriesF @'[Day, Minute, Second] (minute 4000) `shouldBe` "2d1120m"
 
         it "4000 minutes should be formatted like 2d18h40m" $
             unitsF (minute 4000) `shouldBe` "2d18h40m"

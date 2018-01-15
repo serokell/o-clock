@@ -29,6 +29,8 @@ module Time.Units
        , Week
        , Fortnight
 
+       , AllTimes
+
          -- ** Units
        , SecondUnit
        , MillisecondUnit
@@ -40,8 +42,6 @@ module Time.Units
        , DayUnit
        , WeekUnit
        , FortnightUnit
-
-       , AllUnits
 
        , UnitName
        , KnownUnitName
@@ -109,12 +109,6 @@ type DayUnit         = 24 * HourUnit
 type WeekUnit        = 7  * DayUnit
 type FortnightUnit   = 2  * WeekUnit
 
--- | Type-level list that consist of all time units.
-type AllUnits =
-  '[ FortnightUnit, WeekUnit, DayUnit, HourUnit, MinuteUnit, SecondUnit
-   , MillisecondUnit , MicrosecondUnit, NanosecondUnit, PicosecondUnit
-   ]
-
 ----------------------------------------------------------------------------
 -- Time data type
 ----------------------------------------------------------------------------
@@ -130,6 +124,13 @@ type Hour        = Time HourUnit
 type Day         = Time DayUnit
 type Week        = Time WeekUnit
 type Fortnight   = Time FortnightUnit
+
+-- | Type-level list that consist of all time.
+type AllTimes =
+  '[ Fortnight, Week, Day, Hour, Minute, Second
+   , Millisecond , Microsecond, Nanosecond, Picosecond
+   ]
+
 
 -- | Type family for prettier 'show' of time units.
 type family UnitName (unit :: Rat) :: Symbol

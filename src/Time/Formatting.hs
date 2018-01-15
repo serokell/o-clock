@@ -1,24 +1,29 @@
-{-# LANGUAGE AllowAmbiguousTypes #-}
-{-# LANGUAGE DataKinds           #-}
-{-# LANGUAGE FlexibleContexts    #-}
-{-# LANGUAGE InstanceSigs        #-}
-{-# LANGUAGE KindSignatures      #-}
-{-# LANGUAGE Rank2Types          #-}
-{-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE TypeApplications    #-}
-{-# LANGUAGE TypeOperators       #-}
+{-# LANGUAGE AllowAmbiguousTypes  #-}
+{-# LANGUAGE DataKinds            #-}
+{-# LANGUAGE FlexibleContexts     #-}
+{-# LANGUAGE InstanceSigs         #-}
+{-# LANGUAGE PolyKinds            #-}
+{-# LANGUAGE Rank2Types           #-}
+{-# LANGUAGE ScopedTypeVariables  #-}
+{-# LANGUAGE TypeApplications     #-}
+{-# LANGUAGE TypeFamilies         #-}
+{-# LANGUAGE TypeOperators        #-}
+{-# LANGUAGE UndecidableInstances #-}
 
 {- | This module introduces function to format time in desired way.
 
 __Examples__
 
->>> seriesF @'[DayUnit, HourUnit, MinuteUnit, SecondUnit] (minute 4000)
+>>> seriesF @'[Day, Hour, Minute, Second] (minute 4000)
 "2d18h40m"
 
->>> seriesF @'[DayUnit, MinuteUnit, SecondUnit] (minute 4000)
+>>> seriesF @'[Day, Minute, Second] (minute 4000)
 "2d1120m"
 
->>>  seriesF @'[HourUnit, SecondUnit, MillisecondUnit] (Time @MinuteUnit $ 3 % 2)
+>>> seriesF @'[Hour, Minute, Second] (sec 3601)
+"1h1s"
+
+>>>  seriesF @'[Hour, Second, Millisecond] (Time @Minute $ 3 % 2)
 "90s"
 
 -}
@@ -28,29 +33,30 @@ module Time.Formatting
        , unitsF
        ) where
 
-import Time.Rational (Rat, withRuntimeDivRat)
-import Time.Units (AllUnits, KnownRatName, Time, floorUnit, toUnit)
+import Time.Rational (withRuntimeDivRat)
+import Time.Units (AllTimes, KnownRatName, Time, floorUnit, toUnit)
 
 -- | Class for time formatting.
-class Series (units :: [Rat]) where
+class Series (times :: [*]) where
     seriesF :: forall unit . KnownRatName unit
             => Time unit
             -> String
 
-instance Series ('[] :: [Rat]) where
+instance Series ('[] :: [*]) where
     seriesF :: Time someUnit -> String
     seriesF _ = ""
 
-instance (KnownRatName unit, Series units) => Series (unit ': units :: [Rat]) where
-   seriesF :: forall someUnit . (KnownRatName someUnit)
-           => Time someUnit
-           -> String
-   seriesF t = let newUnit = withRuntimeDivRat @someUnit @unit $ toUnit @(Time unit) t
-                   format  = floorUnit newUnit
-                   timeStr = case (floor @(Time unit) newUnit :: Int) of
-                                  0 -> ""
-                                  _ -> show format
-               in timeStr ++ seriesF @units @unit (newUnit - format)
+instance (time ~ Time unit, KnownRatName unit, Series times)
+    => Series (time ': times :: [*]) where
+    seriesF :: forall someTime someUnit . (someTime ~ Time someUnit, KnownRatName someUnit)
+            => someTime
+            -> String
+    seriesF t = let newUnit = withRuntimeDivRat @someUnit @unit $ toUnit @(Time unit) t
+                    format  = floorUnit newUnit
+                    timeStr = case (floor @time newUnit :: Int) of
+                                   0 -> ""
+                                   _ -> show format
+                in timeStr ++ seriesF @times @unit (newUnit - format)
 
 {- | Similar to 'seriesF', but formats using all time units of the library.
 
@@ -62,4 +68,4 @@ instance (KnownRatName unit, Series units) => Series (unit ': units :: [Rat]) wh
 
 -}
 unitsF :: forall unit . KnownRatName unit => Time unit -> String
-unitsF = seriesF @AllUnits
+unitsF = seriesF @AllTimes
