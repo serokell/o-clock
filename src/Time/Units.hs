@@ -41,8 +41,11 @@ module Time.Units
        , WeekUnit
        , FortnightUnit
 
+       , AllUnits
+
        , UnitName
-       , KnownUnitSymbol
+       , KnownUnitName
+       , KnownRatName
 
         -- ** Creation helpers
        , time
@@ -80,7 +83,7 @@ import GHC.TypeLits (KnownSymbol, Symbol, symbolVal)
 import Text.ParserCombinators.ReadP (ReadP, char, munch1, option, pfail)
 import Text.ParserCombinators.ReadPrec (ReadPrec, lift)
 
-import Time.Rational (type (*), type (/), type (:%), KnownDivRat, Rat, RatioNat, ratVal)
+import Time.Rational (type (*), type (/), type (:%), KnownDivRat, Rat, RatioNat, KnownRat, ratVal)
 
 import qualified Control.Concurrent as Concurrent
 import qualified System.CPUTime as CPUTime
@@ -105,6 +108,12 @@ type HourUnit        = 60 * MinuteUnit
 type DayUnit         = 24 * HourUnit
 type WeekUnit        = 7  * DayUnit
 type FortnightUnit   = 2  * WeekUnit
+
+-- | Type-level list that consist of all time units.
+type AllUnits =
+  '[ FortnightUnit, WeekUnit, DayUnit, HourUnit, MinuteUnit, SecondUnit
+   , MillisecondUnit , MicrosecondUnit, NanosecondUnit, PicosecondUnit
+   ]
 
 ----------------------------------------------------------------------------
 -- Time data type
@@ -138,16 +147,19 @@ type instance UnitName (604800  :% 1) = "w"  -- week unit
 type instance UnitName (1209600 :% 1) = "fn" -- fortnight unit
 
 -- | Constraint alias for 'KnownSymbol' 'UnitName'.
-type KnownUnitSymbol unit = KnownSymbol (UnitName unit)
+type KnownUnitName unit = KnownSymbol (UnitName unit)
 
-instance KnownUnitSymbol unit => Show (Time unit) where
+-- | Constraint alias for 'KnownUnitName' and 'KnownRat' for ime unit.
+type KnownRatName unit = (KnownUnitName unit, KnownRat unit)
+
+instance KnownUnitName unit => Show (Time unit) where
     show (Time rat) = let numeratorStr   = show (numerator rat)
                           denominatorStr = case denominator rat of
                                                 1 -> ""
                                                 n -> '/' : show n
                       in numeratorStr ++ denominatorStr ++ symbolVal (Proxy @(UnitName unit))
 
-instance KnownUnitSymbol unit => Read (Time unit) where
+instance KnownUnitName unit => Read (Time unit) where
     readPrec :: ReadPrec (Time unit)
     readPrec = lift readP
       where
