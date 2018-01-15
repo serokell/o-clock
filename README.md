@@ -73,7 +73,7 @@ Since this tutorial is literate haskell file, let's first write some pragmas and
 
 module Main where
 
-import Time ((:%), Time, Hour, HourUnit, UnitName, type (*), floorUnit, toUnit)
+import Time ((:%), Time, Hour, HourUnit, UnitName, type (*), floorUnit, hour, seriesF, toUnit)
 ```
 
 ### Introduce custom units
@@ -114,9 +114,14 @@ formatHours :: Hour -> String
 formatHours hours = let (weeks, days) = calculateWork hours in show weeks ++ show days
 ```
 
-After that we can simply write:
+After that we can simply print the output we wanted.
+
+Thought we have special function for this kind of formatting purposes `seriesF`.
+So the same result can be gained with the usage of it. Check it out:
 
 ```haskell
 main :: IO ()
-main = putStrLn $ formatHours 140
+main = do
+    putStrLn $ formatHours 140
+    putStrLn $ seriesF @'[WorkWeek, WorkDay] $ hour 140
 ```

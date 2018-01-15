@@ -12,8 +12,9 @@ import GHC.Real (Ratio ((:%)))
 import Test.Tasty (TestTree)
 import Test.Tasty.Hspec (Spec, anyException, describe, it, shouldBe, shouldThrow, testSpec)
 
-import Time (Day, Hour, Microsecond, Millisecond, Picosecond, Second, SecondUnit, Time (..), Week,
-             day, floorUnit, fortnight, mcs, ms, ns, ps, sec, toUnit)
+import Time (Day, Hour, HourUnit, Microsecond, Millisecond, Minute, MinuteUnit, Picosecond, Second,
+             SecondUnit, Time (..), Week, day, floorUnit, fortnight, hour, mcs, minute, ms, ns, ps,
+             sec, seriesF, toUnit, unitsF, week, (+:))
 
 unitsTestTree :: IO TestTree
 unitsTestTree = testSpec "Units" spec_Units
@@ -59,3 +60,25 @@ spec_Units = do
             floorUnit @Day (Time $ 5 :% 2) `shouldBe` 2
         it "returns 42ps when floor integer" $
             floorUnit (ps 42) `shouldBe` 42
+    describe "Formatting tests" $ do
+        it "4000 minutes should be formatted without ending-zeros" $
+            seriesF @'[Day, Hour, Minute, Second] (minute 4000) `shouldBe` "2d18h40m"
+        it "4000 minutes should be formatted without beginning-zeros" $
+            seriesF @'[Week, Day, Hour, Minute] (minute 4000) `shouldBe` "2d18h40m"
+        it "3601 sec should be formatted without middle-zeros" $
+            seriesF @'[Hour, Minute, Second] (sec 3601) `shouldBe` "1h1s"
+        it "works on rational nums" $
+            seriesF @'[Hour, Second, Millisecond] (Time @MinuteUnit $ 3 :% 2) `shouldBe` "90s"
+        it "works without minutes formatting" $
+            seriesF @'[Day, Minute, Second] (minute 4000) `shouldBe` "2d1120m"
+
+        it "4000 minutes should be formatted like 2d18h40m" $
+            unitsF (minute 4000) `shouldBe` "2d18h40m"
+        it "42 fortnights should be formatted like 42fn" $
+            unitsF (fortnight 42) `shouldBe` "42fn"
+        it "empty when receive zero time" $
+            unitsF (Time @HourUnit 0) `shouldBe` ""
+        it "sums all time units" $
+            unitsF (  fortnight 1 +: week 1 +: day 1 +: hour 1 +: minute 1
+                   +: sec 1 +: ms 1 +: mcs 1 +: ns 1 +: ps 1
+                   ) `shouldBe` "1fn1w1d1h1m1s1ms1mcs1ns1ps"

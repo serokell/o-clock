@@ -1,3 +1,4 @@
+{-# LANGUAGE ConstraintKinds            #-}
 {-# LANGUAGE DataKinds                  #-}
 {-# LANGUAGE ExplicitForAll             #-}
 {-# LANGUAGE FlexibleContexts           #-}
@@ -28,6 +29,8 @@ module Time.Units
        , Week
        , Fortnight
 
+       , AllTimes
+
          -- ** Units
        , SecondUnit
        , MillisecondUnit
@@ -41,6 +44,8 @@ module Time.Units
        , FortnightUnit
 
        , UnitName
+       , KnownUnitName
+       , KnownRatName
 
         -- ** Creation helpers
        , time
@@ -57,6 +62,8 @@ module Time.Units
        , day
        , week
        , fortnight
+
+       , (+:)
 
         -- ** Functions
        , toUnit
@@ -78,7 +85,7 @@ import GHC.TypeLits (KnownSymbol, Symbol, symbolVal)
 import Text.ParserCombinators.ReadP (ReadP, char, munch1, option, pfail)
 import Text.ParserCombinators.ReadPrec (ReadPrec, lift)
 
-import Time.Rational (type (*), type (/), type (:%), KnownDivRat, Rat, RatioNat, ratVal)
+import Time.Rational (type (*), type (/), type (:%), KnownDivRat, Rat, RatioNat, KnownRat, ratVal)
 
 import qualified Control.Concurrent as Concurrent
 import qualified System.CPUTime as CPUTime
@@ -120,6 +127,13 @@ type Day         = Time DayUnit
 type Week        = Time WeekUnit
 type Fortnight   = Time FortnightUnit
 
+-- | Type-level list that consist of all time.
+type AllTimes =
+  '[ Fortnight, Week, Day, Hour, Minute, Second
+   , Millisecond , Microsecond, Nanosecond, Picosecond
+   ]
+
+
 -- | Type family for prettier 'show' of time units.
 type family UnitName (unit :: Rat) :: Symbol
 
@@ -135,14 +149,20 @@ type instance UnitName (86400   :% 1) = "d"  -- day unit
 type instance UnitName (604800  :% 1) = "w"  -- week unit
 type instance UnitName (1209600 :% 1) = "fn" -- fortnight unit
 
-instance KnownSymbol (UnitName unit) => Show (Time unit) where
+-- | Constraint alias for 'KnownSymbol' 'UnitName'.
+type KnownUnitName unit = KnownSymbol (UnitName unit)
+
+-- | Constraint alias for 'KnownUnitName' and 'KnownRat' for ime unit.
+type KnownRatName unit = (KnownUnitName unit, KnownRat unit)
+
+instance KnownUnitName unit => Show (Time unit) where
     show (Time rat) = let numeratorStr   = show (numerator rat)
                           denominatorStr = case denominator rat of
                                                 1 -> ""
                                                 n -> '/' : show n
                       in numeratorStr ++ denominatorStr ++ symbolVal (Proxy @(UnitName unit))
 
-instance KnownSymbol (UnitName unit) => Read (Time unit) where
+instance KnownUnitName unit => Read (Time unit) where
     readPrec :: ReadPrec (Time unit)
     readPrec = lift readP
       where
@@ -280,6 +300,18 @@ fortnight = time
 -}
 floorUnit :: forall time unit . (time ~ Time unit) => time -> time
 floorUnit = time . floor
+
+-- | Sums times of different units.
+--
+-- >>> minute 1 +: sec 1
+-- 61s
+--
+(+:) :: forall timeB timeA b a . (timeA ~ Time a, timeB ~ Time b, KnownDivRat a b)
+     => timeA
+     -> timeB
+     -> timeB
+t1 +: t2 = toUnit t1 + t2
+{-# INLINE (+:) #-}
 
 ----------------------------------------------------------------------------
 -- Functional

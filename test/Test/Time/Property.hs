@@ -12,14 +12,13 @@ module Test.Time.Property
 
 import GHC.Natural (Natural)
 import GHC.Real ((%))
-import GHC.TypeLits (KnownSymbol)
 import Hedgehog (MonadGen, MonadTest, Property, PropertyT, forAll, property, (===))
 import Test.Tasty (TestTree)
 import Test.Tasty.Hedgehog (testProperty)
 
-import Time (DayUnit, FortnightUnit, HourUnit, KnownRat, MicrosecondUnit, MillisecondUnit,
-             MinuteUnit, NanosecondUnit, PicosecondUnit, Rat, RatioNat, SecondUnit, Time (..),
-             UnitName, WeekUnit, toUnit, withRuntimeDivRat)
+import Time (DayUnit, FortnightUnit, HourUnit, KnownRat, KnownRatName, MicrosecondUnit,
+             MillisecondUnit, MinuteUnit, NanosecondUnit, PicosecondUnit, Rat, RatioNat, SecondUnit,
+             Time (..), WeekUnit, toUnit, withRuntimeDivRat)
 
 import qualified Hedgehog.Gen as Gen
 import qualified Hedgehog.Range as Range
@@ -34,7 +33,7 @@ toUnitTestTree :: TestTree
 toUnitTestTree = testProperty "Hedgehog toUnit @to @from . toUnit @from @to ≡ id' property" prop_toUnit
 
 -- | Existential data type for 'Unit's.
-data AnyTime =  forall (unit :: Rat) . (KnownRat unit, KnownSymbol (UnitName unit))
+data AnyTime =  forall (unit :: Rat) . (KnownRatName unit)
              => MkAnyTime (Time unit)
 
 instance Show AnyTime where
@@ -64,7 +63,7 @@ verifyToUnit :: forall m . (MonadTest m) => AnyTime -> AnyTime -> m ()
 verifyToUnit (MkAnyTime t1) (MkAnyTime t2) = checkToUnit t1 t2
   where
     checkToUnit :: forall (unitFrom :: Rat) (unitTo :: Rat) .
-                   (KnownSymbol (UnitName unitFrom), KnownRat unitFrom, KnownRat unitTo)
+                   (KnownRatName unitFrom, KnownRat unitTo)
                 => Time unitFrom
                 -> Time unitTo
                 -> m ()

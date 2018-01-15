@@ -23,6 +23,7 @@ source-repository head
 library
   hs-source-dirs:      src
   exposed-modules:     Time
+                         Time.Formatting
                          Time.Rational
                          Time.TimeStamp
                          Time.Units
