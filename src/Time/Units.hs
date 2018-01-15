@@ -1,3 +1,4 @@
+{-# LANGUAGE ConstraintKinds            #-}
 {-# LANGUAGE DataKinds                  #-}
 {-# LANGUAGE ExplicitForAll             #-}
 {-# LANGUAGE FlexibleContexts           #-}
@@ -41,6 +42,7 @@ module Time.Units
        , FortnightUnit
 
        , UnitName
+       , KnownUnitSymbol
 
         -- ** Creation helpers
        , time
@@ -135,14 +137,17 @@ type instance UnitName (86400   :% 1) = "d"  -- day unit
 type instance UnitName (604800  :% 1) = "w"  -- week unit
 type instance UnitName (1209600 :% 1) = "fn" -- fortnight unit
 
-instance KnownSymbol (UnitName unit) => Show (Time unit) where
+-- | Constraint alias for 'KnownSymbol' 'UnitName'.
+type KnownUnitSymbol unit = KnownSymbol (UnitName unit)
+
+instance KnownUnitSymbol unit => Show (Time unit) where
     show (Time rat) = let numeratorStr   = show (numerator rat)
                           denominatorStr = case denominator rat of
                                                 1 -> ""
                                                 n -> '/' : show n
                       in numeratorStr ++ denominatorStr ++ symbolVal (Proxy @(UnitName unit))
 
-instance KnownSymbol (UnitName unit) => Read (Time unit) where
+instance KnownUnitSymbol unit => Read (Time unit) where
     readPrec :: ReadPrec (Time unit)
     readPrec = lift readP
       where
