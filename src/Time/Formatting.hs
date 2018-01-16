@@ -32,30 +32,30 @@ module Time.Formatting
        , unitsF
        ) where
 
-import Time.Rational (withRuntimeDivRat)
+import Time.Rational (Rat, withRuntimeDivRat)
 import Time.Units (AllTimes, KnownRatName, Time, floorUnit, toUnit)
 
 -- | Class for time formatting.
-class Series (times :: [*]) where
-    seriesF :: forall unit . KnownRatName unit
-            => Time unit
+class Series (units :: [Rat]) where
+    seriesF :: forall (someUnit :: Rat) . KnownRatName someUnit
+            => Time someUnit
             -> String
 
-instance Series ('[] :: [*]) where
+instance Series ('[] :: [Rat]) where
     seriesF :: Time someUnit -> String
     seriesF _ = ""
 
-instance (time ~ Time unit, KnownRatName unit, Series times)
-    => Series (time ': times :: [*]) where
-    seriesF :: forall someTime someUnit . (someTime ~ Time someUnit, KnownRatName someUnit)
-            => someTime
+instance (KnownRatName unit, Series units)
+    => Series (unit ': units :: [Rat]) where
+    seriesF :: forall (someUnit :: Rat) . KnownRatName someUnit
+            => Time someUnit
             -> String
-    seriesF t = let newUnit = withRuntimeDivRat @someUnit @unit $ toUnit @time t
+    seriesF t = let newUnit = withRuntimeDivRat @someUnit @unit $ toUnit @unit t
                     format  = floorUnit newUnit
-                    timeStr = case floor @time newUnit :: Int of
+                    timeStr = case floor newUnit :: Int of
                                    0 -> ""
                                    _ -> show format
-                in timeStr ++ seriesF @times @unit (newUnit - format)
+                in timeStr ++ seriesF @units @unit (newUnit - format)
 
 {- | Similar to 'seriesF', but formats using all time units of the library.
 

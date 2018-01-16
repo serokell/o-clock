@@ -12,9 +12,9 @@ import GHC.Real (Ratio ((:%)))
 import Test.Tasty (TestTree)
 import Test.Tasty.Hspec (Spec, anyException, describe, it, shouldBe, shouldThrow, testSpec)
 
-import Time (Day, Hour, HourUnit, Microsecond, Millisecond, Minute, MinuteUnit, Picosecond, Second,
-             SecondUnit, Time (..), Week, day, floorUnit, fortnight, hour, mcs, minute, ms, ns, ps,
-             sec, seriesF, toUnit, unitsF, week, (+:))
+import Time (Day, Hour, Microsecond, Millisecond, Minute, Picosecond, Second, Time (..), Week, day,
+             floorUnit, fortnight, hour, mcs, minute, ms, ns, ps, sec, seriesF, toUnit, unitsF,
+             week, (+:))
 
 unitsTestTree :: IO TestTree
 unitsTestTree = testSpec "Units" spec_Units
@@ -38,24 +38,24 @@ spec_Units = do
             toUnit @Picosecond (ns 1) `shouldBe` 1000
     describe "Read Time Test" $ do
         it "parses '42s' as 42 seconds" $
-            read @Second "42s" `shouldBe` 42
+            read @(Time Second) "42s" `shouldBe` 42
         it "fails when '42mm' is expected as seconds" $
-            evaluate (read @Second "42mm") `shouldThrow` anyException
+            evaluate (read @(Time Second) "42mm") `shouldThrow` anyException
         it "parses '7/2s' as 7/2 seconds" $
-            read @Second "7/2s" `shouldBe` Time (7 :% 2)
+            read @(Time Second) "7/2s" `shouldBe` Time (7 :% 2)
         it "fails when '-4s' is expected as seconds" $
-            evaluate (read @Second "-4s") `shouldThrow` anyException
+            evaluate (read @(Time Second) "-4s") `shouldThrow` anyException
         it "parses '14/2h' as 7 hours" $
-            read @Hour "14/2h" `shouldBe` 7
+            read @(Time Hour) "14/2h" `shouldBe` 7
         it "fails when '14/2h' expected as 7 seconds" $
-            evaluate (read @Second "14/2h") `shouldThrow` anyException
+            evaluate (read @(Time Second) "14/2h") `shouldThrow` anyException
         it "parses big number to big number" $
-            read @Microsecond ('1' : replicate 20 '0' ++ "mcs") `shouldBe` 100000000000000000000
+            read @(Time Microsecond) ('1' : replicate 20 '0' ++ "mcs") `shouldBe` 100000000000000000000
         it "fails when '4ms' expected as 4 seconds" $
-            evaluate (read @Second "4ms") `shouldThrow` anyException
+            evaluate (read @(Time Second) "4ms") `shouldThrow` anyException
     describe "Floor tests" $ do
         it "returns 0s when floor < 1 second" $
-            floorUnit (Time @SecondUnit $ 2 :% 3) `shouldBe` 0
+            floorUnit (Time @Second $ 2 :% 3) `shouldBe` 0
         it "returns 2d when floor 2.5 days" $
             floorUnit @Day (Time $ 5 :% 2) `shouldBe` 2
         it "returns 42ps when floor integer" $
@@ -68,7 +68,7 @@ spec_Units = do
         it "3601 sec should be formatted without middle-zeros" $
             seriesF @'[Hour, Minute, Second] (sec 3601) `shouldBe` "1h1s"
         it "works on rational nums" $
-            seriesF @'[Hour, Second, Millisecond] (Time @MinuteUnit $ 3 :% 2) `shouldBe` "90s"
+            seriesF @'[Hour, Second, Millisecond] (Time @Minute $ 3 :% 2) `shouldBe` "90s"
         it "works without minutes formatting" $
             seriesF @'[Day, Minute, Second] (minute 4000) `shouldBe` "2d1120m"
 
@@ -77,7 +77,7 @@ spec_Units = do
         it "42 fortnights should be formatted like 42fn" $
             unitsF (fortnight 42) `shouldBe` "42fn"
         it "empty when receive zero time" $
-            unitsF (Time @HourUnit 0) `shouldBe` ""
+            unitsF (Time @Hour 0) `shouldBe` ""
         it "sums all time units" $
             unitsF (  fortnight 1 +: week 1 +: day 1 +: hour 1 +: minute 1
                    +: sec 1 +: ms 1 +: mcs 1 +: ns 1 +: ps 1

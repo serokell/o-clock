@@ -16,9 +16,9 @@ import Hedgehog (MonadGen, MonadTest, Property, PropertyT, forAll, property, (==
 import Test.Tasty (TestTree)
 import Test.Tasty.Hedgehog (testProperty)
 
-import Time (DayUnit, FortnightUnit, HourUnit, KnownRat, KnownRatName, MicrosecondUnit,
-             MillisecondUnit, MinuteUnit, NanosecondUnit, PicosecondUnit, Rat, RatioNat, SecondUnit,
-             Time (..), WeekUnit, toUnit, withRuntimeDivRat)
+import Time (Day, Fortnight, Hour, KnownRat, KnownRatName, Microsecond,
+             Millisecond, Minute, Nanosecond, Picosecond, Rat, RatioNat, Second,
+             Time (..), Week, toUnit, withRuntimeDivRat)
 
 import qualified Hedgehog.Gen as Gen
 import qualified Hedgehog.Range as Range
@@ -42,16 +42,16 @@ instance Show AnyTime where
 -- | Returns random 'AnyTime'.
 unitChooser :: (MonadGen m) => RatioNat -> m AnyTime
 unitChooser t = Gen.element
-    [ MkAnyTime (Time @SecondUnit      t)
-    , MkAnyTime (Time @MillisecondUnit t)
-    , MkAnyTime (Time @MicrosecondUnit t)
-    , MkAnyTime (Time @NanosecondUnit  t)
-    , MkAnyTime (Time @PicosecondUnit  t)
-    , MkAnyTime (Time @MinuteUnit      t)
-    , MkAnyTime (Time @HourUnit        t)
-    , MkAnyTime (Time @DayUnit         t)
-    , MkAnyTime (Time @WeekUnit        t)
-    , MkAnyTime (Time @FortnightUnit   t)
+    [ MkAnyTime (Time @Second      t)
+    , MkAnyTime (Time @Millisecond t)
+    , MkAnyTime (Time @Microsecond t)
+    , MkAnyTime (Time @Nanosecond  t)
+    , MkAnyTime (Time @Picosecond  t)
+    , MkAnyTime (Time @Minute      t)
+    , MkAnyTime (Time @Hour        t)
+    , MkAnyTime (Time @Day         t)
+    , MkAnyTime (Time @Week        t)
+    , MkAnyTime (Time @Fortnight   t)
     ]
 
 -- | Verifier for 'AnyTime' @read . show = id@.
@@ -69,7 +69,7 @@ verifyToUnit (MkAnyTime t1) (MkAnyTime t2) = checkToUnit t1 t2
                 -> m ()
     checkToUnit t _ = withRuntimeDivRat @unitTo @unitFrom
                     $ withRuntimeDivRat @unitFrom @unitTo
-                    $ toUnit (toUnit @(Time unitTo) t) === t
+                    $ toUnit (toUnit @unitTo t) === t
 
 -- | Generates random natural number up to 10^20.
 -- it receives the lower bound so that it wouldn't be possible
