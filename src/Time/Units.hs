@@ -1,3 +1,4 @@
+{-# LANGUAGE AllowAmbiguousTypes        #-}
 {-# LANGUAGE ConstraintKinds            #-}
 {-# LANGUAGE DataKinds                  #-}
 {-# LANGUAGE ExplicitForAll             #-}
@@ -34,6 +35,7 @@ module Time.Units
        , UnitName
        , KnownUnitName
        , KnownRatName
+       , unitNameVal
 
         -- ** Creation helpers
        , time
@@ -128,15 +130,19 @@ type instance UnitName (1209600 :% 1) = "fn" -- fortnight unit
 -- | Constraint alias for 'KnownSymbol' 'UnitName'.
 type KnownUnitName unit = KnownSymbol (UnitName unit)
 
--- | Constraint alias for 'KnownUnitName' and 'KnownRat' for ime unit.
+-- | Constraint alias for 'KnownUnitName' and 'KnownRat' for time unit.
 type KnownRatName unit = (KnownUnitName unit, KnownRat unit)
+
+-- | Returns type-level 'Symbol' of the time unit converted to 'String'.
+unitNameVal :: forall (unit :: Rat) . (KnownUnitName unit) => String
+unitNameVal = symbolVal (Proxy @(UnitName unit))
 
 instance KnownUnitName unit => Show (Time unit) where
     show (Time rat) = let numeratorStr   = show (numerator rat)
                           denominatorStr = case denominator rat of
                                                 1 -> ""
                                                 n -> '/' : show n
-                      in numeratorStr ++ denominatorStr ++ symbolVal (Proxy @(UnitName unit))
+                      in numeratorStr ++ denominatorStr ++ unitNameVal @unit
 
 instance KnownUnitName unit => Read (Time unit) where
     readPrec :: ReadPrec (Time unit)
@@ -148,7 +154,7 @@ instance KnownUnitName unit => Read (Time unit) where
             n <- naturalP
             m <- option 1 (char '/' *> naturalP)
             timeUnitStr <- munch1 isLetter
-            unless (timeUnitStr == symbolVal (Proxy @(UnitName unit))) pfail
+            unless (timeUnitStr == unitNameVal @unit) pfail
             pure $ Time (n % m)
 
 -- | Has the same behavior as derived instance, but '*' operator
