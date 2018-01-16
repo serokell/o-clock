@@ -19,7 +19,7 @@ With O'Clock you can write in several more convenient ways (and use more preferr
 
 ```haskell ignore
 threadDelay $ sec 5
-threadDelay (5 :: Second)
+threadDelay (5 :: Time Second)
 threadDelay @Second 5
 ```
 
@@ -73,7 +73,7 @@ Since this tutorial is literate haskell file, let's first write some pragmas and
 
 module Main where
 
-import Time ((:%), Time, Hour, HourUnit, UnitName, type (*), floorUnit, hour, seriesF, toUnit)
+import Time ((:%), Time, Hour, UnitName, type (*), floorUnit, hour, seriesF, toUnit)
 ```
 
 ### Introduce custom units
@@ -83,13 +83,10 @@ work day represented as `8` hours and work week represented as `5` work days.
 
 ```haskell
 -- | Time unit for a working day (8 hours).
-type WorkDayUnit = 8 * HourUnit
+type WorkDay = 8 * Hour
 
 -- | Time unit for a work week (5 working days).
-type WorkWeekUnit = 5 * WorkDayUnit
-
-type WorkDay  = Time WorkDayUnit
-type WorkWeek = Time WorkWeekUnit
+type WorkWeek = 5 * WorkDay
 
 -- this allows to use 'Show' and 'Read' functions for our time units
 type instance UnitName (28800  :% 1) = "wd"  -- One WorkDay  contains 28800  seconds
@@ -103,14 +100,14 @@ Now let's implement main logic of our application. Our main function should take
 convert them to work weeks and work days and then show in human readable format.
 
 ```haskell
-calculateWork :: Hour  -- type synonym for 'Time HourUnit'
-              -> (WorkWeek, WorkDay)
+calculateWork :: Time Hour  -- type synonym for 'Time HourUnit'
+              -> (Time WorkWeek, Time WorkDay)
 calculateWork workHours =
     let completeWeeks = floorUnit $ toUnit @WorkWeek workHours
         completeDays  = floorUnit $ toUnit @WorkDay  workHours - toUnit completeWeeks
     in (completeWeeks, completeDays)
 
-formatHours :: Hour -> String
+formatHours :: Time Hour -> String
 formatHours hours = let (weeks, days) = calculateWork hours in show weeks ++ show days
 ```
 

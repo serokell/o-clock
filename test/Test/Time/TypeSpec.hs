@@ -10,8 +10,8 @@ import Test.TypeSpec
 import Test.TypeSpecCrazy
 
 import Time.Rational ((:%), type (/), Gcd, Normalize)
-import Time.Units (DayUnit, FortnightUnit, HourUnit, MicrosecondUnit, MillisecondUnit, MinuteUnit,
-                   NanosecondUnit, PicosecondUnit, SecondUnit, UnitName, WeekUnit)
+import Time.Units (Day, Fortnight, Hour, Microsecond, Millisecond, Minute,
+                   Nanosecond, Picosecond, Second, UnitName, Week)
 
 runTypeSpecTests :: IO ()
 runTypeSpecTests = do
@@ -91,21 +91,21 @@ typeSpec_UnitCalculation ::
 
     "Lower"
     ~~~~~~~~~~~~
-         It "Second      = 1 % 1"             (     SecondUnit `Is` (1 :% 1))
-     -*- It "Millisecond = 1 % 1000"          (MillisecondUnit `Is` (1 :% 1000))
-     -*- It "Microsecond = 1 % 1000000"       (MicrosecondUnit `Is` (1 :% 1000000))
-     -*- It "Nanosecond  = 1 % 1000000000"    ( NanosecondUnit `Is` (1 :% 1000000000))
-     -*- It "Picosecond  = 1 % 1000000000000" ( PicosecondUnit `Is` (1 :% 1000000000000))
+         It "Second      = 1 % 1"             (     Second `Is` (1 :% 1))
+     -*- It "Millisecond = 1 % 1000"          (Millisecond `Is` (1 :% 1000))
+     -*- It "Microsecond = 1 % 1000000"       (Microsecond `Is` (1 :% 1000000))
+     -*- It "Nanosecond  = 1 % 1000000000"    ( Nanosecond `Is` (1 :% 1000000000))
+     -*- It "Picosecond  = 1 % 1000000000000" ( Picosecond `Is` (1 :% 1000000000000))
 
  -/-
 
     "Bigger"
     ~~~~~~~~~~~~
-         It "Minute    = 60 % 1"      (MinuteUnit    `Is` (60 :% 1))
-     -*- It "Hour      = 3600 % 1"    (HourUnit      `Is` (3600 :% 1))
-     -*- It "Day       = 86400 % 1"   (DayUnit       `Is` (86400 :% 1))
-     -*- It "Week      = 604800 % 1"  (WeekUnit      `Is` (604800 :% 1))
-     -*- It "Fortnight = 1209600 % 1" (FortnightUnit `Is` (1209600 :% 1))
+         It "Minute    = 60 % 1"      (Minute    `Is` (60 :% 1))
+     -*- It "Hour      = 3600 % 1"    (Hour      `Is` (3600 :% 1))
+     -*- It "Day       = 86400 % 1"   (Day       `Is` (86400 :% 1))
+     -*- It "Week      = 604800 % 1"  (Week      `Is` (604800 :% 1))
+     -*- It "Fortnight = 1209600 % 1" (Fortnight `Is` (1209600 :% 1))
 
 typeSpec_UnitCalculation = Valid
 
@@ -116,20 +116,20 @@ typeSpec_UnitNames ::
 
     "Lower"
     ~~~~~~~~~~~~
-         It "UnitName SecondUnit      = 's'"   (UnitName SecondUnit      `Is` "s")
-     -*- It "UnitName MillisecondUnit = 'ms'"  (UnitName MillisecondUnit `Is` "ms")
-     -*- It "UnitName MicrosecondUnit = 'mcs'" (UnitName MicrosecondUnit `Is` "mcs")
-     -*- It "UnitName NanosecondUnit  = 'ns'"  (UnitName NanosecondUnit  `Is` "ns")
-     -*- It "UnitName PicosecondUnit  = 'ps'"  (UnitName PicosecondUnit  `Is` "ps")
+         It "UnitName Second      = 's'"   (UnitName Second      `Is` "s")
+     -*- It "UnitName Millisecond = 'ms'"  (UnitName Millisecond `Is` "ms")
+     -*- It "UnitName Microsecond = 'mcs'" (UnitName Microsecond `Is` "mcs")
+     -*- It "UnitName Nanosecond  = 'ns'"  (UnitName Nanosecond  `Is` "ns")
+     -*- It "UnitName Picosecond  = 'ps'"  (UnitName Picosecond  `Is` "ps")
 
  -/-
 
     "Bigger"
     ~~~~~~~~~~~~
-         It "UnitName MinuteUnit    = 'm'"  (UnitName MinuteUnit    `Is` "m")
-     -*- It "UnitName HourUnit      = 'h'"  (UnitName HourUnit      `Is` "h")
-     -*- It "UnitName DayUnit       = 'd'"  (UnitName DayUnit       `Is` "d")
-     -*- It "UnitName WeekUnit      = 'w'"  (UnitName WeekUnit      `Is` "w")
-     -*- It "UnitName FortnightUnit = 'fn'" (UnitName FortnightUnit `Is` "fn")
+         It "UnitName Minute    = 'm'"  (UnitName Minute    `Is` "m")
+     -*- It "UnitName Hour      = 'h'"  (UnitName Hour      `Is` "h")
+     -*- It "UnitName Day       = 'd'"  (UnitName Day       `Is` "d")
+     -*- It "UnitName Week      = 'w'"  (UnitName Week      `Is` "w")
+     -*- It "UnitName Fortnight = 'fn'" (UnitName Fortnight `Is` "fn")
 
 typeSpec_UnitNames = Valid

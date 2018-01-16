@@ -31,18 +31,6 @@ module Time.Units
 
        , AllTimes
 
-         -- ** Units
-       , SecondUnit
-       , MillisecondUnit
-       , MicrosecondUnit
-       , NanosecondUnit
-       , PicosecondUnit
-       , MinuteUnit
-       , HourUnit
-       , DayUnit
-       , WeekUnit
-       , FortnightUnit
-
        , UnitName
        , KnownUnitName
        , KnownRatName
@@ -91,43 +79,31 @@ import qualified Control.Concurrent as Concurrent
 import qualified System.CPUTime as CPUTime
 import qualified System.Timeout as Timeout
 
--- | Time unit is represented as type level rational multiplier with kind 'Rat'.
-newtype Time (rat :: Rat) = Time { unTime :: RatioNat }
-    deriving (Eq, Ord, Enum, Real, RealFrac)
-
 ----------------------------------------------------------------------------
 -- Units
 ----------------------------------------------------------------------------
 
-type SecondUnit      = 1 / 1
-type MillisecondUnit = SecondUnit      / 1000
-type MicrosecondUnit = MillisecondUnit / 1000
-type NanosecondUnit  = MicrosecondUnit / 1000
-type PicosecondUnit  = NanosecondUnit  / 1000
+type Second      = 1 / 1
+type Millisecond = Second      / 1000
+type Microsecond = Millisecond / 1000
+type Nanosecond  = Microsecond / 1000
+type Picosecond  = Nanosecond  / 1000
 
-type MinuteUnit      = 60 * SecondUnit
-type HourUnit        = 60 * MinuteUnit
-type DayUnit         = 24 * HourUnit
-type WeekUnit        = 7  * DayUnit
-type FortnightUnit   = 2  * WeekUnit
+type Minute      = 60 * Second
+type Hour        = 60 * Minute
+type Day         = 24 * Hour
+type Week        = 7  * Day
+type Fortnight   = 2  * Week
 
 ----------------------------------------------------------------------------
 -- Time data type
 ----------------------------------------------------------------------------
 
-type Second      = Time SecondUnit
-type Millisecond = Time MillisecondUnit
-type Microsecond = Time MicrosecondUnit
-type Nanosecond  = Time NanosecondUnit
-type Picosecond  = Time PicosecondUnit
+-- | Time unit is represented as type level rational multiplier with kind 'Rat'.
+newtype Time (rat :: Rat) = Time { unTime :: RatioNat }
+    deriving (Eq, Ord, Enum, Real, RealFrac)
 
-type Minute      = Time MinuteUnit
-type Hour        = Time HourUnit
-type Day         = Time DayUnit
-type Week        = Time WeekUnit
-type Fortnight   = Time FortnightUnit
-
--- | Type-level list that consist of all time.
+-- | Type-level list that consist of all times.
 type AllTimes =
   '[ Fortnight, Week, Day, Hour, Minute, Second
    , Millisecond , Microsecond, Nanosecond, Picosecond
@@ -209,80 +185,80 @@ time n = Time (n :% 1)
 -- | Creates 'Second' from given 'Natural'.
 --
 -- >>> sec 42
--- 42s :: Second
-sec :: Natural -> Second
+-- 42s :: Time Second
+sec :: Natural -> Time Second
 sec = time
 {-# INLINE sec #-}
 
 -- | Creates 'Millisecond' from given 'Natural'.
 --
 -- >>> ms 42
--- 42ms :: Millisecond
-ms :: Natural -> Millisecond
+-- 42ms :: Time Millisecond
+ms :: Natural -> Time Millisecond
 ms = time
 {-# INLINE ms #-}
 
 -- | Creates 'Microsecond' from given 'Natural'.
 --
 -- >>> mcs 42
--- 42mcs :: Microsecond
-mcs :: Natural -> Microsecond
+-- 42mcs :: Time Microsecond
+mcs :: Natural -> Time Microsecond
 mcs = time
 {-# INLINE mcs #-}
 
 -- | Creates 'Nanosecond' from given 'Natural'.
 --
 -- >>> ns 42
--- 42ns :: Nanosecond
-ns :: Natural -> Nanosecond
+-- 42ns :: Time Nanosecond
+ns :: Natural -> Time Nanosecond
 ns = time
 {-# INLINE ns #-}
 
 -- | Creates 'Picosecond' from given 'Natural'.
 --
 -- >>> ps 42
--- 42ps :: Picosecond
-ps :: Natural -> Picosecond
+-- 42ps :: Time Picosecond
+ps :: Natural -> Time Picosecond
 ps = time
 {-# INLINE ps #-}
 
 -- | Creates 'Minute' from given 'Natural'.
 --
 -- >>> minute 42
--- 42m :: Minute
-minute :: Natural -> Minute
+-- 42m :: Time Minute
+minute :: Natural -> Time Minute
 minute = time
 {-# INLINE minute #-}
 
 -- | Creates 'Hour' from given 'Natural'.
 --
 -- >>> hour 42
--- 42h :: Hour
-hour :: Natural -> Hour
+-- 42h :: Time Hour
+hour :: Natural -> Time Hour
 hour = time
 {-# INLINE hour #-}
 
 -- | Creates 'Day' from given 'Natural'.
 --
 -- >>> day 42
--- 42d :: Day
-day :: Natural -> Day
+-- 42d :: Time Day
+day :: Natural -> Time Day
 day = time
 {-# INLINE day #-}
 
 -- | Creates 'Week' from given 'Natural'.
 --
 -- >>> sec 42
--- 42w :: Week
-week :: Natural -> Week
+-- 42w :: Time Week
+week :: Natural -> Time Week
 week = time
 {-# INLINE week #-}
 
 -- | Creates 'Fortnight' from given 'Natural'.
 --
 -- >>> fortnight 42
--- 42fn :: Fortnight
-fortnight :: Natural -> Fortnight
+-- 42fn :: Time Fortnight
+fortnight :: Natural -> Time Fortnight
 fortnight = time
 {-# INLINE fortnight #-}
 
@@ -291,14 +267,14 @@ fortnight = time
 >>> floorUnit @Day (Time $ 5 % 2)
 2d
 
->>> floorUnit (Time @SecondUnit $ 2 % 3)
+>>> floorUnit (Time @Second $ 2 % 3)
 0s
 
 >>> floorUnit $ ps 42
 42ps
 
 -}
-floorUnit :: forall time unit . (time ~ Time unit) => time -> time
+floorUnit :: forall (unit :: Rat) . Time unit -> Time unit
 floorUnit = time . floor
 
 -- | Sums times of different units.
@@ -306,10 +282,10 @@ floorUnit = time . floor
 -- >>> minute 1 +: sec 1
 -- 61s
 --
-(+:) :: forall timeB timeA b a . (timeA ~ Time a, timeB ~ Time b, KnownDivRat a b)
-     => timeA
-     -> timeB
-     -> timeB
+(+:) :: forall (unitResult :: Rat) (unitLeft :: Rat) . KnownDivRat unitLeft unitResult
+     => Time unitLeft
+     -> Time unitResult
+     -> Time unitResult
 t1 +: t2 = toUnit t1 + t2
 {-# INLINE (+:) #-}
 
@@ -319,26 +295,25 @@ t1 +: t2 = toUnit t1 + t2
 
 {- | Converts from one time unit to another time unit.
 
->>> toUnit @Hour (120 :: Minute)
+>>> toUnit @Hour (120 :: Time Minute)
 2h
 
 >>> toUnit @Second (ms 7)
 7/1000s
 
->>> toUnit @Week (Time @DayUnit 45)
+>>> toUnit @Week (Time @Day 45)
 45/7w
 
 >>> toUnit @Second @Minute 3
 180s
 
->>> toUnit (day 42000000) :: Second
+>>> toUnit (day 42000000) :: Time Second
 3628800000000s
 
 -}
-toUnit :: forall timeTo timeFrom (unitTo :: Rat) (unitFrom :: Rat) .
-          (timeTo ~ Time unitTo, timeFrom ~ Time unitFrom, KnownDivRat unitFrom unitTo)
-       => timeFrom
-       -> timeTo
+toUnit :: forall (unitTo :: Rat) (unitFrom :: Rat) . KnownDivRat unitFrom unitTo
+       => Time unitFrom
+       -> Time unitTo
 toUnit Time{..} = Time $ unTime * ratVal @(unitFrom / unitTo)
 {-# INLINE toUnit #-}
 
@@ -347,12 +322,12 @@ toUnit Time{..} = Time $ unTime * ratVal @(unitFrom / unitTo)
 
 
 >>> threadDelay $ sec 2
->>> threadDelay (2 :: Second)
+>>> threadDelay (2 :: Time Second)
 >>> threadDelay @Second 2
 
 -}
-threadDelay :: forall time unit m . (time ~ Time unit, KnownDivRat unit MicrosecondUnit, MonadIO m)
-            => time
+threadDelay :: forall (unit :: Rat) m . (KnownDivRat unit Microsecond, MonadIO m)
+            => Time unit
             -> m ()
 threadDelay = liftIO . Concurrent.threadDelay . floor . toUnit @Microsecond
 {-# INLINE threadDelay #-}
@@ -363,8 +338,8 @@ threadDelay = liftIO . Concurrent.threadDelay . floor . toUnit @Microsecond
 --
 -- >>> getCPUTime @Second
 -- 1064046949/1000000000s
-getCPUTime :: forall time unit m . (time ~ Time unit, KnownDivRat PicosecondUnit unit, MonadIO m)
-           => m time
+getCPUTime :: forall (unit :: Rat) m . (KnownDivRat Picosecond unit, MonadIO m)
+           => m (Time unit)
 getCPUTime = toUnit . ps . fromInteger <$> liftIO CPUTime.getCPUTime
 {-# INLINE getCPUTime #-}
 
@@ -382,8 +357,8 @@ Nothing
 HellNothing
 
 -}
-timeout :: forall time unit m a . (time ~ Time unit, MonadIO m, KnownDivRat unit MicrosecondUnit)
-        => time        -- ^ time
+timeout :: forall (unit :: Rat) m a . (MonadIO m, KnownDivRat unit Microsecond)
+        => Time unit   -- ^ time
         -> IO a        -- ^ 'IO' action
         -> m (Maybe a) -- ^ returns 'Nothing' if no result is available within the given time
 timeout t = liftIO . Timeout.timeout (floor $ toUnit @Microsecond t)

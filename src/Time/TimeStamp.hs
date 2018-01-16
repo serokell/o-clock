@@ -1,3 +1,4 @@
+{-# LANGUAGE DataKinds                  #-}
 {-# LANGUAGE ExplicitForAll             #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE ScopedTypeVariables        #-}
@@ -14,7 +15,7 @@ module Time.TimeStamp
        , timeDiv
        ) where
 
-import Time.Rational (KnownRat, RatioNat)
+import Time.Rational (KnownRat, Rat, RatioNat)
 import Time.Units (Time (..))
 
 -- | Similar to 'Time' but has no units and can be negative.
@@ -24,10 +25,10 @@ newtype TimeStamp = TimeStamp Rational
 
 -- | Returns the result of comparison of two 'Timestamp's and
 -- the 'Time' of that difference of given time unit.
-timeDiff :: forall time unit . (time ~ Time unit, KnownRat unit)
+timeDiff :: forall (unit :: Rat) . KnownRat unit
          => TimeStamp
          -> TimeStamp
-         -> (Ordering, time)
+         -> (Ordering, Time unit)
 timeDiff (TimeStamp a) (TimeStamp b) =
     let order = compare a b
         d = fromRational $ case order of
@@ -37,22 +38,22 @@ timeDiff (TimeStamp a) (TimeStamp b) =
     in (order, d)
 
 -- | Returns the result of addition of two 'Time' elements.
-timeAdd :: forall time unit . (time ~ Time unit, KnownRat unit)
-        => time
-        -> time
-        -> time
+timeAdd :: forall (unit :: Rat) . KnownRat unit
+        => Time unit
+        -> Time unit
+        -> Time unit
 timeAdd = (+)
 
 -- | Returns the result of multiplication of two 'Time' elements.
-timeMul :: forall time unit . (time ~ Time unit, KnownRat unit)
+timeMul :: forall (unit :: Rat) . KnownRat unit
         => RatioNat
-        -> time
-        -> time
+        -> Time unit
+        -> Time unit
 timeMul n (Time t) = Time (n * t)
 
 -- | Returns the result of division of two 'Time' elements.
-timeDiv :: forall time unit . (time ~ Time unit, KnownRat unit)
-        => time
-        -> time
+timeDiv :: forall (unit :: Rat) . KnownRat unit
+        => Time unit
+        -> Time unit
         -> RatioNat
 timeDiv (Time t1) (Time t2) = t1 / t2
