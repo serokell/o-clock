@@ -26,6 +26,9 @@ __Examples__
 >>>  seriesF @'[Hour, Second, Millisecond] (Time @Minute $ 3 % 2)
 "90s"
 
+>>> seriesF @'[Hour, Second] (minute 0)
+"0h"
+
 -}
 
 module Time.Formatting
@@ -59,11 +62,14 @@ instance (KnownRatName unit, Series units)
 #else
     seriesF t = let newUnit = toUnit @unit t
 #endif
-                    format  = floorUnit newUnit
-                    timeStr = case floor newUnit :: Int of
+                    flooredNewUnit = floorUnit newUnit
+                    timeStr = case flooredNewUnit of
                                    0 -> ""
-                                   _ -> show format
-                in timeStr ++ seriesF @units @unit (newUnit - format)
+                                   _ -> show flooredNewUnit
+                    nextUnit = newUnit - flooredNewUnit
+                in if nextUnit == 0
+                   then show newUnit
+                   else timeStr ++ seriesF @units @unit nextUnit
 
 {- | Similar to 'seriesF', but formats using all time units of the library.
 

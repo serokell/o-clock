@@ -76,8 +76,8 @@ spec_Units = do
             unitsF (minute 4000) `shouldBe` "2d18h40m"
         it "42 fortnights should be formatted like 42fn" $
             unitsF (fortnight 42) `shouldBe` "42fn"
-        it "empty when receive zero time" $
-            unitsF (Time @Hour 0) `shouldBe` ""
+        it "the first zero time unit when receive zero time" $
+            unitsF (Time @Hour 0) `shouldBe` "0fn"
         it "sums all time units" $
             unitsF (  fortnight 1 +: week 1 +: day 1 +: hour 1 +: minute 1
                    +: sec 1 +: ms 1 +: mcs 1 +: ns 1 +: ps 1
