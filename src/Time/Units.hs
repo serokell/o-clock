@@ -1,6 +1,7 @@
 {-# LANGUAGE AllowAmbiguousTypes        #-}
 {-# LANGUAGE ConstraintKinds            #-}
 {-# LANGUAGE DataKinds                  #-}
+{-# LANGUAGE DeriveGeneric              #-}
 {-# LANGUAGE ExplicitForAll             #-}
 {-# LANGUAGE FlexibleContexts           #-}
 {-# LANGUAGE InstanceSigs               #-}
@@ -67,6 +68,7 @@ import Control.Monad (unless)
 import Control.Monad.IO.Class (MonadIO, liftIO)
 import Data.Char (isDigit, isLetter)
 import Data.Proxy (Proxy (..))
+import GHC.Generics (Generic)
 import GHC.Natural (Natural)
 import GHC.Prim (coerce)
 import GHC.Read (Read (readPrec))
@@ -103,7 +105,7 @@ type Fortnight   = 2  * Week
 
 -- | Time unit is represented as type level rational multiplier with kind 'Rat'.
 newtype Time (rat :: Rat) = Time { unTime :: RatioNat }
-    deriving (Eq, Ord, Enum, Real, RealFrac)
+    deriving (Eq, Ord, Enum, Real, RealFrac, Generic)
 
 -- | Type-level list that consist of all times.
 type AllTimes =
