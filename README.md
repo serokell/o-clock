@@ -52,6 +52,8 @@ threadDelay @Second 5
    * It means that if you want to roll out your own time units and use it in your project,
      this can be done in easy and convenient way (see tutorial below).
 
+_**Note:**_ features support for `GHC-8.2.2` is quite limited.
+
 ## Example: How to make your own time unit
 
 This README section contains tutorial on how you can introduce your own time units.
