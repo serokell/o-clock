@@ -88,6 +88,7 @@ benchmark o-clock-benchmark
                      , o-clock
                      , deepseq    >= 1.4
                      , gauge      >= 0.2.1 && < 1
+                     , tiempo     >= 0.0.1.1
                      , time-units == 1.0.0
   default-extensions:  OverloadedStrings
                        RecordWildCards
