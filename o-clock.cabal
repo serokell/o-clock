@@ -1,5 +1,5 @@
 name:                o-clock
-version:             0.1.0.0
+version:             0.0.0
 description:         Type-safe time library.
 homepage:            https://github.com/serokell/o-clock
 bug-reports:         https://github.com/serokell/o-clock/issues
@@ -28,7 +28,7 @@ library
                          Time.TimeStamp
                          Time.Units
   ghc-options:         -Wall
-  build-depends:       base         >= 4.11
+  build-depends:       base         >= 4.10  && < 5
                      , ghc-prim     >= 0.5
                      , transformers >= 0.5
   default-language:    Haskell2010
@@ -38,7 +38,7 @@ library
 executable play-o-clock
   main-is:             Playground.hs
   build-depends:       o-clock
-                     , base     >= 4.11
+                     , base     >= 4.10  && < 5
   hs-source-dirs:      examples
   default-language:    Haskell2010
   ghc-options:         -threaded -Wall
@@ -54,7 +54,7 @@ test-suite o-clock-test
                        Test.Time.TypeSpec
                        Test.Time.Units
 
-  build-depends:       base            >= 4.11  && < 5
+  build-depends:       base            >= 4.10  && < 5
                      , o-clock
                      , hedgehog       ^>= 0.5.1
                      , tasty          ^>= 0.12
@@ -67,12 +67,13 @@ test-suite o-clock-test
   default-extensions:  OverloadedStrings
                        RecordWildCards
 
+
 test-suite readme-test
   type:                exitcode-stdio-1.0
   main-is:             README.lhs
 
   build-tool-depends:  markdown-unlit:markdown-unlit
-  build-depends:       base            >= 4.11  && < 5
+  build-depends:       base            >= 4.10  && < 5
                      , o-clock
                      , markdown-unlit ^>= 0.5
   ghc-options:         -Wall -threaded -rtsopts -with-rtsopts=-N -pgmL markdown-unlit
@@ -84,7 +85,7 @@ benchmark o-clock-benchmark
   ghc-options:         -Wall -Werror -O2 -threaded -rtsopts -with-rtsopts=-N
   hs-source-dirs:      benchmark
   main-is:             Main.hs
-  build-depends:       base       >= 4.11  && < 5
+  build-depends:       base       >= 4.8   && < 5
                      , o-clock
                      , deepseq    >= 1.4
                      , gauge      >= 0.2.1 && < 1

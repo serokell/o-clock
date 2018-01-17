@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP                 #-}
 {-# LANGUAGE DataKinds           #-}
 {-# LANGUAGE ExplicitForAll      #-}
 {-# LANGUAGE FlexibleContexts    #-}
@@ -18,7 +19,10 @@ import Test.Tasty.Hedgehog (testProperty)
 
 import Time (Day, Fortnight, Hour, KnownRat, KnownRatName, Microsecond,
              Millisecond, Minute, Nanosecond, Picosecond, Rat, RatioNat, Second,
-             Time (..), Week, toUnit, withRuntimeDivRat)
+             Time (..), Week, toUnit)
+#if ( __GLASGOW_HASKELL__ >= 804 )
+import Time (withRuntimeDivRat)
+#endif
 
 import qualified Hedgehog.Gen as Gen
 import qualified Hedgehog.Range as Range
@@ -67,9 +71,12 @@ verifyToUnit (MkAnyTime t1) (MkAnyTime t2) = checkToUnit t1 t2
                 => Time unitFrom
                 -> Time unitTo
                 -> m ()
-    checkToUnit t _ = withRuntimeDivRat @unitTo @unitFrom
-                    $ withRuntimeDivRat @unitFrom @unitTo
-                    $ toUnit (toUnit @unitTo t) === t
+    checkToUnit t _ =
+#if ( __GLASGOW_HASKELL__ >= 804 )
+                      withRuntimeDivRat @unitTo @unitFrom $
+                      withRuntimeDivRat @unitFrom @unitTo $
+#endif
+                      toUnit (toUnit @unitTo t) === t
 
 -- | Generates random natural number up to 10^20.
 -- it receives the lower bound so that it wouldn't be possible

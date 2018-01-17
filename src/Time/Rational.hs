@@ -1,5 +1,6 @@
 {-# LANGUAGE AllowAmbiguousTypes  #-}
 {-# LANGUAGE ConstraintKinds      #-}
+{-# LANGUAGE CPP                  #-}
 {-# LANGUAGE TypeInType           #-}
 {-# LANGUAGE FlexibleContexts     #-}
 {-# LANGUAGE FlexibleInstances    #-}
@@ -15,20 +16,26 @@
 module Time.Rational
        ( Rat (..)
        , type (:%)
+#if ( __GLASGOW_HASKELL__ >= 804 )
        , type (%)
        , type (*)
        , type (/)
+#endif
        , MulK
        , DivK
+#if ( __GLASGOW_HASKELL__ >= 804 )
        , Gcd
        , Normalize
        , DivRat
+#endif
 
         -- Utilities
        , RatioNat
        , KnownRat (..)
 
+#if ( __GLASGOW_HASKELL__ >= 804 )
        , withRuntimeDivRat
+#endif
        , KnownDivRat
        ) where
 
@@ -36,10 +43,17 @@ import Data.Kind (Type)
 import Data.Proxy (Proxy (..))
 import GHC.Natural (Natural)
 import GHC.Real (Ratio ((:%)))
-import GHC.TypeNats (Div, KnownNat, Mod, Nat, natVal)
+#if ( __GLASGOW_HASKELL__ >= 804 )
+import GHC.TypeNats (Div, Mod)
+#endif
+import GHC.TypeNats (KnownNat, Nat, natVal)
+#if ( __GLASGOW_HASKELL__ >= 804 )
 import Unsafe.Coerce (unsafeCoerce)
+#endif
 
+#if ( __GLASGOW_HASKELL__ >= 804 )
 import qualified GHC.TypeNats
+#endif
 
 -- | Data structure represents the rational number.
 -- Rational number can be represented as a pair of
@@ -63,6 +77,7 @@ type instance DivK Rat Rat = Rat
 type instance DivK Rat Nat = Rat
 type instance DivK Nat Rat = Rat
 
+#if ( __GLASGOW_HASKELL__ >= 804 )
 -- | Overloaded multiplication.
 type family (*) (a :: k1) (b :: k2) :: MulK k1 k2
 
@@ -78,10 +93,12 @@ type instance (a :: Nat) / (b :: Nat) = a % b
 type instance (a :: Rat) / (b :: Rat) = DivRat a b
 type instance (a :: Rat) / (b :: Nat) = DivRatNat a b
 type instance (a :: Nat) / (b :: Rat) = DivRat (a :% 1) b
+#endif
 
 -- | More convenient name for promoted constructor of 'Rat'.
 type (:%) = '(::%)
 
+#if ( __GLASGOW_HASKELL__ >= 804 )
 -- | Type family for normalized pair of 'Nat's — 'Rat'.
 type family (m :: Nat) % (n :: Nat) :: Rat where
     a % b = Normalize (a :% b)
@@ -167,7 +184,7 @@ Normalize (9 % 12) :: Rat
 -}
 type family Normalize (r :: Rat) :: Rat  where
     Normalize (a :% b) = (a `Div` Gcd a b) :% (b `Div` Gcd a b)
-
+#endif
 
 -- | Rational numbers, with numerator and denominator of 'Natural' type.
 type RatioNat = Ratio Natural
@@ -180,6 +197,7 @@ instance (KnownNat a, KnownNat b) => KnownRat (a :% b) where
     ratVal = natVal (Proxy @a) :% natVal (Proxy @b)
 
 
+#if ( __GLASGOW_HASKELL__ >= 804 )
 newtype KnownRatDict (unit :: Rat) r = MkKnownRatDict (KnownRat unit => r)
 
 giftRat :: forall (unit :: Rat) r . (KnownRat unit => r) -> RatioNat -> r
@@ -190,6 +208,12 @@ giftRat given = unsafeCoerce (MkKnownRatDict given :: KnownRatDict unit r)
 withRuntimeDivRat :: forall (a :: Rat) (b :: Rat) r . (KnownRat a, KnownRat b) => (KnownRat (a / b) => r) -> r
 withRuntimeDivRat r = giftRat @(a / b) r (ratVal @a / ratVal @b)
 {-# INLINE withRuntimeDivRat #-}
+#endif
 
 -- | Constraint alias for 'DivRat' units.
-type KnownDivRat a b = (KnownRat a, KnownRat b, KnownRat (a / b))
+type KnownDivRat a b = ( KnownRat a
+                       , KnownRat b
+#if ( __GLASGOW_HASKELL__ >= 804 )
+                       , KnownRat (a / b)
+#endif
+                       )

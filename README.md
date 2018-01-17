@@ -52,6 +52,8 @@ threadDelay @Second 5
    * It means that if you want to roll out your own time units and use it in your project,
      this can be done in easy and convenient way (see tutorial below).
 
+_**Note:**_ features support for `GHC-8.2.2` is quite limited.
+
 ## Example: How to make your own time unit
 
 This README section contains tutorial on how you can introduce your own time units.
@@ -66,6 +68,7 @@ So we want `140 hours` be formatted as `3ww2wd` (3 full work weeks and 2 full wo
 Since this tutorial is literate haskell file, let's first write some pragmas and imports.
 
 ```haskell
+{-# LANGUAGE CPP              #-}
 {-# LANGUAGE DataKinds        #-}
 {-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE TypeFamilies     #-}
@@ -73,7 +76,11 @@ Since this tutorial is literate haskell file, let's first write some pragmas and
 
 module Main where
 
-import Time ((:%), Time, Hour, UnitName, type (*), floorUnit, hour, seriesF, toUnit)
+#if ( __GLASGOW_HASKELL__ >= 804 )
+import Time (type (*))
+#endif
+import Time ((:%), Time, Hour, UnitName,floorUnit, hour, seriesF, toUnit)
+
 ```
 
 ### Introduce custom units
@@ -83,10 +90,18 @@ work day represented as `8` hours and work week represented as `5` work days.
 
 ```haskell
 -- | Time unit for a working day (8 hours).
+#if ( __GLASGOW_HASKELL__ >= 804 )
 type WorkDay = 8 * Hour
+#else
+type WorkDay = 28800 :% 1
+#endif
 
 -- | Time unit for a work week (5 working days).
+#if ( __GLASGOW_HASKELL__ >= 804 )
 type WorkWeek = 5 * WorkDay
+#else
+type WorkWeek = 144000 :% 1
+#endif
 
 -- this allows to use 'Show' and 'Read' functions for our time units
 type instance UnitName (28800  :% 1) = "wd"  -- One WorkDay  contains 28800  seconds
