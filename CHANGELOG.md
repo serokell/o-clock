@@ -3,6 +3,12 @@ Change log
 o'clock uses [PVP Versioning][1].
 The change log is available [on GitHub][2].
 
+0.0.1
+=====
+
+* [#45](https://github.com/serokell/o-clock/issues/45):
+  Fix behavior of 0 time passed to `seriesF`.
+
 0.0.0
 =====
 
