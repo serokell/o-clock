@@ -12,7 +12,7 @@ import Test.TypeSpecCrazy
 
 import Time.Rational ((:%))
 #if ( __GLASGOW_HASKELL__ >= 804 )
-import Time.Rational (type (/), Gcd, Normalize)
+import Time.Rational (type (/), type (>=%), Gcd, Normalize)
 #endif
 import Time.Units (Day, Fortnight, Hour, Microsecond, Millisecond, Minute,
                    Nanosecond, Picosecond, Second, UnitName, Week)
@@ -23,6 +23,7 @@ runTypeSpecTests = do
     print typeSpec_Gcd
     print typeSpec_Normalize
     print typeSpec_DivRat
+    print typeSpec_Compare
 #endif
     print typeSpec_UnitCalculation
     print typeSpec_UnitNames
@@ -90,6 +91,20 @@ typeSpec_DivRat ::
      -*- It "5%6 / 25%3 = 1%10" ((5 / 6) / (25 / 3) `Is` (1 :% 10))
 
 typeSpec_DivRat = Valid
+
+typeSpec_Compare ::
+
+  ">=%"
+  ######
+
+    "Comparing"
+    ~~~~~~~~~~~~
+         It "2%7 >=% 2%7 = True"   (((2 :% 7)  >=% (2 :% 7))  `Is` 'True)
+     -*- It "2%7 >=% 7%2 = False"  (((2 :% 7)  >=% (7 :% 2))  `Is` 'False)
+     -*- It "5%42 >=% 1%42 = True" (((5 :% 42) >=% (1 :% 42)) `Is` 'True)
+
+typeSpec_Compare = Valid
+
 #endif
 
 typeSpec_UnitCalculation ::

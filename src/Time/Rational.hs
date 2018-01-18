@@ -27,6 +27,7 @@ module Time.Rational
        , Gcd
        , Normalize
        , DivRat
+       , type (>=%)
 #endif
 
         -- Utilities
@@ -44,7 +45,7 @@ import Data.Proxy (Proxy (..))
 import GHC.Natural (Natural)
 import GHC.Real (Ratio ((:%)))
 #if ( __GLASGOW_HASKELL__ >= 804 )
-import GHC.TypeNats (Div, Mod)
+import GHC.TypeNats (Div, Mod, type (<=?))
 #endif
 import GHC.TypeNats (KnownNat, Nat, natVal)
 #if ( __GLASGOW_HASKELL__ >= 804 )
@@ -184,6 +185,26 @@ Normalize (9 % 12) :: Rat
 -}
 type family Normalize (r :: Rat) :: Rat  where
     Normalize (a :% b) = (a `Div` Gcd a b) :% (b `Div` Gcd a b)
+
+
+{- | Comparison of type-level rationals, as a function.
+
+>>> :kind! (1 :% 42) >=% (5 :% 42)
+(1 :% 42) >=% (5 :% 42) :: Bool
+= 'False
+
+>>> :kind! (5 :% 42) >=% (1 :% 42)
+(5 :% 42) >=% (1 :% 42) :: Bool
+= 'True
+
+>>> :kind! (42 :% 1) >=% (42 :% 1)
+(42 :% 1) >=% (42 :% 1) :: Bool
+= 'True
+
+-}
+infix 4 >=%
+type family (m :: Rat) >=% (n :: Rat) :: Bool where
+    (a :% b) >=% (c :% d) = c * b <=? a * d
 #endif
 
 -- | Rational numbers, with numerator and denominator of 'Natural' type.

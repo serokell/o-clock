@@ -29,6 +29,17 @@ __Examples__
 >>> seriesF @'[Hour, Second] (minute 0)
 "0h"
 
+The received list should be in descending order. It would be verified at compile-time.
+Example of the error from @ghci@:
+
+>>> seriesF @'[Millisecond, Second] (minute 42)
+
+<interactive>:10:2: error:
+    • List of units should be in descending order
+    • In the expression: seriesF @'[Millisecond, Second] (minute 42)
+      In an equation for ‘it’:
+          it = seriesF @'[Millisecond, Second] (minute 42)
+
 -}
 
 module Time.Formatting
@@ -38,9 +49,31 @@ module Time.Formatting
 
 import Time.Rational (Rat)
 #if ( __GLASGOW_HASKELL__ >= 804 )
-import Time.Rational (withRuntimeDivRat)
+import GHC.TypeLits (TypeError, ErrorMessage (Text))
+import Data.Kind (Constraint)
+
+import Time.Rational (type (>=%), withRuntimeDivRat)
 #endif
 import Time.Units (AllTimes, KnownRatName, Time, floorUnit, toUnit)
+
+#if ( __GLASGOW_HASKELL__ >= 804 )
+-- Type-level 'and'.
+type family And (a :: Bool) (b :: Bool) where
+  And 'False _ = 'False
+  And _      x = x
+
+-- | Type family for verification of the descending order of the given
+-- list of time units.
+type family IsDescending (units :: [Rat]) :: Bool where
+    IsDescending ('[])     = 'True
+    IsDescending ('[unit]) = 'True
+    IsDescending (unit1 ': unit2 ': units) =
+        (unit1 >=% unit2) `And` (IsDescending (unit2 ': units))
+
+type family DescendingConstraint (b :: Bool) :: Constraint where
+    DescendingConstraint 'True  = ()  -- empty constraint; always satisfiable
+    DescendingConstraint 'False = TypeError ('Text "List of units should be in descending order")
+#endif
 
 -- | Class for time formatting.
 class Series (units :: [Rat]) where
@@ -52,7 +85,12 @@ instance Series ('[] :: [Rat]) where
     seriesF :: Time someUnit -> String
     seriesF _ = ""
 
-instance (KnownRatName unit, Series units)
+instance ( KnownRatName unit
+         , Series units
+#if ( __GLASGOW_HASKELL__ >= 804 )
+         , DescendingConstraint (IsDescending (unit : units))
+#endif
+         )
     => Series (unit ': units :: [Rat]) where
     seriesF :: forall (someUnit :: Rat) . KnownRatName someUnit
             => Time someUnit
