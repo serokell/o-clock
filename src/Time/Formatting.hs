@@ -29,6 +29,18 @@ __Examples__
 >>> seriesF @'[Hour, Second] (minute 0)
 "0h"
 
+The received list should be in descending order. It would be verified at compile-time.
+Example of the error from @ghci@:
+
+>>> seriesF @'[Millisecond, Second] (minute 42)
+
+<interactive>:10:2: error:
+    • Couldn't match type ‘'False’ with ‘'True’
+        arising from a use of ‘seriesF’
+    • In the expression: seriesF @'[Millisecond, Second] (minute 42)
+      In an equation for ‘it’:
+          it = seriesF @'[Millisecond, Second] (minute 42)
+
 -}
 
 module Time.Formatting
@@ -38,9 +50,26 @@ module Time.Formatting
 
 import Time.Rational (Rat)
 #if ( __GLASGOW_HASKELL__ >= 804 )
-import Time.Rational (withRuntimeDivRat)
+import Time.Rational (type (>=%), withRuntimeDivRat)
 #endif
 import Time.Units (AllTimes, KnownRatName, Time, floorUnit, toUnit)
+
+#if ( __GLASGOW_HASKELL__ >= 804 )
+-- Type-level 'if' for 'Bool's.
+type family If (c :: Bool) (t :: Bool) (e :: Bool) where
+  If 'True  t e = t
+  If 'False t e = e
+
+-- | Type family for verification of the descending order of the given
+-- list of time units.
+type family IsDescending (units :: [Rat]) :: Bool
+
+type instance IsDescending (unit1 ': unit2 ': units :: [Rat]) =
+    If (unit1 >=% unit2) (IsDescending (unit2 ': units :: [Rat]))
+                         'False
+type instance IsDescending (unit ': '[] :: [Rat]) = 'True
+type instance IsDescending ('[] :: [Rat]) = 'True
+#endif
 
 -- | Class for time formatting.
 class Series (units :: [Rat]) where
@@ -52,7 +81,11 @@ instance Series ('[] :: [Rat]) where
     seriesF :: Time someUnit -> String
     seriesF _ = ""
 
-instance (KnownRatName unit, Series units)
+instance ( KnownRatName unit, Series units
+#if ( __GLASGOW_HASKELL__ >= 804 )
+         , IsDescending (unit : units) ~ 'True
+#endif
+         )
     => Series (unit ': units :: [Rat]) where
     seriesF :: forall (someUnit :: Rat) . KnownRatName someUnit
             => Time someUnit
