@@ -55,20 +55,18 @@ import Time.Rational (type (>=%), withRuntimeDivRat)
 import Time.Units (AllTimes, KnownRatName, Time, floorUnit, toUnit)
 
 #if ( __GLASGOW_HASKELL__ >= 804 )
--- Type-level 'if' for 'Bool's.
-type family If (c :: Bool) (t :: Bool) (e :: Bool) where
-  If 'True  t e = t
-  If 'False t e = e
+-- Type-level 'and'.
+type family And (a :: Bool) (b :: Bool) where
+  And 'False _ = 'False
+  And _      x = x
 
 -- | Type family for verification of the descending order of the given
 -- list of time units.
-type family IsDescending (units :: [Rat]) :: Bool
-
-type instance IsDescending (unit1 ': unit2 ': units :: [Rat]) =
-    If (unit1 >=% unit2) (IsDescending (unit2 ': units :: [Rat]))
-                         'False
-type instance IsDescending (unit ': '[] :: [Rat]) = 'True
-type instance IsDescending ('[] :: [Rat]) = 'True
+type family IsDescending (units :: [Rat]) :: Bool where
+    IsDescending ('[])     = 'True
+    IsDescending ('[unit]) = 'True
+    IsDescending (unit1 ': unit2 ': units) =
+        (unit1 >=% unit2) `And` (IsDescending (unit2 ': units))
 #endif
 
 -- | Class for time formatting.
