@@ -35,8 +35,7 @@ Example of the error from @ghci@:
 >>> seriesF @'[Millisecond, Second] (minute 42)
 
 <interactive>:10:2: error:
-    • Couldn't match type ‘'False’ with ‘'True’
-        arising from a use of ‘seriesF’
+    • List of units should be in descending order
     • In the expression: seriesF @'[Millisecond, Second] (minute 42)
       In an equation for ‘it’:
           it = seriesF @'[Millisecond, Second] (minute 42)
@@ -50,6 +49,9 @@ module Time.Formatting
 
 import Time.Rational (Rat)
 #if ( __GLASGOW_HASKELL__ >= 804 )
+import GHC.TypeLits (TypeError, ErrorMessage (Text))
+import Data.Kind (Constraint)
+
 import Time.Rational (type (>=%), withRuntimeDivRat)
 #endif
 import Time.Units (AllTimes, KnownRatName, Time, floorUnit, toUnit)
@@ -67,6 +69,10 @@ type family IsDescending (units :: [Rat]) :: Bool where
     IsDescending ('[unit]) = 'True
     IsDescending (unit1 ': unit2 ': units) =
         (unit1 >=% unit2) `And` (IsDescending (unit2 ': units))
+
+type family DescendingConstraint (b :: Bool) :: Constraint where
+    DescendingConstraint 'True  = ()  -- empty constraint; always satisfiable
+    DescendingConstraint 'False = TypeError ('Text "List of units should be in descending order")
 #endif
 
 -- | Class for time formatting.
@@ -79,9 +85,10 @@ instance Series ('[] :: [Rat]) where
     seriesF :: Time someUnit -> String
     seriesF _ = ""
 
-instance ( KnownRatName unit, Series units
+instance ( KnownRatName unit
+         , Series units
 #if ( __GLASGOW_HASKELL__ >= 804 )
-         , IsDescending (unit : units) ~ 'True
+         , DescendingConstraint (IsDescending (unit : units))
 #endif
          )
     => Series (unit ': units :: [Rat]) where
