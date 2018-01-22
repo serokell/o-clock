@@ -6,6 +6,9 @@ The change log is available [on GitHub][2].
 0.0.1
 =====
 
+* [#46](https://github.com/serokell/o-clock/issues/46):
+  Introduce `...` type to create custom time unit lists in
+  provided bounds.
 * [#51](https://github.com/serokell/o-clock/issues/51):
   Add `IsDescending` type family to check lists of time units
   in `seriesF` function on right order

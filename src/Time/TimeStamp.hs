@@ -1,8 +1,6 @@
 {-# LANGUAGE DataKinds                  #-}
 {-# LANGUAGE ExplicitForAll             #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
-{-# LANGUAGE ScopedTypeVariables        #-}
-{-# LANGUAGE TypeFamilies               #-}
 
 -- | This module introduces 'TimeStamp' data type
 -- and corresponding functions for operations with time.

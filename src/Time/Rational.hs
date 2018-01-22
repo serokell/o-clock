@@ -5,9 +5,7 @@
 {-# LANGUAGE FlexibleContexts     #-}
 {-# LANGUAGE FlexibleInstances    #-}
 {-# LANGUAGE Rank2Types           #-}
-{-# LANGUAGE ScopedTypeVariables  #-}
 {-# LANGUAGE TypeApplications     #-}
-{-# LANGUAGE TypeFamilies         #-}
 {-# LANGUAGE TypeOperators        #-}
 {-# LANGUAGE UndecidableInstances #-}
 
@@ -205,6 +203,7 @@ type family Normalize (r :: Rat) :: Rat  where
 infix 4 >=%
 type family (m :: Rat) >=% (n :: Rat) :: Bool where
     (a :% b) >=% (c :% d) = c * b <=? a * d
+
 #endif
 
 -- | Rational numbers, with numerator and denominator of 'Natural' type.

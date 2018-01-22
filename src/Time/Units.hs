@@ -7,9 +7,7 @@
 {-# LANGUAGE FlexibleContexts           #-}
 {-# LANGUAGE InstanceSigs               #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
-{-# LANGUAGE ScopedTypeVariables        #-}
 {-# LANGUAGE TypeApplications           #-}
-{-# LANGUAGE TypeFamilies               #-}
 {-# LANGUAGE TypeOperators              #-}
 {-# LANGUAGE UndecidableInstances       #-}
 
@@ -31,8 +29,6 @@ module Time.Units
        , Day
        , Week
        , Fortnight
-
-       , AllTimes
 
        , UnitName
        , KnownUnitName
@@ -125,13 +121,6 @@ type Fortnight   = 1209600 :% 1
 -- | Time unit is represented as type level rational multiplier with kind 'Rat'.
 newtype Time (rat :: Rat) = Time { unTime :: RatioNat }
     deriving (Eq, Ord, Enum, Real, RealFrac, Generic)
-
--- | Type-level list that consist of all times.
-type AllTimes =
-  '[ Fortnight, Week, Day, Hour, Minute, Second
-   , Millisecond , Microsecond, Nanosecond, Picosecond
-   ]
-
 
 -- | Type family for prettier 'show' of time units.
 type family UnitName (unit :: Rat) :: Symbol
