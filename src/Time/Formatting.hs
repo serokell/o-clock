@@ -72,6 +72,7 @@ type AllTimes =
 #if ( __GLASGOW_HASKELL__ >= 804 )
 {- | Creates the list of time units in descending order by provided
 the highest and the lowest bound of the desired list.
+Throws the error when time units are not in the right order.
 
 __Usage example:__
 
@@ -80,14 +81,14 @@ __Usage example:__
 
 -}
 type family (from :: Rat) ... (to :: Rat) :: [Rat] where
-    from ... to = If (IsDescending [from, to])
-                     (TakeWhileNot to   (DropWhileNot from AllTimes))
-                     (TakeWhileNot from (DropWhileNot to AllTimes))
+    from ... to = If (IsDescending '[from, to])
+                     (TakeWhileNot to (DropWhileNot from AllTimes))
+                     (TypeError ('Text "Units should be in descending order"))
 
 -- Drops wile not the required time unit in 'AllTimes'.
 type family DropWhileNot (from :: Rat) (units :: [Rat]) :: [Rat] where
     DropWhileNot x '[] = '[]
-    DropWhileNot x (u ': units) = If (u == x) (u ': units) (DropWhileNot x (u ': units))
+    DropWhileNot x (u ': units) = If (u == x) (u ': units) (DropWhileNot x units)
 
 -- Takes while not equal to the provided bound.
 type family TakeWhileNot (to :: Rat) (units :: [Rat]) :: [Rat] where
