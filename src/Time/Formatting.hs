@@ -4,9 +4,7 @@
 {-# LANGUAGE FlexibleContexts     #-}
 {-# LANGUAGE InstanceSigs         #-}
 {-# LANGUAGE Rank2Types           #-}
-{-# LANGUAGE ScopedTypeVariables  #-}
 {-# LANGUAGE TypeApplications     #-}
-{-# LANGUAGE TypeFamilies         #-}
 {-# LANGUAGE TypeOperators        #-}
 {-# LANGUAGE UndecidableInstances #-}
 
@@ -43,24 +41,59 @@ Example of the error from @ghci@:
 -}
 
 module Time.Formatting
-       ( Series (..)
+       ( AllTimes
+#if ( __GLASGOW_HASKELL__ >= 804 )
+       , type (...)
+#endif
+
+       , Series (..)
        , unitsF
        ) where
 
-import Time.Rational (Rat)
 #if ( __GLASGOW_HASKELL__ >= 804 )
 import GHC.TypeLits (TypeError, ErrorMessage (Text))
 import Data.Kind (Constraint)
+import Data.Type.Equality (type (==))
 
+import Time.Bool (type (&&), If)
 import Time.Rational (type (>=%), withRuntimeDivRat)
 #endif
-import Time.Units (AllTimes, KnownRatName, Time, floorUnit, toUnit)
+import Time.Rational (Rat)
+import Time.Units (Day, Fortnight, Hour, KnownRatName, Microsecond, Millisecond, Minute, Nanosecond,
+                   Picosecond, Second, Time, Week, floorUnit, toUnit)
+
+
+-- | Type-level list that consist of all times.
+type AllTimes =
+  '[ Fortnight, Week, Day, Hour, Minute, Second
+   , Millisecond , Microsecond, Nanosecond, Picosecond
+   ]
 
 #if ( __GLASGOW_HASKELL__ >= 804 )
--- Type-level 'and'.
-type family And (a :: Bool) (b :: Bool) where
-  And 'False _ = 'False
-  And _      x = x
+{- | Creates the list of time units in descending order by provided
+the highest and the lowest bound of the desired list.
+Throws the error when time units are not in the right order.
+
+__Usage example:__
+
+>>> seriesF @(Hour ... Second) $ hour 3 +: minute 5 +:sec 3 +: ms 123
+"3h5m3s"
+
+-}
+type family (from :: Rat) ... (to :: Rat) :: [Rat] where
+    from ... to = If (IsDescending '[from, to])
+                     (TakeWhileNot to (DropWhileNot from AllTimes))
+                     (TypeError ('Text "Units should be in descending order"))
+
+-- Drops wile not the required time unit in 'AllTimes'.
+type family DropWhileNot (from :: Rat) (units :: [Rat]) :: [Rat] where
+    DropWhileNot x '[] = '[]
+    DropWhileNot x (u ': units) = If (u == x) (u ': units) (DropWhileNot x units)
+
+-- Takes while not equal to the provided bound.
+type family TakeWhileNot (to :: Rat) (units :: [Rat]) :: [Rat] where
+    TakeWhileNot x '[] = '[]
+    TakeWhileNot x (u ': units) = If (u == x) '[u] (u ': TakeWhileNot x units)
 
 -- | Type family for verification of the descending order of the given
 -- list of time units.
@@ -68,7 +101,7 @@ type family IsDescending (units :: [Rat]) :: Bool where
     IsDescending ('[])     = 'True
     IsDescending ('[unit]) = 'True
     IsDescending (unit1 ': unit2 ': units) =
-        (unit1 >=% unit2) `And` (IsDescending (unit2 ': units))
+        (unit1 >=% unit2) && (IsDescending (unit2 ': units))
 
 type family DescendingConstraint (b :: Bool) :: Constraint where
     DescendingConstraint 'True  = ()  -- empty constraint; always satisfiable
