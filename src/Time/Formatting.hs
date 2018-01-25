@@ -53,9 +53,9 @@ module Time.Formatting
 #if ( __GLASGOW_HASKELL__ >= 804 )
 import GHC.TypeLits (TypeError, ErrorMessage (Text))
 import Data.Kind (Constraint)
+import Data.Type.Bool (type (&&), If)
 import Data.Type.Equality (type (==))
 
-import Time.Bool (type (&&), If)
 import Time.Rational (type (>=%), withRuntimeDivRat)
 #endif
 import Time.Rational (Rat)

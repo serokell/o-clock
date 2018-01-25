@@ -24,7 +24,6 @@ source-repository head
 library
   hs-source-dirs:      src
   exposed-modules:     Time
-                         Time.Bool
                          Time.Formatting
                          Time.Rational
                          Time.TimeStamp
