@@ -6,6 +6,10 @@ The change log is available [on GitHub][2].
 0.0.1
 =====
 
+* [#62](https://github.com/serokell/o-clock/issues/62):
+  Add `.ghci` file. Make time creation helpers work with
+  `RatioNat` instead of `Naturals`.
+  Rename `+:` to `+:+` add `-:-`.
 * [#46](https://github.com/serokell/o-clock/issues/46):
   Introduce `...` type to create custom time unit lists in
   provided bounds.

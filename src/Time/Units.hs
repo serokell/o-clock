@@ -51,7 +51,8 @@ module Time.Units
        , week
        , fortnight
 
-       , (+:)
+       , (+:+)
+       , (-:-)
 
         -- ** Functions
        , toUnit
@@ -69,7 +70,7 @@ import GHC.Generics (Generic)
 import GHC.Natural (Natural)
 import GHC.Prim (coerce)
 import GHC.Read (Read (readPrec))
-import GHC.Real (Ratio ((:%)), denominator, numerator, (%))
+import GHC.Real (denominator, numerator, (%))
 import GHC.TypeLits (KnownSymbol, Symbol, symbolVal)
 import Text.ParserCombinators.ReadP (ReadP, char, munch1, option, pfail)
 import Text.ParserCombinators.ReadPrec (ReadPrec, lift)
@@ -194,15 +195,15 @@ instance Fractional (Time unit) where
 ----------------------------------------------------------------------------
 
 -- | Creates 'Time' of some type from given 'Natural'.
-time :: Natural -> Time unit
-time n = Time (n :% 1)
+time :: RatioNat -> Time unit
+time n = Time n
 {-# INLINE time #-}
 
 -- | Creates 'Second' from given 'Natural'.
 --
 -- >>> sec 42
 -- 42s :: Time Second
-sec :: Natural -> Time Second
+sec :: RatioNat -> Time Second
 sec = time
 {-# INLINE sec #-}
 
@@ -210,7 +211,7 @@ sec = time
 --
 -- >>> ms 42
 -- 42ms :: Time Millisecond
-ms :: Natural -> Time Millisecond
+ms :: RatioNat -> Time Millisecond
 ms = time
 {-# INLINE ms #-}
 
@@ -218,7 +219,7 @@ ms = time
 --
 -- >>> mcs 42
 -- 42mcs :: Time Microsecond
-mcs :: Natural -> Time Microsecond
+mcs :: RatioNat -> Time Microsecond
 mcs = time
 {-# INLINE mcs #-}
 
@@ -226,7 +227,7 @@ mcs = time
 --
 -- >>> ns 42
 -- 42ns :: Time Nanosecond
-ns :: Natural -> Time Nanosecond
+ns :: RatioNat -> Time Nanosecond
 ns = time
 {-# INLINE ns #-}
 
@@ -234,7 +235,7 @@ ns = time
 --
 -- >>> ps 42
 -- 42ps :: Time Picosecond
-ps :: Natural -> Time Picosecond
+ps :: RatioNat -> Time Picosecond
 ps = time
 {-# INLINE ps #-}
 
@@ -242,7 +243,7 @@ ps = time
 --
 -- >>> minute 42
 -- 42m :: Time Minute
-minute :: Natural -> Time Minute
+minute :: RatioNat -> Time Minute
 minute = time
 {-# INLINE minute #-}
 
@@ -250,7 +251,7 @@ minute = time
 --
 -- >>> hour 42
 -- 42h :: Time Hour
-hour :: Natural -> Time Hour
+hour :: RatioNat -> Time Hour
 hour = time
 {-# INLINE hour #-}
 
@@ -258,7 +259,7 @@ hour = time
 --
 -- >>> day 42
 -- 42d :: Time Day
-day :: Natural -> Time Day
+day :: RatioNat -> Time Day
 day = time
 {-# INLINE day #-}
 
@@ -266,7 +267,7 @@ day = time
 --
 -- >>> sec 42
 -- 42w :: Time Week
-week :: Natural -> Time Week
+week :: RatioNat -> Time Week
 week = time
 {-# INLINE week #-}
 
@@ -274,7 +275,7 @@ week = time
 --
 -- >>> fortnight 42
 -- 42fn :: Time Fortnight
-fortnight :: Natural -> Time Fortnight
+fortnight :: RatioNat -> Time Fortnight
 fortnight = time
 {-# INLINE fortnight #-}
 
@@ -291,19 +292,31 @@ fortnight = time
 
 -}
 floorUnit :: forall (unit :: Rat) . Time unit -> Time unit
-floorUnit = time . floor
+floorUnit = time . fromIntegral @Natural . floor
 
 -- | Sums times of different units.
 --
--- >>> minute 1 +: sec 1
+-- >>> minute 1 +:+ sec 1
 -- 61s
 --
-(+:) :: forall (unitResult :: Rat) (unitLeft :: Rat) . KnownDivRat unitLeft unitResult
+(+:+) :: forall (unitResult :: Rat) (unitLeft :: Rat) . KnownDivRat unitLeft unitResult
      => Time unitLeft
      -> Time unitResult
      -> Time unitResult
-t1 +: t2 = toUnit t1 + t2
-{-# INLINE (+:) #-}
+t1 +:+ t2 = toUnit t1 + t2
+{-# INLINE (+:+) #-}
+
+-- | Substracts times of different units.
+--
+-- >>> minute 1 -:- sec 1
+-- 59s
+--
+(-:-) :: forall (unitResult :: Rat) (unitLeft :: Rat) . KnownDivRat unitLeft unitResult
+     => Time unitLeft
+     -> Time unitResult
+     -> Time unitResult
+t1 -:- t2 = toUnit t1 - t2
+{-# INLINE (-:-) #-}
 
 ----------------------------------------------------------------------------
 -- Functional

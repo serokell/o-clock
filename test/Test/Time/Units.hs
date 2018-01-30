@@ -14,7 +14,7 @@ import Test.Tasty.Hspec (Spec, anyException, describe, it, shouldBe, shouldThrow
 
 import Time (Day, Hour, Microsecond, Millisecond, Minute, Picosecond, Second, Time (..), Week, day,
              floorUnit, fortnight, hour, mcs, minute, ms, ns, ps, sec, seriesF, toUnit, unitsF,
-             week, (+:))
+             week, (+:+))
 
 unitsTestTree :: IO TestTree
 unitsTestTree = testSpec "Units" spec_Units
@@ -79,6 +79,6 @@ spec_Units = do
         it "the first zero time unit when receive zero time" $
             unitsF (Time @Hour 0) `shouldBe` "0fn"
         it "sums all time units" $
-            unitsF (  fortnight 1 +: week 1 +: day 1 +: hour 1 +: minute 1
-                   +: sec 1 +: ms 1 +: mcs 1 +: ns 1 +: ps 1
+            unitsF (  fortnight 1 +:+ week 1 +:+ day 1 +:+ hour 1 +:+ minute 1
+                  +:+ sec 1 +:+ ms 1 +:+ mcs 1 +:+ ns 1 +:+ ps 1
                    ) `shouldBe` "1fn1w1d1h1m1s1ms1mcs1ns1ps"
