@@ -2,6 +2,7 @@
 
 [![Hackage](https://img.shields.io/hackage/v/o-clock.svg)](https://hackage.haskell.org/package/o-clock)
 [![Build status](https://travis-ci.org/serokell/o-clock.svg?branch=master)](https://travis-ci.org/serokell/o-clock)
+[![Stackage Nightly](http://stackage.org/package/o-clock/badge/nightly)](http://stackage.org/nightly/package/o-clock)
 [![MIT license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/serokell/o-clock/blob/master/LICENSE)
 
 ## Overview
