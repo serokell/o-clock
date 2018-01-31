@@ -1,0 +1,2 @@
+:set -XDataKinds -XTypeFamilies -XTypeOperators -XTypeApplications
+import GHC.Real
