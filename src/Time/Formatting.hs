@@ -30,13 +30,15 @@ __Examples__
 The received list should be in descending order. It would be verified at compile-time.
 Example of the error from @ghci@:
 
+#if ( __GLASGOW_HASKELL__ >= 804 )
 >>> seriesF @'[Millisecond, Second] (minute 42)
-
-<interactive>:10:2: error:
+...
     • List of units should be in descending order
     • In the expression: seriesF @'[Millisecond, Second] (minute 42)
       In an equation for ‘it’:
           it = seriesF @'[Millisecond, Second] (minute 42)
+...
+#endif
 
 -}
 
@@ -62,6 +64,11 @@ import Time.Rational (Rat)
 import Time.Units (Day, Fortnight, Hour, KnownRatName, Microsecond, Millisecond, Minute, Nanosecond,
                    Picosecond, Second, Time, Week, floorUnit, toUnit)
 
+-- $setup
+-- >>> import Time.Units (Time (..), fortnight, hour, minute, ms, sec, (+:+))
+-- >>> import GHC.Real ((%))
+
+
 
 -- | Type-level list that consist of all times.
 type AllTimes =
@@ -76,7 +83,7 @@ Throws the error when time units are not in the right order.
 
 __Usage example:__
 
->>> seriesF @(Hour ... Second) $ hour 3 +: minute 5 +:sec 3 +: ms 123
+>>> seriesF @(Hour ... Second) $ hour 3 +:+ minute 5 +:+ sec 3 +:+ ms 123
 "3h5m3s"
 
 -}
