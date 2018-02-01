@@ -6,6 +6,8 @@ The change log is available [on GitHub][2].
 0.0.1
 =====
 
+* [#56](https://github.com/serokell/o-clock/issues/56):
+  Add `doctest` to documentation.
 * [#62](https://github.com/serokell/o-clock/issues/62):
   Add `.ghci` file. Make time creation helpers work with
   `RatioNat` instead of `Naturals`.

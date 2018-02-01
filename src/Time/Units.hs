@@ -202,7 +202,7 @@ time n = Time n
 -- | Creates 'Second' from given 'Natural'.
 --
 -- >>> sec 42
--- 42s :: Time Second
+-- 42s
 sec :: RatioNat -> Time Second
 sec = time
 {-# INLINE sec #-}
@@ -210,7 +210,7 @@ sec = time
 -- | Creates 'Millisecond' from given 'Natural'.
 --
 -- >>> ms 42
--- 42ms :: Time Millisecond
+-- 42ms
 ms :: RatioNat -> Time Millisecond
 ms = time
 {-# INLINE ms #-}
@@ -218,7 +218,7 @@ ms = time
 -- | Creates 'Microsecond' from given 'Natural'.
 --
 -- >>> mcs 42
--- 42mcs :: Time Microsecond
+-- 42mcs
 mcs :: RatioNat -> Time Microsecond
 mcs = time
 {-# INLINE mcs #-}
@@ -226,7 +226,7 @@ mcs = time
 -- | Creates 'Nanosecond' from given 'Natural'.
 --
 -- >>> ns 42
--- 42ns :: Time Nanosecond
+-- 42ns
 ns :: RatioNat -> Time Nanosecond
 ns = time
 {-# INLINE ns #-}
@@ -234,7 +234,7 @@ ns = time
 -- | Creates 'Picosecond' from given 'Natural'.
 --
 -- >>> ps 42
--- 42ps :: Time Picosecond
+-- 42ps
 ps :: RatioNat -> Time Picosecond
 ps = time
 {-# INLINE ps #-}
@@ -242,7 +242,7 @@ ps = time
 -- | Creates 'Minute' from given 'Natural'.
 --
 -- >>> minute 42
--- 42m :: Time Minute
+-- 42m
 minute :: RatioNat -> Time Minute
 minute = time
 {-# INLINE minute #-}
@@ -250,7 +250,7 @@ minute = time
 -- | Creates 'Hour' from given 'Natural'.
 --
 -- >>> hour 42
--- 42h :: Time Hour
+-- 42h
 hour :: RatioNat -> Time Hour
 hour = time
 {-# INLINE hour #-}
@@ -258,15 +258,15 @@ hour = time
 -- | Creates 'Day' from given 'Natural'.
 --
 -- >>> day 42
--- 42d :: Time Day
+-- 42d
 day :: RatioNat -> Time Day
 day = time
 {-# INLINE day #-}
 
 -- | Creates 'Week' from given 'Natural'.
 --
--- >>> sec 42
--- 42w :: Time Week
+-- >>> week 42
+-- 42w
 week :: RatioNat -> Time Week
 week = time
 {-# INLINE week #-}
@@ -274,7 +274,7 @@ week = time
 -- | Creates 'Fortnight' from given 'Natural'.
 --
 -- >>> fortnight 42
--- 42fn :: Time Fortnight
+-- 42fn
 fortnight :: RatioNat -> Time Fortnight
 fortnight = time
 {-# INLINE fortnight #-}
@@ -354,9 +354,11 @@ toUnit (Time t) = Time (t * ratVal @unitFrom / ratVal @unitTo)
  any time-unit and operates in any MonadIO.
 
 
->>> threadDelay $ sec 2
->>> threadDelay (2 :: Time Second)
->>> threadDelay @Second 2
+@
+__>>> threadDelay $ sec 2__
+__>>> threadDelay (2 :: Time Second)__
+__>>> threadDelay @Second 2__
+@
 
 -}
 threadDelay :: forall (unit :: Rat) m . (KnownDivRat unit Microsecond, MonadIO m)
@@ -369,8 +371,11 @@ threadDelay = liftIO . Concurrent.threadDelay . floor . toUnit @Microsecond
 -- program in the given time unit.
 -- The precision of this result is implementation-dependent.
 --
--- >>> getCPUTime @Second
+-- @
+-- __>>> getCPUTime @Second__
 -- 1064046949/1000000000s
+-- @
+--
 getCPUTime :: forall (unit :: Rat) m . (KnownDivRat Picosecond unit, MonadIO m)
            => m (Time unit)
 getCPUTime = toUnit . ps . fromInteger <$> liftIO CPUTime.getCPUTime
@@ -379,15 +384,21 @@ getCPUTime = toUnit . ps . fromInteger <$> liftIO CPUTime.getCPUTime
 {- | Similar to 'Timeout.timeout' but receiving any time unit
 instead of number of microseconds.
 
->>> timeout (sec 1) (putStrLn "Hello O'Clock")
+@
+__>>> timeout (sec 1) (putStrLn "Hello O'Clock")__
 Hello O'Clock
 Just ()
+@
 
->>> timeout (ps 1) (putStrLn "Hello O'Clock")
+@
+__>>> timeout (ps 1) (putStrLn "Hello O'Clock")__
 Nothing
+@
 
->>> timeout (mcs 1) (putStrLn "Hello O'Clock")
+@
+__>>> timeout (mcs 1) (putStrLn "Hello O'Clock")__
 HellNothing
+@
 
 -}
 timeout :: forall (unit :: Rat) m a . (MonadIO m, KnownDivRat unit Microsecond)
