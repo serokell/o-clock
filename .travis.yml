@@ -8,10 +8,20 @@ cache:
   directories:
   - "$HOME/.cabal"
   - "$HOME/.ghc"
+  - "$HOME/.stack"
+  - ".stack-work"
 
 matrix:
 
   include:
+
+  - ghc: 8.2.2
+    env: STACK_YAML="$HOME/build/serokell/o-clock/stack.yaml"
+    os: linux
+    addons:
+      apt:
+        packages:
+        - libgmp-dev
 
   - ghc: 8.4.1
     env: GHCVER='8.4.1' CABALVER='head'
@@ -25,14 +35,31 @@ matrix:
         - cabal-install-head
 
 install:
-- export PATH="/opt/ghc/$GHCVER/bin:/opt/cabal/$CABALVER/bin:$PATH"
-- echo $PATH
-- cp cabal.project.local.ubuntu-example cabal.project.local
-- cabal new-update
-- cabal new-build --enable-tests --enable-benchmarks --allow-newer
+  - |
+    if [ -z "$STACK_YAML" ]; then
+      export PATH="/opt/ghc/$GHCVER/bin:/opt/cabal/$CABALVER/bin:$PATH"
+      echo $PATH
+      cp cabal.project.local.ubuntu-example cabal.project.local
+      cabal new-update
+      cabal new-build --enable-tests --enable-benchmarks --allow-newer
+    else
+      mkdir -p ~/.local/bin
+      export PATH="$HOME/.local/bin:$PATH"
+      travis_retry curl -L 'https://www.stackage.org/stack/linux-x86_64' | tar xz --wildcards --strip-components=1 -C ~/.local/bin '*/stack'
+      stack --version
+      stack setup --no-terminal
+      stack setup --no-terminal --upgrade-cabal
+      stack ghc -- --version
+      stack build --only-dependencies --no-terminal
+    fi
 
 script:
-- cabal new-test --allow-newer
+  - |
+    if [ -z "$STACK_YAML" ]; then
+      cabal new-test --allow-newer
+    else
+      stack build --test --bench --no-terminal
+    fi
 
 notifications:
   email: false
