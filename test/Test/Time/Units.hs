@@ -45,6 +45,14 @@ spec_Units = do
             read @(Time Second) "7/2s" `shouldBe` Time (7 :% 2)
         it "fails when '-4s' is expected as seconds" $
             evaluate (read @(Time Second) "-4s") `shouldThrow` anyException
+        it "parses '25+5/7s' as 180/7 seconds" $
+            read @(Time Second) "25+5/7s" `shouldBe` Time (180 :% 7)
+        it "fails when '3+2s' is expected as seconds" $
+            evaluate (read @(Time Second) "3+2s") `shouldThrow` anyException
+        it "fails when '+3s' is expected as seconds" $
+            evaluate (read @(Time Second) "+3s") `shouldThrow` anyException
+        it "fails when '/3s' is expected as seconds" $
+            evaluate (read @(Time Second) "/3s") `shouldThrow` anyException
         it "parses '14/2h' as 7 hours" $
             read @(Time Hour) "14/2h" `shouldBe` 7
         it "fails when '14/2h' expected as 7 seconds" $

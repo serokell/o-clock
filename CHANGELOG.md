@@ -6,6 +6,9 @@ The change log is available [on GitHub][2].
 0.0.1
 =====
 
+* [#61](https://github.com/serokell/o-clock/issues/61):
+  Change `Show` and `Read` instances for `Time` to use
+  mixed fractions.
 * [#72](https://github.com/serokell/o-clock/issues/72):
   Move `+:+` and `-:-` to `TimeStamp` module.
   Make operators `*:*` and `/:/` for `timeMul` and `timeDiv`.

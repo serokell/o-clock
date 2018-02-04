@@ -68,7 +68,7 @@ import GHC.Prim (coerce)
 import GHC.Read (Read (readPrec))
 import GHC.Real (denominator, numerator, (%))
 import GHC.TypeLits (KnownSymbol, Symbol, symbolVal)
-import Text.ParserCombinators.ReadP (ReadP, char, munch1, option, pfail)
+import Text.ParserCombinators.ReadP (ReadP, char, munch1, option, pfail, (+++))
 import Text.ParserCombinators.ReadPrec (ReadPrec, lift)
 
 #if ( __GLASGOW_HASKELL__ >= 804 )
@@ -145,11 +145,25 @@ unitNameVal :: forall (unit :: Rat) . (KnownUnitName unit) => String
 unitNameVal = symbolVal (Proxy @(UnitName unit))
 
 instance KnownUnitName unit => Show (Time unit) where
-    show (Time rat) = let numeratorStr   = show (numerator rat)
-                          denominatorStr = case denominator rat of
-                                                1 -> ""
-                                                n -> '/' : show n
-                      in numeratorStr ++ denominatorStr ++ unitNameVal @unit
+    showsPrec p (Time t) = showParen (p > 6)
+                              $ showsMixed t
+                              . showString (unitNameVal @unit)
+      where
+        showsMixed 0 = showString "0"
+        showsMixed rat =
+          let (n,d) = (numerator rat, denominator rat)
+              (q,r) = n `quotRem` d
+              op = if q == 0 || r == 0 then "" else "+"
+              quotStr = if q == 0
+                          then id -- NB id === showString ""
+                          else shows q
+              remStr = if r == 0
+                         then id
+                         else shows r
+                            . showString "/"
+                            . shows d
+          in
+              quotStr . showString op . remStr 
 
 instance KnownUnitName unit => Read (Time unit) where
     readPrec :: ReadPrec (Time unit)
@@ -158,11 +172,19 @@ instance KnownUnitName unit => Read (Time unit) where
         readP :: ReadP (Time unit)
         readP = do
             let naturalP = read <$> munch1 isDigit
-            n <- naturalP
-            m <- option 1 (char '/' *> naturalP)
+            -- If a '+' is parsed as part of a mixed fraction, the other parts
+            -- are no longer optional.  This separation is required to prevent
+            -- e.g. "3+2" successfully parsing.
+            let fullMixedExpr = (,,) <$> (naturalP <* char '+')
+                                     <*> (naturalP <* char '/')
+                                     <*> naturalP
+            let improperExpr = (,,) 0 <$> naturalP
+                                      <*> option 1 (char '/' *> naturalP)
+            (q,r,d) <- fullMixedExpr +++ improperExpr
+            let n = (q * d + r)
             timeUnitStr <- munch1 isLetter
             unless (timeUnitStr == unitNameVal @unit) pfail
-            pure $ Time (n % m)
+            pure $ Time (n % d)
 
 -- | Has the same behavior as derived instance, but '*' operator
 -- throws the runtime error with 'error'.
@@ -303,7 +325,7 @@ floorUnit = time . fromIntegral @Natural . floor
 7/1000s
 
 >>> toUnit @Week (Time @Day 45)
-45/7w
+6+3/7w
 
 >>> toUnit @Second @Minute 3
 180s
