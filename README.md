@@ -130,11 +130,18 @@ formatHours hours = let (weeks, days) = calculateWork hours in show weeks ++ sho
 After that we can simply print the output we wanted.
 
 Thought we have special function for this kind of formatting purposes `seriesF`.
-So the same result can be gained with the usage of it. Check it out:
+So the similar result (but not rounded) can be gained with the usage of it. Check it out:
 
 ```haskell
 main :: IO ()
 main = do
-    putStrLn $ formatHours 140
-    putStrLn $ seriesF @'[WorkWeek, WorkDay] $ hour 140
+    putStrLn $ "The result:   " ++ formatHours 140
+    putStrLn $ "With seriesF: " ++ (seriesF @'[WorkWeek, WorkDay] $ hour 140)
+```
+
+And the output will be
+
+```haskell ignore
+The result:   3ww2wd
+With seriesF: 3ww2+1/2wd
 ```

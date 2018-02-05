@@ -6,6 +6,8 @@ The change log is available [on GitHub][2].
 0.1.0
 =====
 
+* [#60](https://github.com/serokell/o-clock/issues/60):
+  Show fractional as the last argument in the result of `seriesF`.
 * [#76](https://github.com/serokell/o-clock/issues/76):
   Remove useless instances of `TimeStamp`. Make TimeStamp always deal with
   `Second`s internally.

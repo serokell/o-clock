@@ -2,6 +2,7 @@
 {-# LANGUAGE CPP                  #-}
 {-# LANGUAGE DataKinds            #-}
 {-# LANGUAGE FlexibleContexts     #-}
+{-# LANGUAGE FlexibleInstances    #-}
 {-# LANGUAGE InstanceSigs         #-}
 {-# LANGUAGE Rank2Types           #-}
 {-# LANGUAGE TypeOperators        #-}
@@ -25,6 +26,9 @@ __Examples__
 
 >>> seriesF @'[Hour, Second] (minute 0)
 "0h"
+
+>>> seriesF @'[Hour, Minute, Second] (Time @Day (2 % 7))
+"6h51m25+5/7s"
 
 The received list should be in descending order. It would be verified at compile-time.
 Example of the error from @ghci@:
@@ -84,7 +88,7 @@ Throws the error when time units are not in the right order.
 __Usage example:__
 
 >>> seriesF @(Hour ... Second) $ hour 3 +:+ minute 5 +:+ sec 3 +:+ ms 123
-"3h5m3s"
+"3h5m3+123/1000s"
 
 -}
 type family (from :: Rat) ... (to :: Rat) :: [Rat] where
@@ -125,16 +129,26 @@ instance Series ('[] :: [Rat]) where
     seriesF :: Time someUnit -> String
     seriesF _ = ""
 
-instance ( KnownRatName unit
-         , Series units
+instance (KnownRatName unit) => Series ('[unit] :: [Rat]) where
+    seriesF :: forall (someUnit :: Rat) . KnownRatName someUnit
+            => Time someUnit -> String
+    seriesF t =
 #if ( __GLASGOW_HASKELL__ >= 804 )
-         , DescendingConstraint (IsDescending (unit : units))
+        let newTime = withRuntimeDivRat @someUnit @unit $ toUnit @unit t
+#else
+        let newTime = toUnit @unit t
+#endif
+        in show newTime
+
+instance ( KnownRatName unit
+         , Series (nextUnit : units)
+#if ( __GLASGOW_HASKELL__ >= 804 )
+         , DescendingConstraint (IsDescending (unit ': nextUnit ': units))
 #endif
          )
-    => Series (unit ': units :: [Rat]) where
+    => Series (unit ': nextUnit ': units :: [Rat]) where
     seriesF :: forall (someUnit :: Rat) . KnownRatName someUnit
-            => Time someUnit
-            -> String
+            => Time someUnit -> String
 #if ( __GLASGOW_HASKELL__ >= 804 )
     seriesF t = let newUnit = withRuntimeDivRat @someUnit @unit $ toUnit @unit t
 #else
@@ -147,7 +161,7 @@ instance ( KnownRatName unit
                     nextUnit = newUnit - flooredNewUnit
                 in if nextUnit == 0
                    then show newUnit
-                   else timeStr ++ seriesF @units @unit nextUnit
+                   else timeStr ++ seriesF @(nextUnit ': units) @unit nextUnit
 
 {- | Similar to 'seriesF', but formats using all time units of the library.
 
