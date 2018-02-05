@@ -6,6 +6,10 @@ The change log is available [on GitHub][2].
 0.0.1
 =====
 
+* [#72](https://github.com/serokell/o-clock/issues/72):
+  Move `+:+` and `-:-` to `TimeStamp` module.
+  Make operators `*:*` and `/:/` for `timeMul` and `timeDiv`.
+  Add `-%-` operator. Change `timeAdd` function to work with `TimeStamp`.
 * [#56](https://github.com/serokell/o-clock/issues/56):
   Add `doctest` to documentation.
 * [#62](https://github.com/serokell/o-clock/issues/62):

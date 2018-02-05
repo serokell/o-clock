@@ -36,6 +36,7 @@ library
   default-extensions:  OverloadedStrings
                        RecordWildCards
                        ScopedTypeVariables
+                       TypeApplications
                        TypeFamilies
 
 executable play-o-clock

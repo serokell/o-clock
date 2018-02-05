@@ -7,7 +7,6 @@
 {-# LANGUAGE FlexibleContexts           #-}
 {-# LANGUAGE InstanceSigs               #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
-{-# LANGUAGE TypeApplications           #-}
 {-# LANGUAGE TypeOperators              #-}
 {-# LANGUAGE UndecidableInstances       #-}
 
@@ -50,9 +49,6 @@ module Time.Units
        , day
        , week
        , fortnight
-
-       , (+:+)
-       , (-:-)
 
         -- ** Functions
        , toUnit
@@ -293,30 +289,6 @@ fortnight = time
 -}
 floorUnit :: forall (unit :: Rat) . Time unit -> Time unit
 floorUnit = time . fromIntegral @Natural . floor
-
--- | Sums times of different units.
---
--- >>> minute 1 +:+ sec 1
--- 61s
---
-(+:+) :: forall (unitResult :: Rat) (unitLeft :: Rat) . KnownDivRat unitLeft unitResult
-     => Time unitLeft
-     -> Time unitResult
-     -> Time unitResult
-t1 +:+ t2 = toUnit t1 + t2
-{-# INLINE (+:+) #-}
-
--- | Substracts times of different units.
---
--- >>> minute 1 -:- sec 1
--- 59s
---
-(-:-) :: forall (unitResult :: Rat) (unitLeft :: Rat) . KnownDivRat unitLeft unitResult
-     => Time unitLeft
-     -> Time unitResult
-     -> Time unitResult
-t1 -:- t2 = toUnit t1 - t2
-{-# INLINE (-:-) #-}
 
 ----------------------------------------------------------------------------
 -- Functional

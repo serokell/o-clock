@@ -4,7 +4,6 @@
 {-# LANGUAGE FlexibleContexts     #-}
 {-# LANGUAGE InstanceSigs         #-}
 {-# LANGUAGE Rank2Types           #-}
-{-# LANGUAGE TypeApplications     #-}
 {-# LANGUAGE TypeOperators        #-}
 {-# LANGUAGE UndecidableInstances #-}
 
@@ -65,7 +64,8 @@ import Time.Units (Day, Fortnight, Hour, KnownRatName, Microsecond, Millisecond,
                    Picosecond, Second, Time, Week, floorUnit, toUnit)
 
 -- $setup
--- >>> import Time.Units (Time (..), fortnight, hour, minute, ms, sec, (+:+))
+-- >>> import Time.Units (Time (..), fortnight, hour, minute, ms, sec)
+-- >>> import Time.TimeStamp ((+:+))
 -- >>> import GHC.Real ((%))
 
 
