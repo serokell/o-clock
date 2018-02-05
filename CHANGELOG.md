@@ -3,9 +3,12 @@ Change log
 o'clock uses [PVP Versioning][1].
 The change log is available [on GitHub][2].
 
-0.0.1
+0.1.0
 =====
 
+* [#76](https://github.com/serokell/o-clock/issues/76):
+  Remove useless instances of `TimeStamp`. Make TimeStamp always deal with
+  `Second`s internally.
 * [#61](https://github.com/serokell/o-clock/issues/61):
   Change `Show` and `Read` instances for `Time` to use
   mixed fractions.
