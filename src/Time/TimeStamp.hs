@@ -23,14 +23,14 @@ module Time.TimeStamp
        ) where
 
 import Time.Rational (KnownDivRat, KnownRat, Rat, RatioNat)
-import Time.Units (Time (..), toUnit)
+import Time.Units (Second, Time (..), sec, toUnit)
 
 -- $setup
 -- >>> import Time.Units (Minute, Second, minute, ms, sec)
 
 -- | Similar to 'Time' but has no units and can be negative.
 newtype TimeStamp = TimeStamp Rational
-    deriving (Show, Read, Num, Eq, Ord, Enum, Fractional, Real, RealFrac)
+    deriving (Show, Read, Eq, Ord)
 
 
 {- | Returns the result of comparison of two 'Timestamp's and
@@ -40,34 +40,37 @@ the 'Time' of that difference of given time unit.
 (GT,2s)
 
 >>>timeDiff @Minute (TimeStamp 4) (TimeStamp 2)
-(GT,2m)
+(GT,1/30m)
 
 >>> timeDiff @Second (TimeStamp 2) (TimeStamp 4)
 (LT,2s)
 
 >>> timeDiff @Minute (TimeStamp 2) (TimeStamp 4)
-(LT,2m)
+(LT,1/30m)
 
 -}
-timeDiff :: forall (unit :: Rat) . KnownRat unit
+timeDiff :: forall (unit :: Rat) . KnownDivRat Second unit
          => TimeStamp
          -> TimeStamp
          -> (Ordering, Time unit)
 timeDiff (TimeStamp a) (TimeStamp b) =
     let (order, r) = ratDiff a b
-    in (order, Time $ fromRational r)
+    in (order, toUnit $ sec $ fromRational r)
 
 {- | Returns the result of addition of 'Time' with 'TimeStamp' elements.
 
 >>> sec 5 `timeAdd` (TimeStamp 4)
 TimeStamp (9 % 1)
 
+>>> minute 1 `timeAdd` (TimeStamp 5)
+TimeStamp (65 % 1)
+
 -}
-timeAdd :: forall (unit :: Rat) . KnownRat unit
+timeAdd :: forall (unit :: Rat) . KnownDivRat unit Second
         => Time unit
         -> TimeStamp
         -> TimeStamp
-timeAdd (Time t) (TimeStamp ts) = TimeStamp (toRational t + ts)
+timeAdd t (TimeStamp ts) = TimeStamp (toRational (unTime $ toUnit @Second t) + ts)
 
 -- | Returns the result of multiplication of two 'Time' elements.
 timeMul :: forall (unit :: Rat) . KnownRat unit
