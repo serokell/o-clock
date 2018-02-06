@@ -6,6 +6,8 @@ The change log is available [on GitHub][2].
 0.1.0
 =====
 
+* [#70](https://github.com/serokell/o-clock/issues/70):
+  Add `fromReal` function to `TimeStamp` module.
 * [#60](https://github.com/serokell/o-clock/issues/60):
   Show fractional as the last argument in the result of `seriesF`.
 * [#76](https://github.com/serokell/o-clock/issues/76):
