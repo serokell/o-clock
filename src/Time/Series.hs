@@ -8,64 +8,36 @@
 {-# LANGUAGE TypeOperators        #-}
 {-# LANGUAGE UndecidableInstances #-}
 
-{- | This module introduces function to format time in desired way.
+-- | This module introduces function to format and parse time in desired way.
 
-__Examples__
-
->>> seriesF @'[Day, Hour, Minute, Second] (minute 4000)
-"2d18h40m"
-
->>> seriesF @'[Day, Minute, Second] (minute 4000)
-"2d1120m"
-
->>> seriesF @'[Hour, Minute, Second] (sec 3601)
-"1h1s"
-
->>>  seriesF @'[Hour, Second, Millisecond] (Time @Minute $ 3 % 2)
-"90s"
-
->>> seriesF @'[Hour, Second] (minute 0)
-"0h"
-
->>> seriesF @'[Hour, Minute, Second] (Time @Day (2 % 7))
-"6h51m25+5/7s"
-
-The received list should be in descending order. It would be verified at compile-time.
-Example of the error from @ghci@:
-
-#if ( __GLASGOW_HASKELL__ >= 804 )
->>> seriesF @'[Millisecond, Second] (minute 42)
-...
-    • List of units should be in descending order
-    • In the expression: seriesF @'[Millisecond, Second] (minute 42)
-      In an equation for ‘it’:
-          it = seriesF @'[Millisecond, Second] (minute 42)
-...
-#endif
-
--}
-
-module Time.Formatting
+module Time.Series
        ( AllTimes
 #if ( __GLASGOW_HASKELL__ >= 804 )
        , type (...)
 #endif
-
-       , Series (..)
+         -- * Formatting
+       , SeriesF (..)
        , unitsF
+
+         -- * Parsing
+       , SeriesP (..)
+       , unitsP
        ) where
 
+import Control.Applicative (liftA2)
+import Data.Char (isDigit, isLetter)
+import Text.Read (readMaybe)
 #if ( __GLASGOW_HASKELL__ >= 804 )
-import GHC.TypeLits (TypeError, ErrorMessage (Text))
 import Data.Kind (Constraint)
 import Data.Type.Bool (type (&&), If)
 import Data.Type.Equality (type (==))
+import GHC.TypeLits (TypeError, ErrorMessage (Text))
 
 import Time.Rational (type (>=%), withRuntimeDivRat)
 #endif
 import Time.Rational (Rat)
 import Time.Units (Day, Fortnight, Hour, KnownRatName, Microsecond, Millisecond, Minute, Nanosecond,
-                   Picosecond, Second, Time, Week, floorUnit, toUnit)
+                   Picosecond, Second, Time (..), Week, floorUnit, toUnit)
 
 -- $setup
 -- >>> import Time.Units (Time (..), fortnight, hour, minute, ms, sec)
@@ -119,17 +91,52 @@ type family DescendingConstraint (b :: Bool) :: Constraint where
     DescendingConstraint 'False = TypeError ('Text "List of units should be in descending order")
 #endif
 
--- | Class for time formatting.
-class Series (units :: [Rat]) where
+{- | Class for time formatting.
+
+__Examples__
+
+>>> seriesF @'[Day, Hour, Minute, Second] (minute 4000)
+"2d18h40m"
+
+>>> seriesF @'[Day, Minute, Second] (minute 4000)
+"2d1120m"
+
+>>> seriesF @'[Hour, Minute, Second] (sec 3601)
+"1h1s"
+
+>>>  seriesF @'[Hour, Second, Millisecond] (Time @Minute $ 3 % 2)
+"90s"
+
+>>> seriesF @'[Hour, Second] (minute 0)
+"0h"
+
+>>> seriesF @'[Hour, Minute, Second] (Time @Day (2 % 7))
+"6h51m25+5/7s"
+
+The received list should be in descending order. It would be verified at compile-time.
+Example of the error from @ghci@:
+
+#if ( __GLASGOW_HASKELL__ >= 804 )
+>>> seriesF @'[Millisecond, Second] (minute 42)
+...
+    • List of units should be in descending order
+    • In the expression: seriesF @'[Millisecond, Second] (minute 42)
+      In an equation for ‘it’:
+          it = seriesF @'[Millisecond, Second] (minute 42)
+...
+#endif
+
+-}
+class SeriesF (units :: [Rat]) where
     seriesF :: forall (someUnit :: Rat) . KnownRatName someUnit
             => Time someUnit
             -> String
 
-instance Series ('[] :: [Rat]) where
+instance SeriesF ('[] :: [Rat]) where
     seriesF :: Time someUnit -> String
     seriesF _ = ""
 
-instance (KnownRatName unit) => Series ('[unit] :: [Rat]) where
+instance (KnownRatName unit) => SeriesF ('[unit] :: [Rat]) where
     seriesF :: forall (someUnit :: Rat) . KnownRatName someUnit
             => Time someUnit -> String
     seriesF t =
@@ -141,12 +148,12 @@ instance (KnownRatName unit) => Series ('[unit] :: [Rat]) where
         in show newTime
 
 instance ( KnownRatName unit
-         , Series (nextUnit : units)
+         , SeriesF (nextUnit : units)
 #if ( __GLASGOW_HASKELL__ >= 804 )
          , DescendingConstraint (IsDescending (unit ': nextUnit ': units))
 #endif
          )
-    => Series (unit ': nextUnit ': units :: [Rat]) where
+    => SeriesF (unit ': nextUnit ': units :: [Rat]) where
     seriesF :: forall (someUnit :: Rat) . KnownRatName someUnit
             => Time someUnit -> String
 #if ( __GLASGOW_HASKELL__ >= 804 )
@@ -174,3 +181,79 @@ instance ( KnownRatName unit
 -}
 unitsF :: forall unit . KnownRatName unit => Time unit -> String
 unitsF = seriesF @AllTimes
+
+{- | Class for time parsing.
+
+__Examples__
+
+>>> seriesP @'[Day, Hour, Minute, Second] @Minute "2d18h40m"
+Just (4000m)
+
+>>> seriesP @'[Day, Minute, Second] @Minute "2d1120m"
+Just (4000m)
+
+>>> seriesP @'[Hour, Minute, Second] @Second "1h1s"
+Just (3601s)
+
+>>> seriesP @'[Hour, Second, Millisecond] @Minute "90s"
+Just (1+1/2m)
+
+>>> seriesP @'[Hour, Second] @Second "11ns"
+Nothing
+
+__Note:__ The received list should be in descending order. It would be verified at compile-time.
+
+-}
+class SeriesP (units :: [Rat]) where
+    seriesP :: forall (someUnit :: Rat) . KnownRatName someUnit
+            => String -> Maybe (Time someUnit)
+
+instance SeriesP '[] where
+    seriesP _ = Nothing
+
+instance (KnownRatName unit) => SeriesP '[unit] where
+    seriesP :: forall (someUnit :: Rat) . KnownRatName someUnit
+            => String -> Maybe (Time someUnit)
+    seriesP ""  = Just $ Time 0
+    seriesP str = readMaybeTime @unit str
+
+instance ( KnownRatName unit
+         , SeriesP (nextUnit : units)
+#if ( __GLASGOW_HASKELL__ >= 804 )
+         , DescendingConstraint (IsDescending (unit ': nextUnit ': units))
+#endif
+         )
+         => SeriesP (unit ': nextUnit ': units :: [Rat]) where
+    seriesP :: forall (someUnit :: Rat) . KnownRatName someUnit
+            => String -> Maybe (Time someUnit)
+    seriesP ""  = Just $ Time 0
+    seriesP str = let (num, rest)  = span isDigit str
+                      (u, nextStr) = span isLetter rest
+                      maybeT = readMaybeTime @unit $ num ++ u
+                  in case maybeT of
+                         Nothing -> seriesP @(nextUnit ': units) str
+                         Just _  -> liftA2 (+) maybeT (seriesP @(nextUnit ': units) nextStr)
+
+{- | Similar to 'seriesP', but parses using all time units of the library.
+
+>>> unitsP @Second "1m"
+Just (60s)
+
+>>> unitsP @Minute "2d18h40m"
+Just (4000m)
+
+-}
+unitsP :: forall unit . KnownRatName unit => String -> Maybe (Time unit)
+unitsP = seriesP @AllTimes @unit
+
+----------------------------------------------------------------------------
+-- Util
+----------------------------------------------------------------------------
+
+readMaybeTime :: forall (unit :: Rat) (someUnit :: Rat) . (KnownRatName unit, KnownRatName someUnit)
+              => String -> Maybe (Time someUnit)
+readMaybeTime str =
+#if ( __GLASGOW_HASKELL__ >= 804 )
+    withRuntimeDivRat @unit @someUnit $
+#endif
+        toUnit @someUnit <$> (readMaybe @(Time unit) str)

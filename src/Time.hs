@@ -4,13 +4,13 @@
 -- can be found here: <https://github.com/serokell/o-clock#readme>
 
 module Time
-    ( module Time.Formatting
-    , module Time.Rational
+    ( module Time.Rational
+    , module Time.Series
     , module Time.Timestamp
     , module Time.Units
     ) where
 
-import Time.Formatting
 import Time.Rational
+import Time.Series
 import Time.Timestamp
 import Time.Units

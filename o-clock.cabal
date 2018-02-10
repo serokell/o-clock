@@ -24,8 +24,8 @@ source-repository head
 library
   hs-source-dirs:      src
   exposed-modules:     Time
-                         Time.Formatting
                          Time.Rational
+                         Time.Series
                          Time.Timestamp
                          Time.Units
   ghc-options:         -Wall

@@ -6,6 +6,9 @@ The change log is available [on GitHub][2].
 0.1.0
 =====
 
+* [#63](https://github.com/serokell/o-clock/issues/63):
+  Rename `Formatting` module to `Series`.
+  Add `SeriesP` class for parsing time.
 * [#81](https://github.com/serokell/o-clock/issues/81):
   Rename `TimeStamp` to `Timestamp`.
 * [#60](https://github.com/serokell/o-clock/issues/60):
