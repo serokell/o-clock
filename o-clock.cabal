@@ -26,7 +26,7 @@ library
   exposed-modules:     Time
                          Time.Formatting
                          Time.Rational
-                         Time.TimeStamp
+                         Time.Timestamp
                          Time.Units
   ghc-options:         -Wall
   build-depends:       base         >= 4.10  && < 5
@@ -54,7 +54,7 @@ test-suite o-clock-test
   main-is:             Spec.hs
 
   other-modules:       Test.Time.Property
-                       Test.Time.TimeStamp
+                       Test.Time.Timestamp
                        Test.Time.TypeSpec
                        Test.Time.Units
 

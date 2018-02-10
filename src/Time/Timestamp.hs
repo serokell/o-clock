@@ -3,11 +3,11 @@
 {-# LANGUAGE FlexibleContexts           #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 
--- | This module introduces 'TimeStamp' data type
+-- | This module introduces 'Timestamp' data type
 -- and corresponding functions for operations with time.
 
-module Time.TimeStamp
-       ( TimeStamp (..)
+module Time.Timestamp
+       ( Timestamp (..)
        , timeDiff
        , timeAdd
        , timeMul
@@ -29,48 +29,48 @@ import Time.Units (Second, Time (..), sec, toUnit)
 -- >>> import Time.Units (Minute, Second, minute, ms, sec)
 
 -- | Similar to 'Time' but has no units and can be negative.
-newtype TimeStamp = TimeStamp Rational
+newtype Timestamp = Timestamp Rational
     deriving (Show, Read, Eq, Ord)
 
 
 {- | Returns the result of comparison of two 'Timestamp's and
 the 'Time' of that difference of given time unit.
 
->>> timeDiff @Second (TimeStamp 4) (TimeStamp 2)
+>>> timeDiff @Second (Timestamp 4) (Timestamp 2)
 (GT,2s)
 
->>>timeDiff @Minute (TimeStamp 4) (TimeStamp 2)
+>>>timeDiff @Minute (Timestamp 4) (Timestamp 2)
 (GT,1/30m)
 
->>> timeDiff @Second (TimeStamp 2) (TimeStamp 4)
+>>> timeDiff @Second (Timestamp 2) (Timestamp 4)
 (LT,2s)
 
->>> timeDiff @Minute (TimeStamp 2) (TimeStamp 4)
+>>> timeDiff @Minute (Timestamp 2) (Timestamp 4)
 (LT,1/30m)
 
 -}
 timeDiff :: forall (unit :: Rat) . KnownDivRat Second unit
-         => TimeStamp
-         -> TimeStamp
+         => Timestamp
+         -> Timestamp
          -> (Ordering, Time unit)
-timeDiff (TimeStamp a) (TimeStamp b) =
+timeDiff (Timestamp a) (Timestamp b) =
     let (order, r) = ratDiff a b
     in (order, toUnit $ sec $ fromRational r)
 
-{- | Returns the result of addition of 'Time' with 'TimeStamp' elements.
+{- | Returns the result of addition of 'Time' with 'Timestamp' elements.
 
->>> sec 5 `timeAdd` (TimeStamp 4)
-TimeStamp (9 % 1)
+>>> sec 5 `timeAdd` (Timestamp 4)
+Timestamp (9 % 1)
 
->>> minute 1 `timeAdd` (TimeStamp 5)
-TimeStamp (65 % 1)
+>>> minute 1 `timeAdd` (Timestamp 5)
+Timestamp (65 % 1)
 
 -}
 timeAdd :: forall (unit :: Rat) . KnownDivRat unit Second
         => Time unit
-        -> TimeStamp
-        -> TimeStamp
-timeAdd t (TimeStamp ts) = TimeStamp (toRational (unTime $ toUnit @Second t) + ts)
+        -> Timestamp
+        -> Timestamp
+timeAdd t (Timestamp ts) = Timestamp (toRational (unTime $ toUnit @Second t) + ts)
 
 -- | Returns the result of multiplication of two 'Time' elements.
 timeMul :: forall (unit :: Rat) . KnownRat unit

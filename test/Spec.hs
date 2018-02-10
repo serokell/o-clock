@@ -3,7 +3,7 @@ module Main where
 import Test.Tasty (defaultMain, testGroup)
 
 import Test.Time.Property (hedgehogTestTrees)
-import Test.Time.TimeStamp (timeStampTestTree)
+import Test.Time.Timestamp (timeStampTestTree)
 import Test.Time.TypeSpec (runTypeSpecTests)
 import Test.Time.Units (unitsTestTree)
 
@@ -15,7 +15,7 @@ main = do
     -- * toUnit tests
     -- * read tests
     unitTests <- unitsTestTree
-    -- TimeStamp tests
+    -- Timestamp tests
     tsTests   <- timeStampTestTree
 
     let allTests = testGroup "O'Clock" $ [unitTests, tsTests] ++ hedgehogTestTrees

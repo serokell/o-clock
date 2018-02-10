@@ -69,7 +69,7 @@ import Time.Units (Day, Fortnight, Hour, KnownRatName, Microsecond, Millisecond,
 
 -- $setup
 -- >>> import Time.Units (Time (..), fortnight, hour, minute, ms, sec)
--- >>> import Time.TimeStamp ((+:+))
+-- >>> import Time.Timestamp ((+:+))
 -- >>> import GHC.Real ((%))
 
 
