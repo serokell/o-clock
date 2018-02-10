@@ -6,11 +6,11 @@
 module Time
     ( module Time.Formatting
     , module Time.Rational
-    , module Time.TimeStamp
+    , module Time.Timestamp
     , module Time.Units
     ) where
 
 import Time.Formatting
 import Time.Rational
-import Time.TimeStamp
+import Time.Timestamp
 import Time.Units
