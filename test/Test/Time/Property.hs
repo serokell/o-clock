@@ -19,7 +19,7 @@ import Test.Tasty.Hedgehog (testProperty)
 
 import Time (Day, Fortnight, Hour, KnownRat, KnownRatName, Microsecond,
              Millisecond, Minute, Nanosecond, Picosecond, Rat, RatioNat, Second,
-             Time (..), Week, toUnit)
+             Time (..), Week, toUnit, unitsF, unitsP)
 #if ( __GLASGOW_HASKELL__ >= 804 )
 import Time (withRuntimeDivRat)
 #endif
@@ -28,13 +28,16 @@ import qualified Hedgehog.Gen as Gen
 import qualified Hedgehog.Range as Range
 
 hedgehogTestTrees :: [TestTree]
-hedgehogTestTrees = [readShowTestTree, toUnitTestTree]
+hedgehogTestTrees = [readShowTestTree, toUnitTestTree, seriesTestTree]
 
 readShowTestTree :: TestTree
 readShowTestTree = testProperty "Hedgehog read . show == id" prop_readShowUnit
 
 toUnitTestTree :: TestTree
 toUnitTestTree = testProperty "Hedgehog toUnit @to @from . toUnit @from @to ≡ id' property" prop_toUnit
+
+seriesTestTree :: TestTree
+seriesTestTree = testProperty "Hedgehog unitsP . unitsF ≡ id" prop_series
 
 -- | Existential data type for 'Unit's.
 data AnyTime =  forall (unit :: Rat) . (KnownRatName unit)
@@ -78,6 +81,14 @@ verifyToUnit (MkAnyTime t1) (MkAnyTime t2) = checkToUnit t1 t2
 #endif
                       toUnit (toUnit @unitTo t) === t
 
+-- | Verifier for @ seriesP . seriesF @.
+verifySeries :: forall m . (MonadTest m) => AnyTime -> m ()
+verifySeries (MkAnyTime anyT) = checkSeries anyT
+  where
+    checkSeries :: forall (unit :: Rat) . KnownRatName unit
+                => Time unit -> m ()
+    checkSeries t = unitsP @unit (unitsF t) === Just t
+
 -- | Generates random natural number up to 10^20.
 -- it receives the lower bound so that it wouldn't be possible
 -- to get 0 for denominator.
@@ -108,3 +119,6 @@ prop_toUnit = property $ do
     t1 <- genAnyTime
     t2 <- genAnyTime
     verifyToUnit t1 t2
+
+prop_series :: Property
+prop_series = property $ genAnyTime >>= verifySeries
