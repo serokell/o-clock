@@ -24,7 +24,6 @@ module Time.Series
        , unitsP
        ) where
 
-import Control.Applicative (liftA2)
 import Data.Char (isDigit, isLetter)
 import Text.Read (readMaybe)
 #if ( __GLASGOW_HASKELL__ >= 804 )
@@ -184,6 +183,11 @@ unitsF = seriesF @AllTimes
 
 {- | Class for time parsing.
 
+Empty string on input will be parsed as 0 time of the required time unit:
+
+>>> seriesP @'[Hour, Minute, Second] @Second ""
+Just (0s)
+
 __Examples__
 
 >>> seriesP @'[Day, Hour, Minute, Second] @Minute "2d18h40m"
@@ -200,6 +204,15 @@ Just (1+1/2m)
 
 >>> seriesP @'[Hour, Second] @Second "11ns"
 Nothing
+
+>>> seriesP @'[Hour, Minute] @Minute "1+1/2h"
+Nothing
+
+>>> seriesP @'[Hour, Minute] @Minute "1+1/2m"
+Just (1+1/2m)
+
+>>> seriesP @'[Hour, Minute] @Minute "1h1+1/2m"
+Just (61+1/2m)
 
 __Note:__ The received list should be in descending order. It would be verified at compile-time.
 
@@ -232,7 +245,7 @@ instance ( KnownRatName unit
                       maybeT = readMaybeTime @unit $ num ++ u
                   in case maybeT of
                          Nothing -> seriesP @(nextUnit ': units) str
-                         Just _  -> liftA2 (+) maybeT (seriesP @(nextUnit ': units) nextStr)
+                         Just t  -> (t +) <$> (seriesP @(nextUnit ': units) nextStr)
 
 {- | Similar to 'seriesP', but parses using all time units of the library.
 
