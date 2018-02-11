@@ -37,6 +37,7 @@ module Time.Units
         -- ** Creation helpers
        , time
        , floorUnit
+       , toNum
 
        , sec
        , ms
@@ -163,7 +164,7 @@ instance KnownUnitName unit => Show (Time unit) where
                             . showString "/"
                             . shows d
           in
-              quotStr . showString op . remStr 
+              quotStr . showString op . remStr
 
 instance KnownUnitName unit => Read (Time unit) where
     readPrec :: ReadPrec (Time unit)
@@ -311,6 +312,37 @@ fortnight = time
 -}
 floorUnit :: forall (unit :: Rat) . Time unit -> Time unit
 floorUnit = time . fromIntegral @Natural . floor
+
+{- | Convert time to the 'Num' in given units.
+
+For example, instead of writing
+
+@
+foo :: POSIXTime
+foo = 10800  -- 3 hours
+@
+
+one can write more safe implementation:
+
+@
+foo = toNum @Second $ hour 3
+@
+
+__Examples:__
+
+>>> toNum @Second @Natural $ hour 3
+10800
+
+>>> toNum @Minute @Int $ hour 3
+180
+
+>>> toNum @Hour @Natural $ hour 3
+3
+
+-}
+toNum :: forall (unitTo :: Rat) n (unit :: Rat) . (KnownDivRat unit unitTo, Num n)
+      => Time unit -> n
+toNum = fromIntegral @Natural . floor . toUnit @unitTo
 
 ----------------------------------------------------------------------------
 -- Functional
