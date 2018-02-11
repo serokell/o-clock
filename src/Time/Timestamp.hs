@@ -8,6 +8,7 @@
 
 module Time.Timestamp
        ( Timestamp (..)
+       , fromUnixTime
        , timeDiff
        , timeAdd
        , timeMul
@@ -32,6 +33,9 @@ import Time.Units (Second, Time (..), sec, toUnit)
 newtype Timestamp = Timestamp Rational
     deriving (Show, Read, Eq, Ord)
 
+-- | Converts unix time to 'Timestamp'.
+fromUnixTime :: Real a => a -> Timestamp
+fromUnixTime = Timestamp . toRational
 
 {- | Returns the result of comparison of two 'Timestamp's and
 the 'Time' of that difference of given time unit.

@@ -6,6 +6,8 @@ The change log is available [on GitHub][2].
 0.1.0
 =====
 
+* [#85](https://github.com/serokell/o-clock/issues/85):
+  Add `fromUnixTime` function.
 * [#71](https://github.com/serokell/o-clock/issues/71):
   Add `toNum` function.
 * [#64](https://github.com/serokell/o-clock/issues/64):
