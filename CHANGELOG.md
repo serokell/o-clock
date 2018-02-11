@@ -6,6 +6,8 @@ The change log is available [on GitHub][2].
 0.1.0
 =====
 
+* [#64](https://github.com/serokell/o-clock/issues/64):
+  Add property tests for `unitsP . unitsF ≡ id`
 * [#63](https://github.com/serokell/o-clock/issues/63):
   Rename `Formatting` module to `Series`.
   Add `SeriesP` class for parsing time.
