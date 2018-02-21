@@ -59,7 +59,7 @@ timeDiff :: forall (unit :: Rat) . KnownDivRat Second unit
          -> (Ordering, Time unit)
 timeDiff (Timestamp a) (Timestamp b) =
     let (order, r) = ratDiff a b
-    in (order, toUnit $ sec $ fromRational r)
+    in (order, toUnit $ sec r)
 
 {- | Returns the result of addition of 'Time' with 'Timestamp' elements.
 
@@ -134,7 +134,8 @@ infixl 6 +:+
 t1 +:+ t2 = toUnit t1 + t2
 {-# INLINE (+:+) #-}
 
--- | Substracts times of different units.
+-- | Substracts time amounts of different units. When the minuend is smaller
+-- than the subtrahend, this function will throw @Underflow :: ArithException@.
 --
 -- >>> minute 1 -:- sec 1
 -- 59s
@@ -147,7 +148,9 @@ infixl 6 -:-
 t1 -:- t2 = toUnit t1 - t2
 {-# INLINE (-:-) #-}
 
-{- | Similar to '-:-' but more safe and returns order in pair with resulting time difference.
+{- | Compute the difference between two amounts of time. The result is returned
+in two components: the ordering (which input is larger) and the numeric
+difference (how much larger). Unlike '-:-', does not throw @ArithException@.
 
 >>> sec 5 -%- sec 3
 (GT,2s)
@@ -164,12 +167,12 @@ infix 6 -%-
 t1 -%- (Time t2Rat) =
     let (Time t1Rat) = toUnit @unitResult t1
         (order, rat) = ratDiff (toRational t1Rat) (toRational t2Rat)
-    in (order, Time $ fromRational rat)
+    in (order, Time rat)
 
-ratDiff :: Rational -> Rational -> (Ordering, Rational)
+ratDiff :: Rational -> Rational -> (Ordering, RatioNat)
 ratDiff r1 r2 =
     let order = compare r1 r2
-        diff  = case order of
+        diff  = fromRational $ case order of
                      LT -> r2 - r1
                      GT -> r1 - r2
                      EQ -> 0
