@@ -3,6 +3,12 @@ Change log
 o'clock uses [PVP Versioning][1].
 The change log is available [on GitHub][2].
 
+1.0.0
+=====
+
+* [#95](https://github.com/serokell/o-clock/issues/95):
+  Add `Semigroup` and `Monoid` instances for `Time`.
+
 0.1.0
 =====
 
