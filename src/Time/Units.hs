@@ -62,7 +62,9 @@ import Control.Applicative ((*>))
 import Control.Monad (unless)
 import Control.Monad.IO.Class (MonadIO, liftIO)
 import Data.Char (isDigit, isLetter)
+import Data.Foldable (foldl')
 import Data.Proxy (Proxy (..))
+import Data.Semigroup (Semigroup (..))
 import GHC.Generics (Generic)
 import GHC.Natural (Natural)
 import GHC.Prim (coerce)
@@ -119,6 +121,23 @@ type Fortnight   = 1209600 :% 1
 -- | Time unit is represented as type level rational multiplier with kind 'Rat'.
 newtype Time (rat :: Rat) = Time { unTime :: RatioNat }
     deriving (Eq, Ord, Enum, Real, RealFrac, Generic)
+
+-- | Addition is associative binary operation for 'Semigroup' of 'Time'.
+instance Semigroup (Time (rat :: Rat)) where
+    (<>) = (+)
+    {-# INLINE (<>) #-}
+    sconcat = foldl' (<>) mempty
+    {-# INLINE sconcat #-}
+    stimes n (Time t) = Time (fromIntegral n * t)
+    {-# INLINE stimes #-}
+
+instance Monoid (Time (rat :: Rat)) where
+    mempty  = Time 0
+    {-# INLINE mempty #-}
+    mappend = (<>)
+    {-# INLINE mappend #-}
+    mconcat = foldl' (<>) mempty
+    {-# INLINE mconcat #-}
 
 -- | Type family for prettier 'show' of time units.
 type family UnitName (unit :: Rat) :: Symbol
