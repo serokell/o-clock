@@ -8,6 +8,8 @@ The change log is available [on GitHub][2].
 
 * [#95](https://github.com/serokell/o-clock/issues/95):
   Add `Semigroup` and `Monoid` instances for `Time`.
+* [#93](https://github.com/serokell/o-clock/issues/93):
+  Remove `transformers` dependency.
 
 0.1.0
 =====
