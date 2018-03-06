@@ -1,5 +1,5 @@
 name:                o-clock
-version:             1.0.0
+version:             0.1.1
 synopsis:            Type-safe time library.
 description:         See README.md for details.
 homepage:            https://github.com/serokell/o-clock
@@ -15,7 +15,9 @@ extra-doc-files:     CHANGELOG.md
                    , README.md
                    , README.lhs
 cabal-version:       >=2.0
-tested-with:         GHC == 8.4.1
+tested-with:         GHC == 8.0.2
+                   , GHC == 8.2.2
+                   , GHC == 8.4.1
 
 source-repository head
   type:     git
