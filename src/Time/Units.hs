@@ -82,6 +82,10 @@ import Data.Hashable (Hashable)
 import Control.DeepSeq (NFData)
 #endif
 
+#ifdef HAS_serialise
+import Codec.Serialise (Serialise (..))
+#endif
+
 #if ( __GLASGOW_HASKELL__ >= 804 )
 import Time.Rational (type (*), type (/))
 #endif
@@ -153,6 +157,10 @@ instance Hashable (Time (rat :: Rat))
 
 #ifdef HAS_deepseq
 instance NFData (Time (rat :: Rat))
+#endif
+
+#ifdef HAS_serialise
+instance Serialise (Time (rat :: Rat))
 #endif
 
 -- | Type family for prettier 'show' of time units.

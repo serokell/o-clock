@@ -45,6 +45,9 @@ library
   if flag(deepseq)
     build-depends:     deepseq  >= 1.4
     cpp-options:       -DHAS_deepseq
+  if flag(serialise)
+    build-depends:     serialise >= 0.2
+    cpp-options:       -DHAS_serialise
 
 executable play-o-clock
   main-is:             Playground.hs
@@ -127,4 +130,8 @@ flag hashable
 
 flag deepseq
   description:         Provide instances for @deepseq@
+  default:             False
+
+flag serialise
+  description:         Provide instances for @serialise@
   default:             False

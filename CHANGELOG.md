@@ -7,7 +7,7 @@ The change log is available [on GitHub][2].
 =====
 
 * [#100](https://github.com/serokell/o-clock/issues/100):
-  Add `Hashable`, `NFData` instances for `Time`.
+  Add `Hashable`, `NFData`, `Serialise` instances for `Time`.
 
 0.1.1
 =====
