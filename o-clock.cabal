@@ -31,7 +31,7 @@ library
                          Time.Timestamp
                          Time.Units
   ghc-options:         -Wall
-  build-depends:       base         >= 4.10  && < 5
+  build-depends:       base         >= 4.9  && < 5
                      , ghc-prim     >= 0.5
   default-language:    Haskell2010
   default-extensions:  OverloadedStrings
@@ -43,7 +43,7 @@ library
 executable play-o-clock
   main-is:             Playground.hs
   build-depends:       o-clock
-                     , base     >= 4.10  && < 5
+                     , base     >= 4.9  && < 5
   hs-source-dirs:      examples
   default-language:    Haskell2010
   ghc-options:         -threaded -Wall
@@ -59,7 +59,7 @@ test-suite o-clock-test
                        Test.Time.TypeSpec
                        Test.Time.Units
 
-  build-depends:       base            >= 4.10  && < 5
+  build-depends:       base            >= 4.9  && < 5
                      , o-clock
                      , hedgehog       ^>= 0.5.1
                      , tasty          ^>= 0.12
