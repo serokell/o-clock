@@ -6,6 +6,13 @@ The change log is available [on GitHub][2].
 1.0.0
 =====
 
+* TODO
+
+0.1.1
+=====
+
+* [#98](https://github.com/serokell/o-clock/issues/98):
+  Support GHC-8.0.2.
 * [#95](https://github.com/serokell/o-clock/issues/95):
   Add `Semigroup` and `Monoid` instances for `Time`.
 * [#93](https://github.com/serokell/o-clock/issues/93):

@@ -41,10 +41,17 @@ import Data.Kind (Type)
 import Data.Proxy (Proxy (..))
 import GHC.Natural (Natural)
 import GHC.Real (Ratio ((:%)))
+
 #if ( __GLASGOW_HASKELL__ >= 804 )
 import GHC.TypeNats (Div, Mod, type (<=?))
 #endif
+
+#if ( __GLASGOW_HASKELL__ >= 802 )
 import GHC.TypeNats (KnownNat, Nat, natVal)
+#else
+import GHC.TypeLits (KnownNat, Nat, natVal)
+#endif
+
 #if ( __GLASGOW_HASKELL__ >= 804 )
 import Unsafe.Coerce (unsafeCoerce)
 #endif
@@ -213,8 +220,11 @@ class KnownRat (r :: Rat) where
     ratVal :: RatioNat
 
 instance (KnownNat a, KnownNat b) => KnownRat (a :% b) where
+#if ( __GLASGOW_HASKELL__ >= 802 )
     ratVal = natVal (Proxy @a) :% natVal (Proxy @b)
-
+#else
+    ratVal = fromIntegral (natVal (Proxy @a)) :% fromIntegral (natVal (Proxy @b))
+#endif
 
 #if ( __GLASGOW_HASKELL__ >= 804 )
 newtype KnownRatDict (unit :: Rat) r = MkKnownRatDict (KnownRat unit => r)
