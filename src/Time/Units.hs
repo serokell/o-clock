@@ -78,6 +78,10 @@ import Text.ParserCombinators.ReadPrec (ReadPrec, lift)
 import Data.Hashable (Hashable)
 #endif
 
+#ifdef HAS_deepseq
+import Control.DeepSeq (NFData)
+#endif
+
 #if ( __GLASGOW_HASKELL__ >= 804 )
 import Time.Rational (type (*), type (/))
 #endif
@@ -145,6 +149,10 @@ instance Monoid (Time (rat :: Rat)) where
 
 #ifdef HAS_hashable
 instance Hashable (Time (rat :: Rat))
+#endif
+
+#ifdef HAS_deepseq
+instance NFData (Time (rat :: Rat))
 #endif
 
 -- | Type family for prettier 'show' of time units.

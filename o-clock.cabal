@@ -40,8 +40,11 @@ library
                        TypeApplications
                        TypeFamilies
   if flag(hashable)
-    build-depends:     hashable >=1.2.6
+    build-depends:     hashable >= 1.2.6
     cpp-options:       -DHAS_hashable
+  if flag(deepseq)
+    build-depends:     deepseq  >= 1.4
+    cpp-options:       -DHAS_deepseq
 
 executable play-o-clock
   main-is:             Playground.hs
@@ -106,10 +109,13 @@ benchmark o-clock-benchmark
   main-is:             Main.hs
   build-depends:       base       >= 4.8   && < 5
                      , o-clock
-                     , deepseq    >= 1.4
                      , gauge      >= 0.2.1 && < 1
                      , tiempo     >= 0.0.1.1
                      , time-units == 1.0.0
+  if !flag(deepseq)
+    build-depends:     deepseq    >= 1.4
+    cpp-options:       -DNO_deepseq
+
   default-extensions:  OverloadedStrings
                        RecordWildCards
 
@@ -117,4 +123,8 @@ benchmark o-clock-benchmark
 
 flag hashable
   description:         Provide instances for @hashable@
+  default:             False
+
+flag deepseq
+  description:         Provide instances for @deepseq@
   default:             False
