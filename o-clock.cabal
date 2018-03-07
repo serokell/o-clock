@@ -1,5 +1,5 @@
 name:                o-clock
-version:             0.1.1
+version:             1.0.0
 synopsis:            Type-safe time library.
 description:         See README.md for details.
 homepage:            https://github.com/serokell/o-clock
@@ -39,6 +39,9 @@ library
                        ScopedTypeVariables
                        TypeApplications
                        TypeFamilies
+  if flag(hashable)
+    build-depends:     hashable >=1.2.6
+    cpp-options:       -DHAS_hashable
 
 executable play-o-clock
   main-is:             Playground.hs
@@ -109,3 +112,9 @@ benchmark o-clock-benchmark
                      , time-units == 1.0.0
   default-extensions:  OverloadedStrings
                        RecordWildCards
+
+-- Flags
+
+flag hashable
+  description:         Provide instances for @hashable@
+  default:             False

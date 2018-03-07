@@ -74,6 +74,10 @@ import GHC.TypeLits (KnownSymbol, Symbol, symbolVal)
 import Text.ParserCombinators.ReadP (ReadP, char, munch1, option, pfail, (+++))
 import Text.ParserCombinators.ReadPrec (ReadPrec, lift)
 
+#ifdef HAS_hashable
+import Data.Hashable (Hashable)
+#endif
+
 #if ( __GLASGOW_HASKELL__ >= 804 )
 import Time.Rational (type (*), type (/))
 #endif
@@ -138,6 +142,10 @@ instance Monoid (Time (rat :: Rat)) where
     {-# INLINE mappend #-}
     mconcat = foldl' (<>) mempty
     {-# INLINE mconcat #-}
+
+#ifdef HAS_hashable
+instance Hashable (Time (rat :: Rat))
+#endif
 
 -- | Type family for prettier 'show' of time units.
 type family UnitName (unit :: Rat) :: Symbol
