@@ -39,6 +39,10 @@ library
                        ScopedTypeVariables
                        TypeApplications
                        TypeFamilies
+  if flag(aeson)
+    build-depends:     aeson    >= 1.2.4
+                     , text
+    cpp-options:       -DHAS_aeson
   if flag(hashable)
     build-depends:     hashable >= 1.2.6
     cpp-options:       -DHAS_hashable
@@ -123,6 +127,10 @@ benchmark o-clock-benchmark
                        RecordWildCards
 
 -- Flags
+
+flag aeson
+  description:         Provide instances for @aeson@
+  default:             False
 
 flag hashable
   description:         Provide instances for @hashable@

@@ -86,6 +86,12 @@ import Control.DeepSeq (NFData)
 import Codec.Serialise (Serialise (..))
 #endif
 
+#ifdef HAS_aeson
+import Data.Aeson (ToJSON (..), FromJSON (..), withText)
+import Text.Read (readMaybe)
+import qualified Data.Text as Text
+#endif
+
 #if ( __GLASGOW_HASKELL__ >= 804 )
 import Time.Rational (type (*), type (/))
 #endif
@@ -161,6 +167,17 @@ instance NFData (Time (rat :: Rat))
 
 #ifdef HAS_serialise
 instance Serialise (Time (rat :: Rat))
+#endif
+
+#ifdef HAS_aeson
+instance (KnownUnitName unit) => ToJSON (Time (unit :: Rat)) where
+    toJSON = toJSON . show
+
+instance (KnownUnitName unit) => FromJSON (Time (unit :: Rat)) where
+    parseJSON = withText "time" $ maybe parseFail pure . maybeTime
+      where
+        parseFail = fail $ "Can not parse Time. Expected unit: " ++ unitNameVal @unit
+        maybeTime = readMaybe @(Time unit) . Text.unpack
 #endif
 
 -- | Type family for prettier 'show' of time units.
