@@ -6,7 +6,9 @@ The change log is available [on GitHub][2].
 1.0.0
 =====
 
-* TODO
+* [#100](https://github.com/serokell/o-clock/issues/100):
+  Add `Hashable`, `NFData`, `Serialise`, `ToJSON`, `FromJSON`
+  instances for `Time`.
 
 0.1.1
 =====

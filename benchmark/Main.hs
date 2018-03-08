@@ -1,5 +1,6 @@
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 
+{-# LANGUAGE CPP                        #-}
 {-# LANGUAGE DataKinds                  #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE KindSignatures             #-}
@@ -8,18 +9,24 @@
 
 module Main where
 
+#ifdef NO_deepseq
 import Control.DeepSeq (NFData)
+#endif
 import Gauge (bench, bgroup, defaultMain, nf, whnf)
 
-import Time (Day, Hour, Microsecond, Nanosecond, Rat, Second, Time (..), hour, mcs, ns, sec, toUnit,
-             week)
+#ifdef NO_deepseq
+import Time (Rat, Time)
+#endif
+import Time (Day, Hour, Microsecond, Nanosecond, Second, hour, mcs, ns, sec, toUnit, week)
 
 import qualified Data.Time.Units as TU (Day, Hour, Microsecond, Nanosecond, Second, Week,
                                         convertUnit)
 import qualified Tiempo (hours, microSeconds, toHours, toMicroSeconds)
 
 
-deriving instance NFData (Time (unit :: Rat))
+#ifdef NO_deepseq
+instance NFData (Time (unit :: Rat))
+#endif
 
 main :: IO ()
 main = defaultMain

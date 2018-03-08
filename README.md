@@ -53,7 +53,11 @@ threadDelay @Second 5
    * It means that if you want to roll out your own time units and use it in your project,
      this can be done in easy and convenient way (see tutorial below).
 
-_**Note:**_ features support for `GHC-8.2.2` is quite limited.
+6. `O'Clock` contains useful instances like `Hashable`, `NFData`, `Serialise`, `ToJSON`, `FromJSON`
+   but it's not included to the package by default. To do that you need to provide corresponding
+   flag from this list: `hashable`, `deepseq`, `serialise` and `aeson`.
+
+_**Note:**_ features support for `GHC-8.2.2` and `GHC-8.0.2` is quite limited.
 
 ## Example: How to make your own time unit
 

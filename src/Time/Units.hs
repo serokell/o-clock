@@ -74,6 +74,24 @@ import GHC.TypeLits (KnownSymbol, Symbol, symbolVal)
 import Text.ParserCombinators.ReadP (ReadP, char, munch1, option, pfail, (+++))
 import Text.ParserCombinators.ReadPrec (ReadPrec, lift)
 
+#ifdef HAS_hashable
+import Data.Hashable (Hashable)
+#endif
+
+#ifdef HAS_deepseq
+import Control.DeepSeq (NFData)
+#endif
+
+#ifdef HAS_serialise
+import Codec.Serialise (Serialise (..))
+#endif
+
+#ifdef HAS_aeson
+import Data.Aeson (ToJSON (..), FromJSON (..), withText)
+import Text.Read (readMaybe)
+import qualified Data.Text as Text
+#endif
+
 #if ( __GLASGOW_HASKELL__ >= 804 )
 import Time.Rational (type (*), type (/))
 #endif
@@ -138,6 +156,29 @@ instance Monoid (Time (rat :: Rat)) where
     {-# INLINE mappend #-}
     mconcat = foldl' (<>) mempty
     {-# INLINE mconcat #-}
+
+#ifdef HAS_hashable
+instance Hashable (Time (rat :: Rat))
+#endif
+
+#ifdef HAS_deepseq
+instance NFData (Time (rat :: Rat))
+#endif
+
+#ifdef HAS_serialise
+instance Serialise (Time (rat :: Rat))
+#endif
+
+#ifdef HAS_aeson
+instance (KnownUnitName unit) => ToJSON (Time (unit :: Rat)) where
+    toJSON = toJSON . show
+
+instance (KnownUnitName unit) => FromJSON (Time (unit :: Rat)) where
+    parseJSON = withText "time" $ maybe parseFail pure . maybeTime
+      where
+        parseFail = fail $ "Can not parse Time. Expected unit: " ++ unitNameVal @unit
+        maybeTime = readMaybe @(Time unit) . Text.unpack
+#endif
 
 -- | Type family for prettier 'show' of time units.
 type family UnitName (unit :: Rat) :: Symbol
