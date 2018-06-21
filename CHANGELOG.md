@@ -6,6 +6,8 @@ The change log is available [on GitHub][2].
 1.0.0
 =====
 
+* [#106](https://github.com/serokell/o-clock/issues/106):
+  Remove `Num`, `Fractional`, `Real`, `RealFrac` instancies of `Time`.
 * [#100](https://github.com/serokell/o-clock/issues/100):
   Add `Hashable`, `NFData`, `Serialise`, `ToJSON`, `FromJSON`
   instances for `Time`.

@@ -37,6 +37,7 @@ module Time.Units
         -- ** Creation helpers
        , time
        , floorUnit
+       , floorRat
        , toNum
 
        , sec
@@ -138,11 +139,11 @@ type Fortnight   = 1209600 :% 1
 
 -- | Time unit is represented as type level rational multiplier with kind 'Rat'.
 newtype Time (rat :: Rat) = Time { unTime :: RatioNat }
-    deriving (Eq, Ord, Enum, Real, RealFrac, Generic)
+    deriving (Eq, Ord, Enum, Generic)
 
 -- | Addition is associative binary operation for 'Semigroup' of 'Time'.
 instance Semigroup (Time (rat :: Rat)) where
-    (<>) = (+)
+    (<>) = coerce ((+) :: RatioNat -> RatioNat -> RatioNat)
     {-# INLINE (<>) #-}
     sconcat = foldl' (<>) mempty
     {-# INLINE sconcat #-}
@@ -247,28 +248,6 @@ instance KnownUnitName unit => Read (Time unit) where
             unless (timeUnitStr == unitNameVal @unit) pfail
             pure $ Time (n % d)
 
--- | Has the same behavior as derived instance, but '*' operator
--- throws the runtime error with 'error'.
-instance Num (Time unit) where
-    (+) = coerce ((+) :: RatioNat -> RatioNat -> RatioNat)
-    {-# INLINE (+) #-}
-    (-) = coerce ((-) :: RatioNat -> RatioNat -> RatioNat)
-    {-# INLINE (-) #-}
-    (*) = error "It's not possible to multiply time"
-    abs = id
-    {-# INLINE abs #-}
-    signum = coerce (signum :: RatioNat -> RatioNat)
-    {-# INLINE signum #-}
-    fromInteger = coerce (fromInteger :: Integer -> RatioNat)
-    {-# INLINE fromInteger #-}
-
--- | Has the same behavior as derived instance, but '/' operator
--- throws the runtime error with 'error'.
-instance Fractional (Time unit) where
-    fromRational = coerce (fromRational :: Rational -> RatioNat)
-    {-# INLINE fromRational #-}
-    (/) = error "It's not possible to divide time"
-
 ----------------------------------------------------------------------------
 -- Creation helpers
 ----------------------------------------------------------------------------
@@ -358,6 +337,10 @@ fortnight :: RatioNat -> Time Fortnight
 fortnight = time
 {-# INLINE fortnight #-}
 
+-- | Returns the greatest integer not greater than given 'Time'.
+floorRat :: forall (unit :: Rat) b . (Integral b) => Time unit -> b
+floorRat = floor . unTime
+
 {- | Similar to 'floor', but works with 'Time' units.
 
 >>> floorUnit @Day (Time $ 5 % 2)
@@ -371,7 +354,7 @@ fortnight = time
 
 -}
 floorUnit :: forall (unit :: Rat) . Time unit -> Time unit
-floorUnit = time . fromIntegral @Natural . floor
+floorUnit = time . fromIntegral @Natural . floorRat
 
 {- | Convert time to the 'Num' in given units.
 
@@ -402,7 +385,7 @@ __Examples:__
 -}
 toNum :: forall (unitTo :: Rat) n (unit :: Rat) . (KnownDivRat unit unitTo, Num n)
       => Time unit -> n
-toNum = fromIntegral @Natural . floor . toUnit @unitTo
+toNum = fromIntegral @Natural . floorRat . toUnit @unitTo
 
 ----------------------------------------------------------------------------
 -- Functional
@@ -410,7 +393,7 @@ toNum = fromIntegral @Natural . floor . toUnit @unitTo
 
 {- | Converts from one time unit to another time unit.
 
->>> toUnit @Hour (120 :: Time Minute)
+>>> toUnit @Hour (minute 120)
 2h
 
 >>> toUnit @Second (ms 7)
@@ -419,7 +402,7 @@ toNum = fromIntegral @Natural . floor . toUnit @unitTo
 >>> toUnit @Week (Time @Day 45)
 6+3/7w
 
->>> toUnit @Second @Minute 3
+>>> toUnit @Second @Minute (Time 3)
 180s
 
 >>> toUnit (day 42000000) :: Time Second
@@ -450,7 +433,7 @@ __>>> threadDelay @Second 2__
 threadDelay :: forall (unit :: Rat) m . (KnownDivRat unit Microsecond, MonadIO m)
             => Time unit
             -> m ()
-threadDelay = liftIO . Concurrent.threadDelay . floor . toUnit @Microsecond
+threadDelay = liftIO . Concurrent.threadDelay . floorRat . toUnit @Microsecond
 {-# INLINE threadDelay #-}
 
 -- | Similar to 'CPUTime.getCPUTime' but returns the CPU time used by the current
@@ -491,5 +474,5 @@ timeout :: forall (unit :: Rat) m a . (MonadIO m, KnownDivRat unit Microsecond)
         => Time unit   -- ^ time
         -> IO a        -- ^ 'IO' action
         -> m (Maybe a) -- ^ returns 'Nothing' if no result is available within the given time
-timeout t = liftIO . Timeout.timeout (floor $ toUnit @Microsecond t)
+timeout t = liftIO . Timeout.timeout (floorRat $ toUnit @Microsecond t)
 {-# INLINE timeout #-}

@@ -20,7 +20,7 @@ With O'Clock you can write in several more convenient ways (and use more preferr
 
 ```haskell ignore
 threadDelay $ sec 5
-threadDelay (5 :: Time Second)
+threadDelay (Time @Second 5)
 threadDelay @Second 5
 ```
 
@@ -84,7 +84,7 @@ module Main where
 #if ( __GLASGOW_HASKELL__ >= 804 )
 import Time (type (*))
 #endif
-import Time ((:%), Time, Hour, UnitName,floorUnit, hour, seriesF, toUnit)
+import Time ((:%), (-:-), Time (Time), Hour, UnitName,floorUnit, hour, seriesF, toUnit)
 
 ```
 
@@ -124,7 +124,7 @@ calculateWork :: Time Hour  -- type synonym for 'Time HourUnit'
               -> (Time WorkWeek, Time WorkDay)
 calculateWork workHours =
     let completeWeeks = floorUnit $ toUnit @WorkWeek workHours
-        completeDays  = floorUnit $ toUnit @WorkDay  workHours - toUnit completeWeeks
+        completeDays  = floorUnit $ toUnit @WorkDay  workHours -:- toUnit completeWeeks
     in (completeWeeks, completeDays)
 
 formatHours :: Time Hour -> String
@@ -139,7 +139,7 @@ So the similar result (but not rounded) can be gained with the usage of it. Chec
 ```haskell
 main :: IO ()
 main = do
-    putStrLn $ "The result:   " ++ formatHours 140
+    putStrLn $ "The result:   " ++ formatHours (Time 140)
     putStrLn $ "With seriesF: " ++ (seriesF @'[WorkWeek, WorkDay] $ hour 140)
 ```
 

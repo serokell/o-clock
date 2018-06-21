@@ -23,6 +23,8 @@ module Time.Timestamp
 
        ) where
 
+import GHC.Prim (coerce)
+
 import Time.Rational (KnownDivRat, KnownRat, Rat, RatioNat)
 import Time.Units (Second, Time (..), sec, toUnit)
 
@@ -91,7 +93,7 @@ timeMul n (Time t) = Time (n * t)
 >>> 2 *:* 3 *:* sec 5
 30s
 
->>> 3 *:* 5 *:* 7 :: Time Second
+>>> 3 *:* 5 *:* sec 7
 105s
 
 >>> ms 2000 +:+ 2 *:* sec 3
@@ -131,7 +133,7 @@ infixl 6 +:+
       => Time unitLeft
       -> Time unitResult
       -> Time unitResult
-t1 +:+ t2 = toUnit t1 + t2
+t1 +:+ t2 = coerce ((+) :: RatioNat -> RatioNat -> RatioNat) (toUnit @unitResult t1) t2
 {-# INLINE (+:+) #-}
 
 -- | Substracts time amounts of different units. When the minuend is smaller
@@ -145,7 +147,7 @@ infixl 6 -:-
       => Time unitLeft
       -> Time unitResult
       -> Time unitResult
-t1 -:- t2 = toUnit t1 - t2
+t1 -:- t2 = coerce ((-) :: RatioNat -> RatioNat -> RatioNat) (toUnit @unitResult t1) t2
 {-# INLINE (-:-) #-}
 
 {- | Compute the difference between two amounts of time. The result is returned

@@ -25,6 +25,7 @@ module Time.Series
        ) where
 
 import Data.Char (isDigit, isLetter)
+import Data.Semigroup ((<>))
 import Text.Read (readMaybe)
 #if ( __GLASGOW_HASKELL__ >= 804 )
 import Data.Kind (Constraint)
@@ -37,6 +38,7 @@ import Time.Rational (type (>=%), withRuntimeDivRat)
 import Time.Rational (Rat)
 import Time.Units (Day, Fortnight, Hour, KnownRatName, Microsecond, Millisecond, Minute, Nanosecond,
                    Picosecond, Second, Time (..), Week, floorUnit, toUnit)
+import Time.Timestamp ((-:-))
 
 -- $setup
 -- >>> import Time.Units (Time (..), fortnight, hour, minute, ms, sec)
@@ -162,10 +164,15 @@ instance ( KnownRatName unit
 #endif
                     flooredNewUnit = floorUnit newUnit
                     timeStr = case flooredNewUnit of
-                                   0 -> ""
+                                   Time 0 -> ""
                                    _ -> show flooredNewUnit
-                    nextUnit = newUnit - flooredNewUnit
-                in if nextUnit == 0
+
+#if ( __GLASGOW_HASKELL__ >= 804 )
+                    nextUnit = withRuntimeDivRat @unit @unit $ newUnit -:- flooredNewUnit
+#else
+                    nextUnit = newUnit -:- flooredNewUnit
+#endif
+                in if nextUnit == Time 0
                    then show newUnit
                    else timeStr ++ seriesF @(nextUnit ': units) @unit nextUnit
 
@@ -245,7 +252,7 @@ instance ( KnownRatName unit
                       maybeT = readMaybeTime @unit $ num ++ u
                   in case maybeT of
                          Nothing -> seriesP @(nextUnit ': units) str
-                         Just t  -> (t +) <$> (seriesP @(nextUnit ': units) nextStr)
+                         Just t  -> ((t <>)) <$> (seriesP @(nextUnit ': units) nextStr)
 
 {- | Similar to 'seriesP', but parses using all time units of the library.
 

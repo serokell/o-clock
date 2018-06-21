@@ -14,10 +14,10 @@ build-type:          Simple
 extra-doc-files:     CHANGELOG.md
                    , README.md
                    , README.lhs
-cabal-version:       >=2.0
+cabal-version:       2.0
 tested-with:         GHC == 8.0.2
                    , GHC == 8.2.2
-                   , GHC == 8.4.1
+                   , GHC == 8.4.3
 
 source-repository head
   type:     git
