@@ -57,7 +57,7 @@ spec_Units = do
         it "fails when '14/2h' expected as 7 seconds" $
             evaluate (read @(Time Second) "14/2h") `shouldThrow` anyException
         it "parses big number to big number" $
-            read ('1' : replicate 20 '0' ++ "mcs") `shouldBe` mcs 100000000000000000000
+            read ('1' : replicate 20 '0' ++ "mcs") `shouldBe` mcs (10 ^ (20 :: Int))
         it "fails when '4ms' expected as 4 seconds" $
             evaluate (read @(Time Second) "4ms") `shouldThrow` anyException
     describe "Floor tests" $ do
