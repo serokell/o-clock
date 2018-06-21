@@ -31,7 +31,7 @@ matrix:
         packages:
         - libgmp-dev
 
-  - ghc: 8.4.1
+  - ghc: 8.4.3
     env: STACK_YAML="$HOME/build/serokell/o-clock/stack.yaml"
     os: linux
     addons:
@@ -39,15 +39,15 @@ matrix:
         packages:
         - libgmp-dev
 
-  - ghc: 8.4.1
-    env: GHCVER='8.4.1' CABALVER='head'
+  - ghc: 8.4.3
+    env: GHCVER='8.4.3' CABALVER='head'
     os: linux
     addons:
       apt:
         sources:
         - hvr-ghc
         packages:
-        - ghc-8.4.1
+        - ghc-8.4.3
         - cabal-install-head
 
 install:
