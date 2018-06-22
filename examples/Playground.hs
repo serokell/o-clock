@@ -2,11 +2,11 @@
 
 module Main where
 
-import Time (Second, Time, threadDelay)
+import Time (sec, threadDelay)
 
 main :: IO ()
 main = do
-    let twoSecs = 2 :: Time Second
+    let twoSecs = sec 2
     putStrLn "Hello!"
     threadDelay twoSecs
     putStrLn "Hello after 2 seconds"

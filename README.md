@@ -2,6 +2,7 @@
 
 [![Hackage](https://img.shields.io/hackage/v/o-clock.svg)](https://hackage.haskell.org/package/o-clock)
 [![Build status](https://travis-ci.org/serokell/o-clock.svg?branch=master)](https://travis-ci.org/serokell/o-clock)
+[![Stackage](http://stackage.org/package/o-clock/badge/lts)](http://stackage.org/lts/package/o-clock)
 [![Stackage Nightly](http://stackage.org/package/o-clock/badge/nightly)](http://stackage.org/nightly/package/o-clock)
 [![MIT license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/serokell/o-clock/blob/master/LICENSE)
 
@@ -20,7 +21,7 @@ With O'Clock you can write in several more convenient ways (and use more preferr
 
 ```haskell ignore
 threadDelay $ sec 5
-threadDelay (5 :: Time Second)
+threadDelay (Time @Second 5)
 threadDelay @Second 5
 ```
 
@@ -84,7 +85,7 @@ module Main where
 #if ( __GLASGOW_HASKELL__ >= 804 )
 import Time (type (*))
 #endif
-import Time ((:%), Time, Hour, UnitName,floorUnit, hour, seriesF, toUnit)
+import Time ((:%), (-:-), Time, Hour, UnitName,floorUnit, hour, seriesF, toUnit)
 
 ```
 
@@ -120,11 +121,10 @@ Now let's implement main logic of our application. Our main function should take
 convert them to work weeks and work days and then show in human readable format.
 
 ```haskell
-calculateWork :: Time Hour  -- type synonym for 'Time HourUnit'
-              -> (Time WorkWeek, Time WorkDay)
+calculateWork :: Time Hour -> (Time WorkWeek, Time WorkDay)
 calculateWork workHours =
     let completeWeeks = floorUnit $ toUnit @WorkWeek workHours
-        completeDays  = floorUnit $ toUnit @WorkDay  workHours - toUnit completeWeeks
+        completeDays  = floorUnit $ toUnit @WorkDay  workHours -:- toUnit completeWeeks
     in (completeWeeks, completeDays)
 
 formatHours :: Time Hour -> String
@@ -139,7 +139,7 @@ So the similar result (but not rounded) can be gained with the usage of it. Chec
 ```haskell
 main :: IO ()
 main = do
-    putStrLn $ "The result:   " ++ formatHours 140
+    putStrLn $ "The result:   " ++ formatHours (hour 140)
     putStrLn $ "With seriesF: " ++ (seriesF @'[WorkWeek, WorkDay] $ hour 140)
 ```
 
