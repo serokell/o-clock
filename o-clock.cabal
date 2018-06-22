@@ -11,6 +11,7 @@ maintainer:          Serokell <hi@serokell.io>
 copyright:           2018 Serokell
 category:            Time
 build-type:          Simple
+stability:           stable
 extra-doc-files:     CHANGELOG.md
                    , README.md
                    , README.lhs

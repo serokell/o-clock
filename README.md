@@ -85,7 +85,7 @@ module Main where
 #if ( __GLASGOW_HASKELL__ >= 804 )
 import Time (type (*))
 #endif
-import Time ((:%), (-:-), Time (Time), Hour, UnitName,floorUnit, hour, seriesF, toUnit)
+import Time ((:%), (-:-), Time, Hour, UnitName,floorUnit, hour, seriesF, toUnit)
 
 ```
 
@@ -121,8 +121,7 @@ Now let's implement main logic of our application. Our main function should take
 convert them to work weeks and work days and then show in human readable format.
 
 ```haskell
-calculateWork :: Time Hour  -- type synonym for 'Time HourUnit'
-              -> (Time WorkWeek, Time WorkDay)
+calculateWork :: Time Hour -> (Time WorkWeek, Time WorkDay)
 calculateWork workHours =
     let completeWeeks = floorUnit $ toUnit @WorkWeek workHours
         completeDays  = floorUnit $ toUnit @WorkDay  workHours -:- toUnit completeWeeks
@@ -140,7 +139,7 @@ So the similar result (but not rounded) can be gained with the usage of it. Chec
 ```haskell
 main :: IO ()
 main = do
-    putStrLn $ "The result:   " ++ formatHours (Time 140)
+    putStrLn $ "The result:   " ++ formatHours (hour 140)
     putStrLn $ "With seriesF: " ++ (seriesF @'[WorkWeek, WorkDay] $ hour 140)
 ```
 
