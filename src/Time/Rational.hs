@@ -4,6 +4,9 @@
 {-# LANGUAGE TypeInType           #-}
 {-# LANGUAGE FlexibleContexts     #-}
 {-# LANGUAGE FlexibleInstances    #-}
+#if ( __GLASGOW_HASKELL__ >= 806 )
+{-# LANGUAGE NoStarIsType               #-}
+#endif
 {-# LANGUAGE Rank2Types           #-}
 {-# LANGUAGE TypeOperators        #-}
 {-# LANGUAGE UndecidableInstances #-}
