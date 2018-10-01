@@ -3,6 +3,11 @@ Change log
 o'clock uses [PVP Versioning][1].
 The change log is available [on GitHub][2].
 
+1.0.0.1
+=======
+
+* Add support for GHC-8.6.1
+
 1.0.0
 =====
 
