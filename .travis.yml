@@ -50,14 +50,24 @@ matrix:
         - ghc-8.4.3
         - cabal-install-head
 
+  - ghc: 8.6.1
+    env: GHCVER='8.6.1' CABALVER='head'
+    os: linux
+    addons:
+      apt:
+        sources:
+        - hvr-ghc
+        packages:
+        - ghc-8.6.1
+        - cabal-install-head
+
 install:
   - |
     if [ -z "$STACK_YAML" ]; then
       export PATH="/opt/ghc/$GHCVER/bin:/opt/cabal/$CABALVER/bin:$PATH"
       echo $PATH
-      cp cabal.project.local.ubuntu-example cabal.project.local
       cabal new-update
-      cabal new-build --enable-tests --enable-benchmarks --allow-newer -f aeson -f hashable -f serialise -f deepseq
+      cabal new-build --enable-tests --enable-benchmarks -f aeson -f hashable -f serialise -f deepseq
     else
       mkdir -p ~/.local/bin
       export PATH="$HOME/.local/bin:$PATH"
@@ -71,7 +81,7 @@ install:
 script:
   - |
     if [ -z "$STACK_YAML" ]; then
-      cabal new-test --allow-newer
+      cabal new-test
     else
       stack build --test --bench --no-terminal --flag o-clock:aeson --flag o-clock:hashable --flag o-clock:serialise --flag o-clock:deepseq
     fi

@@ -1,0 +1,5 @@
+packages: .
+tests: True
+benchmarks: True
+
+allow-newer: tiempo:base, tiempo:time, serialise:containers, cborg:containers

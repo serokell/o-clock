@@ -76,6 +76,9 @@ Since this tutorial is literate haskell file, let's first write some pragmas and
 ```haskell
 {-# LANGUAGE CPP              #-}
 {-# LANGUAGE DataKinds        #-}
+#if ( __GLASGOW_HASKELL__ >= 806 )
+{-# LANGUAGE NoStarIsType     #-}
+#endif
 {-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE TypeFamilies     #-}
 {-# LANGUAGE TypeOperators    #-}
