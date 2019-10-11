@@ -31,7 +31,15 @@ matrix:
         packages:
         - libgmp-dev
 
-  - ghc: 8.4.3
+  - ghc: 8.4.4
+    env: STACK_YAML="$HOME/build/serokell/o-clock/stack-8.4.4.yaml"
+    os: linux
+    addons:
+      apt:
+        packages:
+        - libgmp-dev
+
+  - ghc: 8.6.5
     env: STACK_YAML="$HOME/build/serokell/o-clock/stack.yaml"
     os: linux
     addons:
