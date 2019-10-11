@@ -1,0 +1,7 @@
+resolver: nightly-2019-10-10
+
+extra-deps:
+- tiempo-0.0.1.1
+- time-units-1.0.0
+
+allow-newer: true
