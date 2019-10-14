@@ -12,9 +12,7 @@
 
 module Time.Series
        ( AllTimes
-#if ( __GLASGOW_HASKELL__ >= 804 )
        , type (...)
-#endif
          -- * Formatting
        , SeriesF (..)
        , unitsF
@@ -25,20 +23,18 @@ module Time.Series
        ) where
 
 import Data.Char (isDigit, isLetter)
-import Data.Semigroup ((<>))
-import Text.Read (readMaybe)
-#if ( __GLASGOW_HASKELL__ >= 804 )
 import Data.Kind (Constraint)
+import Data.Semigroup ((<>))
 import Data.Type.Bool (type (&&), If)
 import Data.Type.Equality (type (==))
-import GHC.TypeLits (TypeError, ErrorMessage (Text))
+import GHC.TypeLits (ErrorMessage (Text), TypeError)
+import Text.Read (readMaybe)
 
 import Time.Rational (type (>=%), withRuntimeDivRat)
-#endif
 import Time.Rational (Rat)
+import Time.Timestamp ((-:-))
 import Time.Units (Day, Fortnight, Hour, KnownRatName, Microsecond, Millisecond, Minute, Nanosecond,
                    Picosecond, Second, Time (..), Week, floorUnit, toUnit)
-import Time.Timestamp ((-:-))
 
 -- $setup
 -- >>> import Time.Units (Time (..), fortnight, hour, minute, ms, sec)
@@ -53,7 +49,6 @@ type AllTimes =
    , Millisecond , Microsecond, Nanosecond, Picosecond
    ]
 
-#if ( __GLASGOW_HASKELL__ >= 804 )
 {- | Creates the list of time units in descending order by provided
 the highest and the lowest bound of the desired list.
 Throws the error when time units are not in the right order.
@@ -90,7 +85,6 @@ type family IsDescending (units :: [Rat]) :: Bool where
 type family DescendingConstraint (b :: Bool) :: Constraint where
     DescendingConstraint 'True  = ()  -- empty constraint; always satisfiable
     DescendingConstraint 'False = TypeError ('Text "List of units should be in descending order")
-#endif
 
 {- | Class for time formatting.
 
@@ -117,7 +111,6 @@ __Examples__
 The received list should be in descending order. It would be verified at compile-time.
 Example of the error from @ghci@:
 
-#if ( __GLASGOW_HASKELL__ >= 804 )
 >>> seriesF @'[Millisecond, Second] (minute 42)
 ...
     • List of units should be in descending order
@@ -125,7 +118,6 @@ Example of the error from @ghci@:
       In an equation for ‘it’:
           it = seriesF @'[Millisecond, Second] (minute 42)
 ...
-#endif
 
 -}
 class SeriesF (units :: [Rat]) where
@@ -141,37 +133,23 @@ instance (KnownRatName unit) => SeriesF ('[unit] :: [Rat]) where
     seriesF :: forall (someUnit :: Rat) . KnownRatName someUnit
             => Time someUnit -> String
     seriesF t =
-#if ( __GLASGOW_HASKELL__ >= 804 )
         let newTime = withRuntimeDivRat @someUnit @unit $ toUnit @unit t
-#else
-        let newTime = toUnit @unit t
-#endif
         in show newTime
 
 instance ( KnownRatName unit
          , SeriesF (nextUnit : units)
-#if ( __GLASGOW_HASKELL__ >= 804 )
          , DescendingConstraint (IsDescending (unit ': nextUnit ': units))
-#endif
          )
     => SeriesF (unit ': nextUnit ': units :: [Rat]) where
     seriesF :: forall (someUnit :: Rat) . KnownRatName someUnit
             => Time someUnit -> String
-#if ( __GLASGOW_HASKELL__ >= 804 )
     seriesF t = let newUnit = withRuntimeDivRat @someUnit @unit $ toUnit @unit t
-#else
-    seriesF t = let newUnit = toUnit @unit t
-#endif
                     flooredNewUnit = floorUnit newUnit
                     timeStr = case flooredNewUnit of
                                    Time 0 -> ""
-                                   _ -> show flooredNewUnit
+                                   _      -> show flooredNewUnit
 
-#if ( __GLASGOW_HASKELL__ >= 804 )
                     nextUnit = withRuntimeDivRat @unit @unit $ newUnit -:- flooredNewUnit
-#else
-                    nextUnit = newUnit -:- flooredNewUnit
-#endif
                 in if nextUnit == Time 0
                    then show newUnit
                    else timeStr ++ seriesF @(nextUnit ': units) @unit nextUnit
@@ -239,9 +217,7 @@ instance (KnownRatName unit) => SeriesP '[unit] where
 
 instance ( KnownRatName unit
          , SeriesP (nextUnit : units)
-#if ( __GLASGOW_HASKELL__ >= 804 )
          , DescendingConstraint (IsDescending (unit ': nextUnit ': units))
-#endif
          )
          => SeriesP (unit ': nextUnit ': units :: [Rat]) where
     seriesP :: forall (someUnit :: Rat) . KnownRatName someUnit
@@ -273,7 +249,5 @@ unitsP = seriesP @AllTimes @unit
 readMaybeTime :: forall (unit :: Rat) (someUnit :: Rat) . (KnownRatName unit, KnownRatName someUnit)
               => String -> Maybe (Time someUnit)
 readMaybeTime str =
-#if ( __GLASGOW_HASKELL__ >= 804 )
     withRuntimeDivRat @unit @someUnit $
-#endif
         toUnit @someUnit <$> (readMaybe @(Time unit) str)

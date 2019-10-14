@@ -96,10 +96,7 @@ import Text.Read (readMaybe)
 import qualified Data.Text as Text
 #endif
 
-#if ( __GLASGOW_HASKELL__ >= 804 )
-import Time.Rational (type (*), type (/))
-#endif
-import Time.Rational (type (:%), KnownDivRat, Rat, RatioNat, KnownRat, ratVal)
+import Time.Rational (type (*), type (/), type (:%), KnownDivRat, Rat, RatioNat, KnownRat, ratVal)
 
 import qualified Control.Concurrent as Concurrent
 import qualified System.CPUTime as CPUTime
@@ -109,7 +106,6 @@ import qualified System.Timeout as Timeout
 -- Units
 ----------------------------------------------------------------------------
 
-#if ( __GLASGOW_HASKELL__ >= 804 )
 type Second      = 1 / 1
 type Millisecond = Second      / 1000
 type Microsecond = Millisecond / 1000
@@ -121,20 +117,6 @@ type Hour        = 60 * Minute
 type Day         = 24 * Hour
 type Week        = 7  * Day
 type Fortnight   = 2  * Week
-
-#else
-type Second      = 1 :% 1
-type Millisecond = 1 :% 1000
-type Microsecond = 1 :% 1000000
-type Nanosecond  = 1 :% 1000000000
-type Picosecond  = 1 :% 1000000000000
-
-type Minute      = 60 :% 1
-type Hour        = 3600 :% 1
-type Day         = 86400 :% 1
-type Week        = 604800 :% 1
-type Fortnight   = 1209600 :% 1
-#endif
 
 ----------------------------------------------------------------------------
 -- Time data type
@@ -415,11 +397,7 @@ toNum = fromIntegral @Natural . floorRat . toUnit @unitTo
 toUnit :: forall (unitTo :: Rat) (unitFrom :: Rat) . KnownDivRat unitFrom unitTo
        => Time unitFrom
        -> Time unitTo
-#if ( __GLASGOW_HASKELL__ >= 804 )
 toUnit Time{..} = Time $ unTime * ratVal @(unitFrom / unitTo)
-#else
-toUnit (Time t) = Time (t * ratVal @unitFrom / ratVal @unitTo)
-#endif
 {-# INLINE toUnit #-}
 
 {- | Convenient version of 'Control.Concurrent.threadDelay' which takes

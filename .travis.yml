@@ -15,22 +15,6 @@ matrix:
 
   include:
 
-  - ghc: 8.0.2
-    env: STACK_YAML="$HOME/build/serokell/o-clock/stack-8.0.2.yaml"
-    os: linux
-    addons:
-      apt:
-        packages:
-        - libgmp-dev
-
-  - ghc: 8.2.2
-    env: STACK_YAML="$HOME/build/serokell/o-clock/stack-8.2.2.yaml"
-    os: linux
-    addons:
-      apt:
-        packages:
-        - libgmp-dev
-
   - ghc: 8.4.4
     env: STACK_YAML="$HOME/build/serokell/o-clock/stack-8.4.4.yaml"
     os: linux
