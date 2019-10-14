@@ -1,5 +1,5 @@
 name:                o-clock
-version:             1.0.0.1
+version:             1.1.0
 synopsis:            Type-safe time library.
 description:         See README.md for details.
 homepage:            https://github.com/serokell/o-clock
