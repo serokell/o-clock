@@ -126,6 +126,9 @@ benchmark o-clock-benchmark
     build-depends:     deepseq    >= 1.4
     cpp-options:       -DNO_deepseq
 
+  if !flag(bench-buildable)
+    buildable:         False
+
   default-extensions:  OverloadedStrings
                        RecordWildCards
 
@@ -145,4 +148,8 @@ flag deepseq
 
 flag serialise
   description:         Provide instances for @serialise@
+  default:             False
+
+flag bench-buildable
+  description:         Make benchmarks buildable
   default:             False

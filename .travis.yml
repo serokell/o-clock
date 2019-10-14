@@ -94,7 +94,10 @@ script:
     if [ -z "$STACK_YAML" ]; then
       cabal new-test
     else
-      stack build --test --bench --no-terminal --flag o-clock:aeson --flag o-clock:hashable --flag o-clock:serialise --flag o-clock:deepseq
+      stack build --test --no-terminal --flag o-clock:aeson --flag o-clock:hashable --flag o-clock:serialise --flag o-clock:deepseq
+      # We use kinda dead packages (tiempo and time-units) in benchmarks, so we have to use `allow-newer` to build them.
+      echo "allow-newer: true" >> $STACK_YAML
+      stack build --bench --no-terminal --flag o-clock:aeson --flag o-clock:hashable --flag o-clock:serialise --flag o-clock:deepseq --flag o-clock:bench-buildable
     fi
 
 notifications:

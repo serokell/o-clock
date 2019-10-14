@@ -7,5 +7,3 @@ extra-deps:
 ## Serialise
 - serialise-0.2.0.0
 - cborg-0.2.0.0
-
-allow-newer: true
