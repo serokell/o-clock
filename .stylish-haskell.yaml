@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2019 Serokell <https://serokell.io>
+#
+# SPDX-License-Identifier: MPL-2.0
+
 # Default stylish-haskell configuration file in Serokell.
 # It's based on default config provided by `stylish-haskell --defaults` but has some changes
 # ==================================
