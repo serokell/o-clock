@@ -3,6 +3,16 @@ Change log
 o'clock uses [PVP Versioning][1].
 The change log is available [on GitHub][2].
 
+1.1.0
+=====
+
+* [#110](https://github.com/serokell/o-clock/issues/110):
+  Resurrect `o-clock` in nightly resolver. Specifically:
+  + Explicitly support GHC-8.8.
+  + Bump many upper bounds.
+  + Make benchmarks not buildable by default.
+  + Drop support for GHC-8.0 and GHC-8.2.
+
 1.0.0.1
 =======
 

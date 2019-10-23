@@ -1,5 +1,5 @@
 name:                o-clock
-version:             1.0.0.1
+version:             1.1.0
 synopsis:            Type-safe time library.
 description:         See README.md for details.
 homepage:            https://github.com/serokell/o-clock
@@ -16,10 +16,11 @@ extra-doc-files:     CHANGELOG.md
                    , README.md
                    , README.lhs
 cabal-version:       2.0
-tested-with:         GHC == 8.0.2
-                   , GHC == 8.2.2
-                   , GHC == 8.4.3
+tested-with:         GHC == 8.4.3
+                   , GHC == 8.4.4
                    , GHC == 8.6.1
+                   , GHC == 8.6.5
+                   , GHC == 8.8.1
 
 source-repository head
   type:     git
@@ -46,13 +47,13 @@ library
                      , text
     cpp-options:       -DHAS_aeson
   if flag(hashable)
-    build-depends:     hashable >= 1.2.6 && < 1.3
+    build-depends:     hashable >= 1.2.6 && < 1.4
     cpp-options:       -DHAS_hashable
   if flag(deepseq)
     build-depends:     deepseq  ^>= 1.4
     cpp-options:       -DHAS_deepseq
   if flag(serialise)
-    build-depends:     serialise >= 0.2
+    build-depends:     serialise >= 0.2 && < 0.3
     cpp-options:       -DHAS_serialise
 
 executable play-o-clock
@@ -76,11 +77,11 @@ test-suite o-clock-test
 
   build-depends:       base            >= 4.9  && < 5
                      , o-clock
-                     , hedgehog       ^>= 0.6
-                     , tasty          >= 0.12 && < 1.2
-                     , tasty-hedgehog >= 0.1 && < 0.3
+                     , hedgehog       >= 0.6 && < 1.1
+                     , tasty          >= 0.12 && < 1.3
+                     , tasty-hedgehog >= 0.1 && < 1.1
                      , tasty-hspec    ^>= 1.1.3
-                     , type-spec      ^>= 0.3.0.1
+                     , type-spec      >= 0.3.0.1 && < 0.5
 
   ghc-options:         -Wall -threaded -rtsopts -with-rtsopts=-N
   default-language:    Haskell2010
@@ -95,7 +96,7 @@ test-suite o-clock-doctest
   build-tool-depends:  doctest:doctest
   build-depends:       base    >= 4.10 && < 5
                      , doctest ^>= 0.16
-                     , Glob    ^>= 0.9
+                     , Glob    >= 0.9 && < 0.11
   ghc-options:         -Wall -threaded -rtsopts -with-rtsopts=-N
   default-language:    Haskell2010
 
@@ -125,6 +126,9 @@ benchmark o-clock-benchmark
     build-depends:     deepseq    >= 1.4
     cpp-options:       -DNO_deepseq
 
+  if !flag(bench-buildable)
+    buildable:         False
+
   default-extensions:  OverloadedStrings
                        RecordWildCards
 
@@ -144,4 +148,8 @@ flag deepseq
 
 flag serialise
   description:         Provide instances for @serialise@
+  default:             False
+
+flag bench-buildable
+  description:         Make benchmarks buildable
   default:             False

@@ -1,4 +1,4 @@
-resolver: lts-14.8
+resolver: nightly-2019-10-10
 
 extra-deps:
 - tiempo-0.0.1.1

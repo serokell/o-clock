@@ -10,25 +10,19 @@ module Test.Time.TypeSpec
 import Test.TypeSpec
 import Test.TypeSpecCrazy
 
-import Time.Rational ((:%))
-#if ( __GLASGOW_HASKELL__ >= 804 )
-import Time.Rational (type (/), type (>=%), Gcd, Normalize)
-#endif
-import Time.Units (Day, Fortnight, Hour, Microsecond, Millisecond, Minute,
-                   Nanosecond, Picosecond, Second, UnitName, Week)
+import Time.Rational (type (/), (:%), type (>=%), Gcd, Normalize)
+import Time.Units (Day, Fortnight, Hour, Microsecond, Millisecond, Minute, Nanosecond, Picosecond,
+                   Second, UnitName, Week)
 
 runTypeSpecTests :: IO ()
 runTypeSpecTests = do
-#if ( __GLASGOW_HASKELL__ >= 804 )
     print typeSpec_Gcd
     print typeSpec_Normalize
     print typeSpec_DivRat
     print typeSpec_Compare
-#endif
     print typeSpec_UnitCalculation
     print typeSpec_UnitNames
 
-#if ( __GLASGOW_HASKELL__ >= 804 )
 typeSpec_Gcd ::
 
   "GCD"
@@ -104,8 +98,6 @@ typeSpec_Compare ::
      -*- It "5%42 >=% 1%42 = True" (((5 :% 42) >=% (1 :% 42)) `Is` 'True)
 
 typeSpec_Compare = Valid
-
-#endif
 
 typeSpec_UnitCalculation ::
 
