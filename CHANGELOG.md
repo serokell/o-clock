@@ -9,6 +9,15 @@ Change log
 o'clock uses [PVP Versioning][1].
 The change log is available [on GitHub][2].
 
+1.2.0
+=====
+
+* [#113](https://github.com/serokell/o-clock/pull/113):
+  + Increase some upper bounds.
+  + Drop support for GHC-8.4.
+  + Drop `deepseq`, `serialize` and `hashable` flags.
+  + Fix some warnings.
+
 1.1.0
 =====
 

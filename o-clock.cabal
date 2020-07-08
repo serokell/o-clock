@@ -1,9 +1,9 @@
--- SPDX-FileCopyrightText: 2019 Serokell <https://serokell.io>
+-- SPDX-FileCopyrightText: 2020 Serokell <https://serokell.io>
 --
 -- SPDX-License-Identifier: MPL-2.0
 
 name:                o-clock
-version:             1.1.0
+version:             1.2.0
 synopsis:            Type-safe time library.
 description:         See README.md for details.
 homepage:            https://github.com/serokell/o-clock
@@ -12,7 +12,7 @@ license:             MPL-2.0
 license-file:        LICENSE
 author:              @serokell
 maintainer:          Serokell <hi@serokell.io>
-copyright:           2018 Serokell
+copyright:           2020 Serokell
 category:            Time
 build-type:          Simple
 stability:           stable
@@ -20,11 +20,9 @@ extra-doc-files:     CHANGELOG.md
                    , README.md
                    , README.lhs
 cabal-version:       2.0
-tested-with:         GHC == 8.4.3
-                   , GHC == 8.4.4
-                   , GHC == 8.6.1
-                   , GHC == 8.6.5
-                   , GHC == 8.8.1
+tested-with:         GHC == 8.6.5
+                   , GHC == 8.8.3
+                   , GHC == 8.10.1
 
 source-repository head
   type:     git
@@ -39,7 +37,7 @@ library
                          Time.Units
   ghc-options:         -Wall
   build-depends:       base         >= 4.9  && < 5
-                     , ghc-prim     ^>= 0.5
+                     , ghc-prim     >= 0.5 && < 0.7
   default-language:    Haskell2010
   default-extensions:  OverloadedStrings
                        RecordWildCards
@@ -47,18 +45,9 @@ library
                        TypeApplications
                        TypeFamilies
   if flag(aeson)
-    build-depends:     aeson    >= 1.2.4 && < 1.5
+    build-depends:     aeson    >= 1.2.4 && < 1.6
                      , text
     cpp-options:       -DHAS_aeson
-  if flag(hashable)
-    build-depends:     hashable >= 1.2.6 && < 1.4
-    cpp-options:       -DHAS_hashable
-  if flag(deepseq)
-    build-depends:     deepseq  ^>= 1.4
-    cpp-options:       -DHAS_deepseq
-  if flag(serialise)
-    build-depends:     serialise >= 0.2 && < 0.3
-    cpp-options:       -DHAS_serialise
 
 executable play-o-clock
   main-is:             Playground.hs
@@ -93,6 +82,9 @@ test-suite o-clock-test
                        RecordWildCards
 
 test-suite o-clock-doctest
+  if os(windows)
+     buildable: False
+
   type:                exitcode-stdio-1.0
   hs-source-dirs:      test
   main-is:             Doctest.hs
@@ -105,6 +97,9 @@ test-suite o-clock-doctest
   default-language:    Haskell2010
 
 test-suite readme-test
+  if os(windows)
+     buildable: False
+
   type:                exitcode-stdio-1.0
   main-is:             README.lhs
 
@@ -122,14 +117,11 @@ benchmark o-clock-benchmark
   hs-source-dirs:      benchmark
   main-is:             Main.hs
   build-depends:       base       >= 4.8   && < 5
+                     , deepseq    >= 1.4
                      , o-clock
                      , gauge      >= 0.2.1 && < 1
                      , tiempo     >= 0.0.1.1
                      , time-units == 1.0.0
-  if !flag(deepseq)
-    build-depends:     deepseq    >= 1.4
-    cpp-options:       -DNO_deepseq
-
   if !flag(bench-buildable)
     buildable:         False
 
@@ -140,18 +132,6 @@ benchmark o-clock-benchmark
 
 flag aeson
   description:         Provide instances for @aeson@
-  default:             False
-
-flag hashable
-  description:         Provide instances for @hashable@
-  default:             False
-
-flag deepseq
-  description:         Provide instances for @deepseq@
-  default:             False
-
-flag serialise
-  description:         Provide instances for @serialise@
   default:             False
 
 flag bench-buildable

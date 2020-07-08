@@ -28,7 +28,6 @@ module Time.Series
 
 import Data.Char (isDigit, isLetter)
 import Data.Kind (Constraint)
-import Data.Semigroup ((<>))
 import Data.Type.Bool (type (&&), If)
 import Data.Type.Equality (type (==))
 import GHC.TypeLits (ErrorMessage (Text), TypeError)

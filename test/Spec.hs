@@ -16,8 +16,8 @@ main = do
     -- type specs
     runTypeSpecTests
     -- Units tests with tasty:
-    -- * toUnit tests
-    -- * read tests
+    -- • toUnit tests
+    -- • read tests
     unitTests <- unitsTestTree
     -- Timestamp tests
     tsTests   <- timeStampTestTree
