@@ -64,8 +64,6 @@ threadDelay @Second 5
    but it's not included to the package by default. To do that you need to provide corresponding
    flag from this list: `hashable`, `deepseq`, `serialise` and `aeson`.
 
-_**Note:**_ features support for `GHC-8.2.2` and `GHC-8.0.2` is quite limited.
-
 ## Example: How to make your own time unit
 
 This README section contains tutorial on how you can introduce your own time units.
