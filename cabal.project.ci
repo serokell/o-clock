@@ -1,0 +1,17 @@
+-- SPDX-FileCopyrightText: 2020 Serokell <https://serokell.io>
+--
+-- SPDX-License-Identifier: MPL-2.0
+
+-- Sadly we can't pass `--ghc-options=-Werror` to `cabal build`
+-- because it applies it to dependencies as well.
+-- See: https://github.com/haskell/cabal/issues/3883
+-- So we need this file.
+
+packages:
+  o-clock.cabal
+
+package o-clock
+  ghc-options: -Werror
+  flags: +aeson +bench-buildable
+
+allow-newer: tiempo:base, tiempo:time, serialise:containers, cborg:containers

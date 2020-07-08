@@ -1,9 +1,0 @@
-# SPDX-FileCopyrightText: 2019 Serokell <https://serokell.io>
-#
-# SPDX-License-Identifier: MPL-2.0
-
-resolver: nightly-2019-10-10
-
-extra-deps:
-- tiempo-0.0.1.1
-- time-units-1.0.0
