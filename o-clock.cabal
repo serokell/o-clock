@@ -1,9 +1,9 @@
--- SPDX-FileCopyrightText: 2019 Serokell <https://serokell.io>
+-- SPDX-FileCopyrightText: 2020 Serokell <https://serokell.io>
 --
 -- SPDX-License-Identifier: MPL-2.0
 
 name:                o-clock
-version:             1.1.0
+version:             1.2.0
 synopsis:            Type-safe time library.
 description:         See README.md for details.
 homepage:            https://github.com/serokell/o-clock
@@ -12,7 +12,7 @@ license:             MPL-2.0
 license-file:        LICENSE
 author:              @serokell
 maintainer:          Serokell <hi@serokell.io>
-copyright:           2018 Serokell
+copyright:           2020 Serokell
 category:            Time
 build-type:          Simple
 stability:           stable
