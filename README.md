@@ -60,9 +60,9 @@ threadDelay @Second 5
    * It means that if you want to roll out your own time units and use it in your project,
      this can be done in easy and convenient way (see tutorial below).
 
-6. `O'Clock` contains useful instances like `Hashable`, `NFData`, `Serialise`, `ToJSON`, `FromJSON`
-   but it's not included to the package by default. To do that you need to provide corresponding
-   flag from this list: `hashable`, `deepseq`, `serialise` and `aeson`.
+6. `O'Clock` contains useful instances: `ToJSON` and `FromJSON`.
+   However, they are not included to the package by default.
+   To do that, you need to provide the corresponding flag: `aeson`.
 
 ## Example: How to make your own time unit
 

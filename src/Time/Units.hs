@@ -82,18 +82,6 @@ import GHC.TypeLits (KnownSymbol, Symbol, symbolVal)
 import Text.ParserCombinators.ReadP (ReadP, char, munch1, option, pfail, (+++))
 import Text.ParserCombinators.ReadPrec (ReadPrec, lift)
 
-#ifdef HAS_hashable
-import Data.Hashable (Hashable)
-#endif
-
-#ifdef HAS_deepseq
-import Control.DeepSeq (NFData)
-#endif
-
-#ifdef HAS_serialise
-import Codec.Serialise (Serialise (..))
-#endif
-
 #ifdef HAS_aeson
 import Data.Aeson (ToJSON (..), FromJSON (..), withText)
 import Text.Read (readMaybe)
@@ -146,18 +134,6 @@ instance Monoid (Time (rat :: Rat)) where
     {-# INLINE mappend #-}
     mconcat = foldl' (<>) mempty
     {-# INLINE mconcat #-}
-
-#ifdef HAS_hashable
-instance Hashable (Time (rat :: Rat))
-#endif
-
-#ifdef HAS_deepseq
-instance NFData (Time (rat :: Rat))
-#endif
-
-#ifdef HAS_serialise
-instance Serialise (Time (rat :: Rat))
-#endif
 
 #ifdef HAS_aeson
 instance (KnownUnitName unit) => ToJSON (Time (unit :: Rat)) where

@@ -1,4 +1,4 @@
--- SPDX-FileCopyrightText: 2019 Serokell <https://serokell.io>
+-- SPDX-FileCopyrightText: 2020 Serokell <https://serokell.io>
 --
 -- SPDX-License-Identifier: MPL-2.0
 
@@ -13,24 +13,17 @@
 
 module Main where
 
-#ifdef NO_deepseq
 import Control.DeepSeq (NFData)
-#endif
 import Gauge (bench, bgroup, defaultMain, nf, whnf)
 
-#ifdef NO_deepseq
-import Time (Rat, Time)
-#endif
-import Time (Day, Hour, Microsecond, Nanosecond, Second, hour, mcs, ns, sec, toUnit, week)
+import Time (Day, Hour, Microsecond, Nanosecond, Rat, Second, Time, hour, mcs, ns, sec, toUnit,
+             week)
 
 import qualified Data.Time.Units as TU (Day, Hour, Microsecond, Nanosecond, Second, Week,
                                         convertUnit)
 import qualified Tiempo (hours, microSeconds, toHours, toMicroSeconds)
 
-
-#ifdef NO_deepseq
 instance NFData (Time (unit :: Rat))
-#endif
 
 main :: IO ()
 main = defaultMain

@@ -48,15 +48,6 @@ library
     build-depends:     aeson    >= 1.2.4 && < 1.5
                      , text
     cpp-options:       -DHAS_aeson
-  if flag(hashable)
-    build-depends:     hashable >= 1.2.6 && < 1.4
-    cpp-options:       -DHAS_hashable
-  if flag(deepseq)
-    build-depends:     deepseq  ^>= 1.4
-    cpp-options:       -DHAS_deepseq
-  if flag(serialise)
-    build-depends:     serialise >= 0.2 && < 0.3
-    cpp-options:       -DHAS_serialise
 
 executable play-o-clock
   main-is:             Playground.hs
@@ -120,14 +111,11 @@ benchmark o-clock-benchmark
   hs-source-dirs:      benchmark
   main-is:             Main.hs
   build-depends:       base       >= 4.8   && < 5
+                     , deepseq    >= 1.4
                      , o-clock
                      , gauge      >= 0.2.1 && < 1
                      , tiempo     >= 0.0.1.1
                      , time-units == 1.0.0
-  if !flag(deepseq)
-    build-depends:     deepseq    >= 1.4
-    cpp-options:       -DNO_deepseq
-
   if !flag(bench-buildable)
     buildable:         False
 
@@ -138,18 +126,6 @@ benchmark o-clock-benchmark
 
 flag aeson
   description:         Provide instances for @aeson@
-  default:             False
-
-flag hashable
-  description:         Provide instances for @hashable@
-  default:             False
-
-flag deepseq
-  description:         Provide instances for @deepseq@
-  default:             False
-
-flag serialise
-  description:         Provide instances for @serialise@
   default:             False
 
 flag bench-buildable
