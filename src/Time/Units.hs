@@ -66,7 +66,6 @@ module Time.Units
        , timeout
        ) where
 
-import Control.Applicative ((*>))
 import Control.Monad (unless)
 import Control.Monad.IO.Class (MonadIO, liftIO)
 import Data.Char (isDigit, isLetter)
