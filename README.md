@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2019 Serokell <https://serokell.io>
+
+SPDX-License-Identifier: MPL-2.0
+-->
+
 # O'Clock
 
 [![Hackage](https://img.shields.io/hackage/v/o-clock.svg)](https://hackage.haskell.org/package/o-clock)
