@@ -82,6 +82,9 @@ test-suite o-clock-test
                        RecordWildCards
 
 test-suite o-clock-doctest
+  if os(windows)
+     buildable: False
+
   type:                exitcode-stdio-1.0
   hs-source-dirs:      test
   main-is:             Doctest.hs
@@ -94,6 +97,9 @@ test-suite o-clock-doctest
   default-language:    Haskell2010
 
 test-suite readme-test
+  if os(windows)
+     buildable: False
+
   type:                exitcode-stdio-1.0
   main-is:             README.lhs
 
