@@ -10,7 +10,7 @@ SPDX-License-Identifier: MPL-2.0
 [![Hackage](https://img.shields.io/hackage/v/o-clock.svg)](https://hackage.haskell.org/package/o-clock)
 [![Stackage](http://stackage.org/package/o-clock/badge/lts)](http://stackage.org/lts/package/o-clock)
 [![Stackage Nightly](http://stackage.org/package/o-clock/badge/nightly)](http://stackage.org/nightly/package/o-clock)
-[![MIT license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/serokell/o-clock/blob/master/LICENSE)
+[![License: MPL 2.0](https://img.shields.io/badge/License-MPL%202.0-brightgreen.svg)](https://github.com/serokell/o-clock/blob/master/LICENSE)
 
 ## Overview
 
