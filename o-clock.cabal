@@ -71,7 +71,7 @@ test-suite o-clock-test
   build-depends:       base            >= 4.9  && < 5
                      , o-clock
                      , hedgehog       >= 0.6 && < 1.1
-                     , tasty          >= 0.12 && < 1.4
+                     , tasty          >= 0.12 && < 1.5
                      , tasty-hedgehog >= 0.1 && < 1.1
                      , tasty-hspec    ^>= 1.1.3
                      , type-spec      >= 0.3.0.1 && < 0.5
