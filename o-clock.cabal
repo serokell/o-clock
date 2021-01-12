@@ -3,7 +3,7 @@
 -- SPDX-License-Identifier: MPL-2.0
 
 name:                o-clock
-version:             1.2.0
+version:             1.2.0.1
 synopsis:            Type-safe time library.
 description:         See README.md for details.
 homepage:            https://github.com/serokell/o-clock

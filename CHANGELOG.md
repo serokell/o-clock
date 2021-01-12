@@ -9,6 +9,11 @@ Change log
 o'clock uses [PVP Versioning][1].
 The change log is available [on GitHub][2].
 
+1.2.0.1
+=======
+
+Bump upper versions of some dependencies.
+
 1.2.0
 =====
 
