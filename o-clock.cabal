@@ -1,4 +1,4 @@
--- SPDX-FileCopyrightText: 2020 Serokell <https://serokell.io>
+-- SPDX-FileCopyrightText: 2020-2021 Serokell <https://serokell.io>
 --
 -- SPDX-License-Identifier: MPL-2.0
 
@@ -22,7 +22,7 @@ extra-doc-files:     CHANGELOG.md
 cabal-version:       2.0
 tested-with:         GHC == 8.6.5
                    , GHC == 8.8.3
-                   , GHC == 8.10.1
+                   , GHC == 8.10.4
 
 source-repository head
   type:     git
