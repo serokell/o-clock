@@ -15,12 +15,7 @@ main :: IO ()
 main = do
     -- type specs
     runTypeSpecTests
-    -- Units tests with tasty:
-    -- • toUnit tests
-    -- • read tests
-    unitTests <- unitsTestTree
-    -- Timestamp tests
-    tsTests   <- timeStampTestTree
 
-    let allTests = testGroup "O'Clock" $ [unitTests, tsTests] ++ hedgehogTestTrees
+    let allTests = testGroup "O'Clock" $
+            [unitsTestTree, timeStampTestTree] ++ hedgehogTestTrees
     defaultMain allTests
