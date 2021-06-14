@@ -9,6 +9,12 @@ Change log
 o'clock uses [PVP Versioning][1].
 The change log is available [on GitHub][2].
 
+1.2.1
+=====
+
+* [#121](https://github.com/serokell/o-clock/pull/121):
+  + Remove `tasty-hspec` dependency from tests.
+
 1.2.0.1
 =======
 
