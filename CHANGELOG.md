@@ -9,6 +9,14 @@ Change log
 o'clock uses [PVP Versioning][1].
 The change log is available [on GitHub][2].
 
+1.2.1.1
+=====
+
+* [#125](https://github.com/serokell/o-clock/pull/125):
+  + Remove `ghc-prim` dependency.
+  + Remove old artifacts of GHC<8.6 support.
+  + Make `base` constraints stricter.
+
 1.2.1
 =====
 
