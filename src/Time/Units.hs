@@ -11,9 +11,7 @@
 {-# LANGUAGE FlexibleContexts           #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE InstanceSigs               #-}
-#if ( __GLASGOW_HASKELL__ >= 806 )
 {-# LANGUAGE NoStarIsType               #-}
-#endif
 {-# LANGUAGE TypeOperators              #-}
 {-# LANGUAGE UndecidableInstances       #-}
 
