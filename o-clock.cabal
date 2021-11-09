@@ -1,3 +1,4 @@
+cabal-version: 2.2
 -- SPDX-FileCopyrightText: 2020-2021 Serokell <https://serokell.io>
 --
 -- SPDX-License-Identifier: MPL-2.0
@@ -19,7 +20,6 @@ stability:           stable
 extra-doc-files:     CHANGELOG.md
                    , README.md
                    , README.lhs
-cabal-version:       2.0
 tested-with:         GHC == 8.6.5
                    , GHC == 8.8.3
                    , GHC == 8.10.4
@@ -28,16 +28,20 @@ source-repository head
   type:     git
   location: https://github.com/serokell/o-clock
 
+common common-options
+  build-depends:
+      base >=4.7 && <4.17
+  ghc-options: -Wall
+  default-language: Haskell2010
+
 library
+  import:              common-options
   hs-source-dirs:      src
   exposed-modules:     Time
                          Time.Rational
                          Time.Series
                          Time.Timestamp
                          Time.Units
-  ghc-options:         -Wall
-  build-depends:       base         >= 4.9  && < 5
-  default-language:    Haskell2010
   default-extensions:  OverloadedStrings
                        RecordWildCards
                        ScopedTypeVariables
@@ -49,15 +53,15 @@ library
     cpp-options:       -DHAS_aeson
 
 executable play-o-clock
+  import:              common-options
   main-is:             Playground.hs
   build-depends:       o-clock
-                     , base     >= 4.9  && < 5
   hs-source-dirs:      examples
-  default-language:    Haskell2010
-  ghc-options:         -threaded -Wall
+  ghc-options:         -threaded
                        -fno-warn-orphans
 
 test-suite o-clock-test
+  import:              common-options
   type:                exitcode-stdio-1.0
   hs-source-dirs:      test
   main-is:             Spec.hs
@@ -67,8 +71,7 @@ test-suite o-clock-test
                        Test.Time.TypeSpec
                        Test.Time.Units
 
-  build-depends:       base            >= 4.9  && < 5
-                     , o-clock
+  build-depends:       o-clock
                      , hedgehog       >= 0.6 && < 1.1
                      , hspec-expectations ^>= 0.8
                      , tasty          >= 0.12 && < 1.5
@@ -76,12 +79,12 @@ test-suite o-clock-test
                      , tasty-hunit-compat ^>= 0.2
                      , type-spec      >= 0.3.0.1 && < 0.5
 
-  ghc-options:         -Wall -threaded -rtsopts -with-rtsopts=-N
-  default-language:    Haskell2010
+  ghc-options:         -threaded -rtsopts -with-rtsopts=-N
   default-extensions:  OverloadedStrings
                        RecordWildCards
 
 test-suite o-clock-doctest
+  import:              common-options
   if os(windows)
      buildable: False
 
@@ -90,13 +93,12 @@ test-suite o-clock-doctest
   main-is:             Doctest.hs
 
   build-tool-depends:  doctest:doctest
-  build-depends:       base    >= 4.10 && < 5
-                     , doctest >= 0.16 && < 0.19
+  build-depends:       doctest >= 0.16 && < 0.19
                      , Glob    >= 0.9 && < 0.11
-  ghc-options:         -Wall -threaded -rtsopts -with-rtsopts=-N
-  default-language:    Haskell2010
+  ghc-options:         -threaded -rtsopts -with-rtsopts=-N
 
 test-suite readme-test
+  import:              common-options
   if os(windows)
      buildable: False
 
@@ -104,20 +106,17 @@ test-suite readme-test
   main-is:             README.lhs
 
   build-tool-depends:  markdown-unlit:markdown-unlit
-  build-depends:       base            >= 4.10  && < 5
-                     , o-clock
+  build-depends:       o-clock
                      , markdown-unlit ^>= 0.5
-  ghc-options:         -Wall -threaded -rtsopts -with-rtsopts=-N -pgmL markdown-unlit
-  default-language:    Haskell2010
+  ghc-options:         -threaded -rtsopts -with-rtsopts=-N -pgmL markdown-unlit
 
 benchmark o-clock-benchmark
+  import:              common-options
   type:                exitcode-stdio-1.0
-  default-language:    Haskell2010
-  ghc-options:         -Wall -O2 -threaded -rtsopts -with-rtsopts=-N
+  ghc-options:         -O2 -threaded -rtsopts -with-rtsopts=-N
   hs-source-dirs:      benchmark
   main-is:             Main.hs
-  build-depends:       base       >= 4.8   && < 5
-                     , deepseq    >= 1.4
+  build-depends:       deepseq    >= 1.4
                      , o-clock
                      , gauge      >= 0.2.1 && < 1
                      , tiempo     >= 0.0.1.1
