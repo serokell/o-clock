@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: MPL-2.0
 
-resolver: lts-17.6
+resolver: lts-18.16
 
 extra-deps:
 - tiempo-0.0.1.1
