@@ -123,7 +123,8 @@ benchmark o-clock-benchmark
                      , gauge      >= 0.2.1 && < 1
                      , tiempo     >= 0.0.1.1
                      , time-units == 1.0.0
-  if !flag(bench-buildable)
+  -- ghc 9.2 is not supported by gauge (due to basement)
+  if !flag(bench-buildable) || impl(ghc >= 9.2)
     buildable:         False
 
   default-extensions:  OverloadedStrings
