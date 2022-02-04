@@ -50,7 +50,7 @@ library
                        TypeApplications
                        TypeFamilies
   if flag(aeson)
-    build-depends:     aeson    >= 1.2.4 && < 1.6
+    build-depends:     aeson    >= 1.2.4 && < 2.1
                      , text
     cpp-options:       -DHAS_aeson
 
