@@ -3,13 +3,13 @@
 -- SPDX-License-Identifier: MPL-2.0
 
 {-# LANGUAGE AllowAmbiguousTypes  #-}
-{-# LANGUAGE ConstraintKinds      #-}
 {-# LANGUAGE CPP                  #-}
-{-# LANGUAGE TypeInType           #-}
+{-# LANGUAGE ConstraintKinds      #-}
 {-# LANGUAGE FlexibleContexts     #-}
 {-# LANGUAGE FlexibleInstances    #-}
 {-# LANGUAGE NoStarIsType         #-}
 {-# LANGUAGE Rank2Types           #-}
+{-# LANGUAGE TypeInType           #-}
 {-# LANGUAGE TypeOperators        #-}
 {-# LANGUAGE UndecidableInstances #-}
 
@@ -40,7 +40,7 @@ import Data.Kind (Type)
 import Data.Proxy (Proxy (..))
 import GHC.Natural (Natural)
 import GHC.Real (Ratio ((:%)))
-import GHC.TypeNats (Div, Mod, type (<=?), KnownNat, Nat, natVal)
+import GHC.TypeNats (Div, KnownNat, Mod, Nat, natVal, type (<=?))
 import qualified GHC.TypeNats
 import Unsafe.Coerce (unsafeCoerce)
 
@@ -90,6 +90,11 @@ type family (m :: Nat) % (n :: Nat) :: Rat where
     a % b = Normalize (a :% b)
 infixl 7 %
 
+-- Note about usage of CPP for doctests:
+-- @:%@ is a synonym for @'::%@. GHC older than 9.2 does not expand
+-- type synonyms when @:kind!@ is used in REPL, so we get the short synonym.
+-- Starting from 9.2 type synonyms are expanded, so we get @'::%@.
+
 {- | Division of type-level rationals.
 
 If there are 'Rat' with 'Nat's @a@ and @b@ and another
@@ -99,51 +104,103 @@ If there are 'Rat' with 'Nat's @a@ and @b@ and another
  \]
 
 __Example:__
-
+-}
+#if ( __GLASGOW_HASKELL__ >= 902 )
+{- |
+>>> :kind! DivRat (9 % 11) (9 % 11)
+DivRat (9 % 11) (9 % 11) :: Rat
+= 1 '::% 1
+-}
+#else
+{- |
 >>> :kind! DivRat (9 % 11) (9 % 11)
 DivRat (9 % 11) (9 % 11) :: Rat
 = 1 :% 1
 -}
+#endif
 type family DivRat (m :: Rat) (n :: Rat) :: Rat where
     DivRat (a :% b) (c :% d) = (a * d) % (b * c)
 
 {- | Multiplication for type-level rationals.
 
 __Example:__
-
+-}
+#if ( __GLASGOW_HASKELL__ >= 902 )
+{- |
+>>> :kind!  MulRat (2 % 3) (9 % 11)
+MulRat (2 % 3) (9 % 11) :: Rat
+= 6 '::% 11
+-}
+#else
+{- |
 >>> :kind!  MulRat (2 % 3) (9 % 11)
 MulRat (2 % 3) (9 % 11) :: Rat
 = 6 :% 11
 -}
+#endif
 type family MulRat (m :: Rat) (n :: Rat) :: Rat where
     MulRat (a :% b) (c :% d) = (a * c) % (b * d)
 
 {- | Multiplication of type-level natural with rational.
 
 __Example:__
+-}
+#if ( __GLASGOW_HASKELL__ >= 902 )
+{- |
+
+>>> :kind!  MulNatRat 2 (9 % 11)
+MulNatRat 2 (9 % 11) :: Rat
+= 18 '::% 11
+-}
+#else
+{- |
 
 >>> :kind!  MulNatRat 2 (9 % 11)
 MulNatRat 2 (9 % 11) :: Rat
 = 18 :% 11
 -}
+#endif
 type family MulNatRat (n :: Nat) (r :: Rat) :: Rat where
     MulNatRat x (a :% b) = (x * a) % b
 
 {- | Division of type-level rational and natural.
 
 __Example:__
+-}
+#if ( __GLASGOW_HASKELL__ >= 902 )
+{- |
+
+>>> :kind!  DivRatNat (9 % 11) 2
+DivRatNat (9 % 11) 2 :: Rat
+= 9 '::% 22
+-}
+#else
+{- |
 
 >>> :kind!  DivRatNat (9 % 11) 2
 DivRatNat (9 % 11) 2 :: Rat
 = 9 :% 22
 -}
+#endif
 type family DivRatNat (r :: Rat) (n :: Nat) :: Rat where
     DivRatNat (a :% b) x = a % (b * x)
 
 {- | Greatest common divisor for type-level naturals.
 
 __Example:__
+-}
+#if ( __GLASGOW_HASKELL__ >= 902 )
+{- |
+>>> :kind! Gcd 9 11
+Gcd 9 11 :: Natural
+= 1
 
+>>> :kind! Gcd 9 12
+Gcd 9 12 :: Natural
+= 3
+-}
+#else
+{- |
 >>> :kind! Gcd 9 11
 Gcd 9 11 :: Nat
 = 1
@@ -152,6 +209,7 @@ Gcd 9 11 :: Nat
 Gcd 9 12 :: Nat
 = 3
 -}
+#endif
 type family Gcd (m :: Nat) (n :: Nat) :: Nat where
     Gcd a 0 = a
     Gcd a b = Gcd b (a `Mod` b)
@@ -159,7 +217,19 @@ type family Gcd (m :: Nat) (n :: Nat) :: Nat where
 {- | Normalization of type-level rational.
 
 __Example:__
+-}
+#if ( __GLASGOW_HASKELL__ >= 902 )
+{- |
+>>> :kind! Normalize (9 % 11)
+Normalize (9 % 11) :: Rat
+= 9 '::% 11
 
+>>> :kind! Normalize (9 % 12)
+Normalize (9 % 12) :: Rat
+= 3 '::% 4
+-}
+#else
+{- |
 >>> :kind! Normalize (9 % 11)
 Normalize (9 % 11) :: Rat
 = 9 :% 11
@@ -168,6 +238,8 @@ Normalize (9 % 11) :: Rat
 Normalize (9 % 12) :: Rat
 = 3 :% 4
 -}
+#endif
+
 type family Normalize (r :: Rat) :: Rat  where
     Normalize (a :% b) = (a `Div` Gcd a b) :% (b `Div` Gcd a b)
 
