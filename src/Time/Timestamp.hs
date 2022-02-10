@@ -27,7 +27,7 @@ module Time.Timestamp
 
        ) where
 
-import GHC.Prim (coerce)
+import Data.Coerce (coerce)
 
 import Time.Rational (KnownDivRat, KnownRat, Rat, RatioNat)
 import Time.Units (Second, Time (..), sec, toUnit)
