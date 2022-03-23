@@ -82,9 +82,9 @@ timeAdd :: forall (unit :: Rat) . KnownDivRat unit Second
         -> Timestamp
 timeAdd t (Timestamp ts) = Timestamp (toRational (unTime $ toUnit @Second t) + ts)
 
--- | Returns the result of multiplication of two 'Time' elements.
-timeMul :: forall (unit :: Rat) . KnownRat unit
-        => RatioNat
+-- | Returns the result of multiplying a number by a 'Time' element.
+timeMul :: forall (unit :: Rat) .
+           RatioNat
         -> Time unit
         -> Time unit
 timeMul n (Time t) = Time (n * t)
