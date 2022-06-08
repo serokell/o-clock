@@ -44,6 +44,7 @@ module Time.Units
        , floorUnit
        , floorRat
        , toNum
+       , toFractional
 
        , sec
        , ms
@@ -300,7 +301,7 @@ fortnight = time
 {-# INLINE fortnight #-}
 
 -- | Returns the greatest integer not greater than given 'Time'.
-floorRat :: forall (unit :: Rat) b . (Integral b) => Time unit -> b
+floorRat :: forall b (unit :: Rat) . Integral b => Time unit -> b
 floorRat = floor . unTime
 
 {- | Similar to 'floor', but works with 'Time' units.
@@ -348,6 +349,24 @@ __Examples:__
 toNum :: forall (unitTo :: Rat) n (unit :: Rat) . (KnownDivRat unit unitTo, Num n)
       => Time unit -> n
 toNum = fromIntegral @Natural . floorRat . toUnit @unitTo
+{-# DEPRECATED toNum
+  [ "May lead to unexpected flooring of the fractional time."
+  , "Use 'toFractional' to avoid rounding or 'floorRat' to keep the flooring behaviour."
+  ] #-}
+
+{- | Convert the 'Time' object to the 'Fractional' value.
+
+__Examples:__
+
+>>> toFractional @Rational $ hour (1 % 8)
+1 % 8
+
+>>> toFractional @Double $ hour (1 % 8)
+0.125
+
+-}
+toFractional :: forall r (unit :: Rat) . Fractional r => Time unit -> r
+toFractional = fromRational . toRational . unTime
 
 ----------------------------------------------------------------------------
 -- Functional
