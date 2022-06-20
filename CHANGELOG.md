@@ -9,6 +9,14 @@ Change log
 o'clock uses [PVP Versioning][1].
 The change log is available [on GitHub][2].
 
+Unreleased
+=====
+
+* [#129](https://github.com/serokell/o-clock/pull/129)
+  + Deprecate `toNum`: may cause accidental flooring.
+  + Add the `toFractional` function to avoid the accidental flooring.
+  + Change the order of the type variables in the definition of `floorRat` so that the target type comes first.
+
 1.2.1.1
 =====
 

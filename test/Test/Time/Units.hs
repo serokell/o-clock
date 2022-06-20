@@ -12,13 +12,14 @@ module Test.Time.Units
        ) where
 
 import Control.Exception (evaluate)
-import GHC.Real (Ratio ((:%)))
+import GHC.Real (Ratio ((:%)), (%))
 import Test.Hspec.Expectations (anyException, shouldBe, shouldThrow)
 import Test.Tasty (TestTree, testGroup)
 import Test.Tasty.HUnit (testCase)
 
 import Time (Day, Hour, Millisecond, Minute, Second, Time (..), Week, day, floorUnit, fortnight,
-             hour, mcs, minute, ms, ns, ps, sec, seriesF, toUnit, unitsF, week, (+:+))
+             hour, mcs, minute, ms, ns, ps, sec, seriesF, toUnit, toFractional, unitsF, week,
+             (+:+))
 
 unitsTestTree :: TestTree
 unitsTestTree = testGroup "Units" unitsTests
@@ -74,6 +75,12 @@ unitsTests =
             floorUnit (Time $ 5 :% 2) `shouldBe` day 2
         , testCase "returns 42ps when floor integer" $
             floorUnit (ps 42) `shouldBe` ps 42
+        ]
+    , testGroup "Conversion to Fractional values"
+        [ testCase "The 'Rational' representation of (hour $ 1 % 8) should be equal to 1 % 8" $
+            toFractional @Rational (hour (1 % 8)) `shouldBe` 1 % 8
+        , testCase "The 'Double' representation of (hour $ 1 % 8) should be equal to 0.125" $
+            toFractional @Double (hour (1 % 8)) `shouldBe` 0.125
         ]
     , testGroup "Formatting tests"
         [ testCase "4000 minutes should be formatted without ending-zeros" $
