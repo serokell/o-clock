@@ -16,6 +16,8 @@ Unreleased
   + Deprecate `toNum`: may cause accidental flooring.
   + Add the `toFractional` function to avoid the accidental flooring.
   + Change the order of the type variables in the definition of `floorRat` so that the target type comes first.
+* [#131](https://github.com/serokell/o-clock/pull/131)
+  + Add `ceilingRat` and `ceilingUnit`.
 
 1.2.1.1
 =====

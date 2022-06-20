@@ -43,6 +43,8 @@ module Time.Units
        , time
        , floorUnit
        , floorRat
+       , ceilingUnit
+       , ceilingRat
        , toNum
        , toFractional
 
@@ -318,6 +320,25 @@ floorRat = floor . unTime
 -}
 floorUnit :: forall (unit :: Rat) . Time unit -> Time unit
 floorUnit = time . fromIntegral @Natural . floorRat
+
+-- | Returns the smallest integer greater than or equal to the given 'Time'.
+ceilingRat :: forall b (unit :: Rat) . (Integral b) => Time unit -> b
+ceilingRat = ceiling . unTime
+
+{- | Similar to 'ceiling', but works with 'Time' units.
+
+>>> ceilingUnit @Day (Time $ 5 % 2)
+3d
+
+>>> ceilingUnit (Time @Second $ 2 % 3)
+1s
+
+>>> ceilingUnit $ ps 42
+42ps
+
+-}
+ceilingUnit :: forall (unit :: Rat) . Time unit -> Time unit
+ceilingUnit = time . fromIntegral @Natural . ceilingRat
 
 {- | Convert time to the 'Num' in given units.
 
