@@ -17,9 +17,10 @@ import Test.Hspec.Expectations (anyException, shouldBe, shouldThrow)
 import Test.Tasty (TestTree, testGroup)
 import Test.Tasty.HUnit (testCase)
 
-import Time (Day, Hour, Millisecond, Minute, Second, Time (..), Week, day, floorUnit, fortnight,
-             hour, mcs, minute, ms, ns, ps, sec, seriesF, toUnit, toFractional, unitsF, week,
-             (+:+))
+
+import Time (Day, Hour, Millisecond, Minute, Second, Time (..), Week, day, floorUnit, ceilingUnit,
+             fortnight, hour, mcs, minute, ms, ns, ps, sec, seriesF, toUnit, toFractional, unitsF,
+             week, (+:+))
 
 unitsTestTree :: TestTree
 unitsTestTree = testGroup "Units" unitsTests
@@ -75,6 +76,14 @@ unitsTests =
             floorUnit (Time $ 5 :% 2) `shouldBe` day 2
         , testCase "returns 42ps when floor integer" $
             floorUnit (ps 42) `shouldBe` ps 42
+        ]
+    , testGroup "Ceiling tests"
+        [ testCase "returns 1s, given 2/3 seconds" $
+            ceilingUnit (Time @Second $ 2 :% 3) `shouldBe` sec 1
+        , testCase "returns 3d, given 2+1/2 days" $
+            ceilingUnit (Time $ 5 :% 2) `shouldBe` day 3
+        , testCase "returns 42ps, given exactly 42 picoseconds" $
+            ceilingUnit (ps 42) `shouldBe` ps 42
         ]
     , testGroup "Conversion to Fractional values"
         [ testCase "The 'Rational' representation of (hour $ 1 % 8) should be equal to 1 % 8" $
