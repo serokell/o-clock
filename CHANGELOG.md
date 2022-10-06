@@ -12,6 +12,9 @@ The change log is available [on GitHub][2].
 Unreleased
 =====
 
+1.3
+=====
+
 * [#129](https://github.com/serokell/o-clock/pull/129)
   + Deprecate `toNum`: may cause accidental flooring.
   + Add the `toFractional` function to avoid the accidental flooring.
