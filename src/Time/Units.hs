@@ -3,8 +3,8 @@
 -- SPDX-License-Identifier: MPL-2.0
 
 {-# LANGUAGE AllowAmbiguousTypes        #-}
-{-# LANGUAGE ConstraintKinds            #-}
 {-# LANGUAGE CPP                        #-}
+{-# LANGUAGE ConstraintKinds            #-}
 {-# LANGUAGE DataKinds                  #-}
 {-# LANGUAGE DeriveGeneric              #-}
 {-# LANGUAGE ExplicitForAll             #-}
@@ -83,12 +83,12 @@ import Text.ParserCombinators.ReadP (ReadP, char, munch1, option, pfail, (+++))
 import Text.ParserCombinators.ReadPrec (ReadPrec, lift)
 
 #ifdef HAS_aeson
-import Data.Aeson (ToJSON (..), FromJSON (..), withText)
-import Text.Read (readMaybe)
+import Data.Aeson (FromJSON (..), ToJSON (..), withText)
 import qualified Data.Text as Text
+import Text.Read (readMaybe)
 #endif
 
-import Time.Rational (type (*), type (/), type (:%), KnownDivRat, Rat, RatioNat, KnownRat, ratVal)
+import Time.Rational (KnownDivRat, KnownRat, Rat, RatioNat, ratVal, type (*), type (/), type (:%))
 
 import qualified Control.Concurrent as Concurrent
 import qualified System.CPUTime as CPUTime
@@ -322,6 +322,8 @@ floorUnit :: forall (unit :: Rat) . Time unit -> Time unit
 floorUnit = time . fromIntegral @Natural . floorRat
 
 -- | Returns the smallest integer greater than or equal to the given 'Time'.
+--
+-- @since 1.3
 ceilingRat :: forall b (unit :: Rat) . (Integral b) => Time unit -> b
 ceilingRat = ceiling . unTime
 
@@ -336,6 +338,7 @@ ceilingRat = ceiling . unTime
 >>> ceilingUnit $ ps 42
 42ps
 
+@since 1.3
 -}
 ceilingUnit :: forall (unit :: Rat) . Time unit -> Time unit
 ceilingUnit = time . fromIntegral @Natural . ceilingRat
@@ -385,6 +388,7 @@ __Examples:__
 >>> toFractional @Double $ hour (1 % 8)
 0.125
 
+@since 1.3
 -}
 toFractional :: forall r (unit :: Rat) . Fractional r => Time unit -> r
 toFractional = fromRational . toRational . unTime
