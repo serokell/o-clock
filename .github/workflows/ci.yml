@@ -45,8 +45,8 @@ jobs:
           - "8.6.5"
           - "8.8.3"
           - "8.10.4"
-          - "9.0.1"
-          - "9.2.1"
+          - "9.0.2"
+          - "9.2.4"
         exclude:
           - os: macOS-latest
             ghc: 8.10.4
@@ -97,8 +97,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        stack: ["2.7.3"]
-        ghc: ["8.10.7"]
+        stack: ["2.9.1"]
+        ghc: ["9.0.2"]
 
     steps:
     - uses: actions/checkout@v2
