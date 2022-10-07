@@ -12,7 +12,7 @@ The change log is available [on GitHub][2].
 Unreleased
 =====
 
-1.3
+1.3.0
 =====
 
 * [#129](https://github.com/serokell/o-clock/pull/129)

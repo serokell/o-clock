@@ -323,7 +323,7 @@ floorUnit = time . fromIntegral @Natural . floorRat
 
 -- | Returns the smallest integer greater than or equal to the given 'Time'.
 --
--- @since 1.3
+-- @since 1.3.0
 ceilingRat :: forall b (unit :: Rat) . (Integral b) => Time unit -> b
 ceilingRat = ceiling . unTime
 
@@ -338,7 +338,7 @@ ceilingRat = ceiling . unTime
 >>> ceilingUnit $ ps 42
 42ps
 
-@since 1.3
+@since 1.3.0
 -}
 ceilingUnit :: forall (unit :: Rat) . Time unit -> Time unit
 ceilingUnit = time . fromIntegral @Natural . ceilingRat
@@ -388,7 +388,7 @@ __Examples:__
 >>> toFractional @Double $ hour (1 % 8)
 0.125
 
-@since 1.3
+@since 1.3.0
 -}
 toFractional :: forall r (unit :: Rat) . Fractional r => Time unit -> r
 toFractional = fromRational . toRational . unTime
