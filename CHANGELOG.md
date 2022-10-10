@@ -12,6 +12,9 @@ The change log is available [on GitHub][2].
 Unreleased
 =====
 
+* [#136](https://github.com/serokell/o-clock/pull/136)
+  + Remove `toNum`.
+
 1.3.0
 =====
 

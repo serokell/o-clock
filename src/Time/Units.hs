@@ -45,7 +45,6 @@ module Time.Units
        , floorRat
        , ceilingUnit
        , ceilingRat
-       , toNum
        , toFractional
 
        , sec
@@ -342,41 +341,6 @@ ceilingRat = ceiling . unTime
 -}
 ceilingUnit :: forall (unit :: Rat) . Time unit -> Time unit
 ceilingUnit = time . fromIntegral @Natural . ceilingRat
-
-{- | Convert time to the 'Num' in given units.
-
-For example, instead of writing
-
-@
-foo :: POSIXTime
-foo = 10800  -- 3 hours
-@
-
-one can write more safe implementation:
-
-@
-foo = toNum @Second $ hour 3
-@
-
-__Examples:__
-
->>> toNum @Second @Natural $ hour 3
-10800
-
->>> toNum @Minute @Int $ hour 3
-180
-
->>> toNum @Hour @Natural $ hour 3
-3
-
--}
-toNum :: forall (unitTo :: Rat) n (unit :: Rat) . (KnownDivRat unit unitTo, Num n)
-      => Time unit -> n
-toNum = fromIntegral @Natural . floorRat . toUnit @unitTo
-{-# DEPRECATED toNum
-  [ "May lead to unexpected flooring of the fractional time."
-  , "Use 'toFractional' to avoid rounding or 'floorRat' to keep the flooring behaviour."
-  ] #-}
 
 {- | Convert the 'Time' object to the 'Fractional' value.
 
