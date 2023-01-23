@@ -6,6 +6,7 @@
 {-# LANGUAGE CPP                        #-}
 {-# LANGUAGE ConstraintKinds            #-}
 {-# LANGUAGE DataKinds                  #-}
+{-# LANGUAGE DeriveDataTypeable         #-}
 {-# LANGUAGE DeriveGeneric              #-}
 {-# LANGUAGE ExplicitForAll             #-}
 {-# LANGUAGE FlexibleContexts           #-}
@@ -70,6 +71,7 @@ import Control.Monad (unless)
 import Control.Monad.IO.Class (MonadIO, liftIO)
 import Data.Char (isDigit, isLetter)
 import Data.Coerce (coerce)
+import Data.Data (Data)
 import Data.Foldable (foldl')
 import Data.Proxy (Proxy (..))
 import Data.Semigroup (Semigroup (..))
@@ -115,7 +117,7 @@ type Fortnight   = 2  * Week
 
 -- | Time unit is represented as type level rational multiplier with kind 'Rat'.
 newtype Time (rat :: Rat) = Time { unTime :: RatioNat }
-    deriving (Eq, Ord, Enum, Generic)
+    deriving (Eq, Ord, Enum, Generic, Data)
 
 -- | Addition is associative binary operation for 'Semigroup' of 'Time'.
 instance Semigroup (Time (rat :: Rat)) where
