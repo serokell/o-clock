@@ -38,28 +38,27 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macOS-latest, windows-latest]
-        cabal: ["3.6"]
+        cabal: ["3.10"]
         # If you update this list of supported compiler versions,
         # make sure to update the `tested-with` section of `o-clock.cabal`.
         ghc:
-          - "8.6.5"
-          - "8.8.3"
-          - "8.10.4"
           - "9.0.2"
-          - "9.2.4"
+          - "9.2.8"
+          - "9.4.5"
+          - "9.6.2"
         exclude:
           - os: macOS-latest
-            ghc: 8.10.4
+            ghc: 9.4.5
           - os: macOS-latest
-            ghc: 8.8.3
+            ghc: 9.2.8
           - os: macOS-latest
-            ghc: 8.6.5
+            ghc: 9.0.2
           - os: windows-latest
-            ghc: 8.10.4
+            ghc: 9.4.5
           - os: windows-latest
-            ghc: 8.8.3
+            ghc: 9.2.8
           - os: windows-latest
-            ghc: 8.6.5
+            ghc: 9.0.2
 
     steps:
     - uses: actions/checkout@v3
@@ -97,8 +96,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        stack: ["2.9.1"]
-        ghc: ["9.0.2"]
+        stack: ["2.11.1"]
+        ghc: ["9.4.5"]
 
     steps:
     - uses: actions/checkout@v3
