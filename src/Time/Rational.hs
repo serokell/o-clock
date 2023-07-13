@@ -5,11 +5,12 @@
 {-# LANGUAGE AllowAmbiguousTypes  #-}
 {-# LANGUAGE CPP                  #-}
 {-# LANGUAGE ConstraintKinds      #-}
+{-# LANGUAGE DataKinds            #-}
 {-# LANGUAGE FlexibleContexts     #-}
 {-# LANGUAGE FlexibleInstances    #-}
 {-# LANGUAGE NoStarIsType         #-}
+{-# LANGUAGE PolyKinds            #-}
 {-# LANGUAGE Rank2Types           #-}
-{-# LANGUAGE TypeInType           #-}
 {-# LANGUAGE TypeOperators        #-}
 {-# LANGUAGE UndecidableInstances #-}
 
