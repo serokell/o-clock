@@ -1,4 +1,4 @@
--- SPDX-FileCopyrightText: 2019 Serokell <https://serokell.io>
+-- SPDX-FileCopyrightText: 2019-2023 Serokell <https://serokell.io>
 --
 -- SPDX-License-Identifier: MPL-2.0
 
@@ -13,6 +13,15 @@
 {-# LANGUAGE Rank2Types           #-}
 {-# LANGUAGE TypeOperators        #-}
 {-# LANGUAGE UndecidableInstances #-}
+
+-- See https://github.com/ghc/ghc/commit/13d627bbd0bc3dd30d672de341aa7f471be0aa2c
+-- Starting from 9.6, GHC doesn't print promotion ticks when they are not necessary.
+-- Because of that we need to support too many cases in doctests.
+-- Let's force redundant ticks for now and remove this flag later when we stop
+-- supporting 9.0 at least.
+#if ( __GLASGOW_HASKELL__ >= 906 )
+{-# OPTIONS_GHC -fprint-redundant-promotion-ticks #-}
+#endif
 
 -- | This module introduces 'Rat' kind and all necessary functional.
 
@@ -44,6 +53,11 @@ import GHC.Real (Ratio ((:%)))
 import GHC.TypeNats (Div, KnownNat, Mod, Nat, natVal, type (<=?))
 import qualified GHC.TypeNats
 import Unsafe.Coerce (unsafeCoerce)
+
+#if ( __GLASGOW_HASKELL__ >= 906 )
+-- $setup
+-- >>> {-# OPTIONS_GHC -fprint-redundant-promotion-ticks #-}
+#endif
 
 -- | Data structure represents the rational number.
 -- Rational number can be represented as a pair of
