@@ -1,8 +1,8 @@
-# SPDX-FileCopyrightText: 2019-2021 Serokell <https://serokell.io>
+# SPDX-FileCopyrightText: 2019-2023 Serokell <https://serokell.io>
 #
 # SPDX-License-Identifier: MPL-2.0
 
-resolver: lts-19.27
+resolver: lts-21.12
 
 extra-deps:
 - tiempo-0.0.1.1

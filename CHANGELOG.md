@@ -9,13 +9,15 @@ Change log
 o'clock uses [PVP Versioning][1].
 The change log is available [on GitHub][2].
 
-Unreleased
+1.4.0
 =====
 
 * [#136](https://github.com/serokell/o-clock/pull/136)
   + Remove `toNum`.
 * [#139](https://github.com/serokell/o-clock/pull/139)
   + Add `Data` instance to `Time`.
+* [#140](https://github.com/serokell/o-clock/pull/140)
+  + Increase some upper bounds.
 
 1.3.0
 =====
