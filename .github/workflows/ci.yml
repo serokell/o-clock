@@ -89,7 +89,7 @@ jobs:
     - name: Haddock
       # Run haddock for all components
       run: |
-        cabal haddock --project-file=cabal.project.ci --haddock-all
+        cabal haddock --project-file=cabal.project.ci
 
   stack:
     name: stack / ghc ${{ matrix.ghc }}
