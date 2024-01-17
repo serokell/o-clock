@@ -73,7 +73,7 @@ test-suite o-clock-test
                        Test.Time.Units
 
   build-depends:       o-clock
-                     , hedgehog       >= 0.6 && < 1.4
+                     , hedgehog       >= 0.6 && < 1.5
                      , hspec-expectations ^>= 0.8
                      , tasty          >= 0.12 && < 1.6
                      , tasty-hedgehog >= 0.1 && < 1.5.0
