@@ -9,6 +9,12 @@ Change log
 o'clock uses [PVP Versioning][1].
 The change log is available [on GitHub][2].
 
+1.4.0.1
+=======
+* [#145](https://github.com/serokell/o-clock/pull/145)
+  + Bump some upper bounds.
+  + Get rid of warnings with GHC-9.12.
+
 1.4.0
 =====
 
